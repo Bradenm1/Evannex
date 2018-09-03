@@ -1,3 +1,4 @@
+// Number of AI to spawn each side
 _numbToSpawn = 40;
 
 // spawnAI function
