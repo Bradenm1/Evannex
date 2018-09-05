@@ -1,11 +1,13 @@
 // Number of AI to spawn each side
 _aiLimit = 15; // Number of groups
-_numbToSpawn = 3; // AI spawn per spawn rate
-_aiSpawnRate = 1; // Delay in seconds
+//_numbToSpawn = 3;  AI spawn per spawn rate
+_aiSpawnRate = 2; // Delay in seconds
+_allSpawnedDelay = 10; // Seconds to wait untill checking if any groups died
 _minDis = 180; // Limit to spawm from center
 _maxDis = 360; // Outter limit
-_radius = 60; // Radius to spawn within
-_groups = [];
+_radius = 55; // Radius to spawn within
+_totalSpawned = 0; // Total groups spawned
+_groups = []; // All spawned groups
 
 
 // Types
@@ -13,8 +15,9 @@ _sides = ["EAST", "WEST"];
 
 _types = ["OPF_F","BLU_F"];
 
-_unitTypes = ["Infantry","Armored", "Motorized_MTP"];
+_unitTypes = ["Infantry","Armored", "Motorized_MTP", "Mechanized", "SpecOps"];
 
+// Below units are in-order below given the _sides and _unitTypes positions 
 _units = [[[ // EAST
 	"OI_reconPatrol",
 	"OI_reconSentry",
@@ -41,7 +44,22 @@ _units = [[[ // EAST
 	"OIA_MotInf_MGTeam",
 	"OIA_MotInf_MortTeam",
 	"OIA_MotInf_Team"
-]], [[ // WEST
+], [
+	"OIA_MechInf_AA",
+	"OIA_MechInf_AT",
+	"OIA_MechInf_Support",
+	"OIA_MechInfSquad"
+], [
+	"OI_AttackTeam_UAV",
+	"OI_AttackTeam_UGV",
+	"OI_diverTeam",
+	"OI_diverTeam_Boat",
+	"OI_diverTeam_SDV",
+	"OI_ReconTeam_UAV",
+	"OI_ReconTeam_UGV",
+	"OI_SmallTeam_UAV"
+]], 
+[[ // WEST
 	"BUS_InfSentry",
 	"BUS_InfSquad",
 	"BUS_InfAssault",
@@ -68,6 +86,20 @@ _units = [[[ // EAST
 	"BUS_MotInf_MGTeam",
 	"BUS_MotInf_MortTeam",
 	"BUS_MotInf_Team"
+], [
+	"BUS_MechInf_AA",
+	"BUS_MechInf_AT",
+	"BUS_MechInf_Support",
+	"BUS_MechInfSquad"
+], [
+	"BUS_AttackTeam_UAV",
+	"BUS_AttackTeam_UGV",
+	"BUS_diverTeam",
+	"BUS_diverTeam_Boat",
+	"BUS_diverTeam_SDV",
+	"BUS_ReconTeam_UAV",
+	"BUS_ReconTeam_UGV",
+	"BUS_SmallTeam_UAV"
 ]]];
 
 // Gets a random location on the plaer
@@ -91,21 +123,29 @@ spawnAI = {
 
 // Spawns a group
 spawnGroup = {
-	_createdGroup = objNull;
-	if (_this select 0 == "EAST") then [ { 
-			_createdGroup = [[] call getLocation, EAST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
+	// Check what side to spawn
+	_createdGroup = if (_this select 0 == "EAST") then [ { 
+			[[] call getLocation, EAST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
 		}, { 
-			_createdGroup = [[] call getLocation, WEST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
+			[[] call getLocation, WEST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
 		} 
 	];
-	_createdGroup move position player;
+	_pos = [] call getLocation;
+	_createdGroup addWaypoint [_pos, 0];
 	_createdGroup;
 };
 
 // Selects and spawns random units
 selectRandomGroupToSpawn = {
+	_eastCount = 0;
+	_westCount = 0;
+	// Check number of groups for each side
+	{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
+	} foreach _groups;
+	// Check what side should be spawned given the group amounts for each side
+	_side = if (((_eastCount >= (_aiLimit / 2)) or (_eastCount > _westCount)) and ((_westCount <= (_aiLimit / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
 	// Picks a random side
-	_side = floor random count _sides;
+	//_side = floor random count _sides;
 	// Picks random type of units
 	_index = floor random count _unitTypes;
 	// Selects unit side given the side
@@ -123,9 +163,16 @@ while {True} do {
 	while {count _groups <= _aiLimit} do {
 		sleep _aiSpawnRate;
 		[] call selectRandomGroupToSpawn;
+		_totalSpawned = _totalSpawned + 1;
+		hint format ["Group Spawned - Total:  %1", _totalSpawned];
 	};
 	// Delete groups where all units are dead
-	{if ((count (units _x)) == 0) then {deleteGroup _x; _x = grpNull; _x = nil}} foreach allGroups;
+	{	// Add waypoint to group (Will do for all groups)
+		_pos = [] call getLocation;
+		_x addWaypoint [_pos, 0];
+		// Check group is empty, remove it from groups and delete it
+		if ((count (units _x)) == 0) then { _groups deleteAt (_groups find _x); deleteGroup _x;  _x = grpNull; _x = nil; };
+	} foreach _groups;
 	// Save memory instead of constant checking
-	sleep 1;
+	sleep _allSpawnedDelay;
 };
