@@ -1,7 +1,7 @@
 // Number of AI to spawn each side
 _aiLimit = 15; // Number of groups
 //_numbToSpawn = 3;  AI spawn per spawn rate
-_aiSpawnRate = 2; // Delay in seconds
+_aiSpawnRate = 0; // Delay in seconds
 _allSpawnedDelay = 10; // Seconds to wait untill checking if any groups died
 _minDis = 180; // Limit to spawm from center
 _maxDis = 360; // Outter limit
@@ -11,7 +11,7 @@ _groups = []; // All spawned groups
 
 
 // Types
-_sides = ["EAST", "WEST"];
+_sides = [EAST, WEST];
 
 _types = ["OPF_F","BLU_F"];
 
@@ -123,13 +123,8 @@ spawnAI = {
 
 // Spawns a group
 spawnGroup = {
-	// Check what side to spawn
-	_createdGroup = if (_this select 0 == "EAST") then [ { 
-			[[] call getLocation, EAST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
-		}, { 
-			[[] call getLocation, WEST, (configFile >> "CfgGroups" >> _this select 0 >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup; 
-		} 
-	];
+	_createdGroup = [[] call getLocation, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup;
+	// Get position for the waypoint
 	_pos = [] call getLocation;
 	_createdGroup addWaypoint [_pos, 0];
 	_createdGroup;
@@ -144,8 +139,6 @@ selectRandomGroupToSpawn = {
 	} foreach _groups;
 	// Check what side should be spawned given the group amounts for each side
 	_side = if (((_eastCount >= (_aiLimit / 2)) or (_eastCount > _westCount)) and ((_westCount <= (_aiLimit / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
-	// Picks a random side
-	//_side = floor random count _sides;
 	// Picks random type of units
 	_index = floor random count _unitTypes;
 	// Selects unit side given the side
@@ -156,6 +149,23 @@ selectRandomGroupToSpawn = {
 	_unitGroup = _groupSide select _index;
 	_groups append [[_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup] call spawnGroup];
 };
+
+// Creates the radius
+_markerPos = player getPos [_radius * sqrt 360, 360];
+createMarker ["Radius", position player]; 
+"Radius" setMarkerSize [_radius * sqrt 360, _radius * sqrt 360];
+"Radius" setMarkerBrush "FDiagonal";
+"Radius" setMarkerShape "ELLIPSE";
+"Radius" setMarkerColor "ColorBlue";
+"Radius" setMarkerText "Enemy Zone";
+"Radius" setMarkerAlpha 0.5;
+
+// Create text icon
+createMarker ["Icon", position player];
+"Icon" setMarkerShape "ICON"; 
+"Icon" setMarkerText "Enemy Zone";
+"Icon" setMarkerType "mil_triangle";
+"Icon" setMarkerColor "ColorGreen";
 
 // Endless loop
 while {True} do {
