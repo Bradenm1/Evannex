@@ -15,6 +15,11 @@ _zones = [position player];
 // Current zone
 _zone = objnull;
 
+// The model of HQ to use
+_hqModel = "Land_Cargo_HQ_V1_F";
+// The model for the radio tower
+_radioTowerModel = "Land_TTowerBig_2_F";
+
 // Types
 _sides = [EAST, WEST];
 
@@ -204,11 +209,25 @@ createHQ = {
 	// Gets position near center
 	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
 	// Place HQ near center
-	"Land_Cargo_HQ_V1_F" createVehicle _hqPos;
+	_hqModel createVehicle _hqPos;
 	// Creates the radius
 	["ZONE_HQ_RADIUS", _hqCenterPos, 10, 360, "ColorGreen", "HQ Zone", 0.6] call createRadiusMarker;
 	// Create text icon
 	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorGreen"] call createTextMarker;
+};
+
+// Creates the RadioTower
+createRadioTower = {
+	// Creates center for RadioTower
+	_hqCenterPos = [] call getLocation;
+	// Gets position near center
+	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
+	// Place RadioTower near center
+	_radioTowerModel createVehicle _hqPos;
+	// Creates the radius
+	["ZONE_RADIOTOWER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Radio Tower Zone", 0.6] call createRadiusMarker;
+	// Create text icon
+	["ZONE_RADIOTOWER_ICON", _hqCenterPos, "Radio Tower", "ColorGreen"] call createTextMarker;
 };
 
 // Main function
@@ -216,6 +235,7 @@ main = {
 	// Create a zone
 	[] call createZone;
 	[] call createHQ;
+	[] call createRadioTower;
 	// Endless loop
 	while {True} do {
 		// Spawn AI untill reached limit
