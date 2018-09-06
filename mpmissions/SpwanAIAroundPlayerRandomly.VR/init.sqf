@@ -163,11 +163,11 @@ createZone = {
 	// Creates the radius
 	createMarker ["Radius", _location]; 
 	"Radius" setMarkerSize [_radius * sqrt _maxDis, _radius * sqrt _maxDis];
-	"Radius" setMarkerBrush "FDiagonal";
+	"Radius" setMarkerBrush "SolidBorder";
 	"Radius" setMarkerShape "ELLIPSE";
 	"Radius" setMarkerColor "ColorBlue";
 	"Radius" setMarkerText "Enemy Zone";
-	"Radius" setMarkerAlpha 0.5;
+	"Radius" setMarkerAlpha 0.4;
 
 	// Create text icon
 	createMarker ["Icon", _location];
@@ -186,11 +186,11 @@ createHQ = {
 	// Creates the radius
 	createMarker ["HQ_RADIUS", _hqCenterPos]; 
 	"HQ_RADIUS" setMarkerSize [10 * sqrt 360, 10 * sqrt 360];
-	"HQ_RADIUS" setMarkerBrush "FDiagonal";
+	"HQ_RADIUS" setMarkerBrush "Border";
 	"HQ_RADIUS" setMarkerShape "ELLIPSE";
 	"HQ_RADIUS" setMarkerColor "ColorGreen";
 	"HQ_RADIUS" setMarkerText "Enemy Zone";
-	"HQ_RADIUS" setMarkerAlpha 0.6;
+	"HQ_RADIUS" setMarkerAlpha 1;
 
 	// Create text icon
 	createMarker ["HQ_ICON", _hqCenterPos];

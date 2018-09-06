@@ -156,50 +156,62 @@ selectRandomGroupToSpawn = {
 	_groups append [[_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup] call spawnGroup];
 };
 
+// Creates a circle on the map
+createRadiusMarker = {
+	_name = _this select 0;
+	_loc = _this select 1;
+	_radi = _this select 2;
+	_maxD = _this select 3;
+	_color = _this select 4;
+	_txt = _this select 5;
+	_alpha = _this select 6;
+	createMarker [_name, _loc]; 
+	_name setMarkerSize [_radi * sqrt _maxD, _radi * sqrt _maxD];
+	_name setMarkerBrush "SolidBorder";
+	_name setMarkerShape "ELLIPSE";
+	_name setMarkerColor _color;
+	_name setMarkerText _txt;
+	_name setMarkerAlpha _alpha;
+};
+
+// Creates text icon on the map 
+createTextMarker = {
+	_name = _this select 0;
+	_loc = _this select 1;
+	_txt = _this select 2;
+	_color = _this select 3;
+	createMarker [_name, _loc];
+	_name setMarkerShape "ICON"; 
+	_name setMarkerText _txt;
+	_name setMarkerType "mil_triangle";
+	_name setMarkerColor _color;
+};
+
 // Creates the zone
 createZone = {
 	_zone = floor random count _zones;
 	_location = _zones select _zone;
 	// Creates the radius
-	createMarker ["Radius", _location]; 
-	"Radius" setMarkerSize [_radius * sqrt _maxDis, _radius * sqrt _maxDis];
-	"Radius" setMarkerBrush "FDiagonal";
-	"Radius" setMarkerShape "ELLIPSE";
-	"Radius" setMarkerColor "ColorBlue";
-	"Radius" setMarkerText "Enemy Zone";
-	"Radius" setMarkerAlpha 0.5;
-
+	["ZONE_RADIUS", _location, _radius, _maxDis, "ColorBlue", "Enemy Zone", 0.4] call createRadiusMarker;
 	// Create text icon
-	createMarker ["Icon", _location];
-	"Icon" setMarkerShape "ICON"; 
-	"Icon" setMarkerText "Enemy Zone";
-	"Icon" setMarkerType "mil_triangle";
-	"Icon" setMarkerColor "ColorGreen";
+	["ZONE_ICON", _location, "Enemy Zone", "ColorGreen"] call createTextMarker;
 };
 
 // Creates the HQ
 createHQ = {
+	// Creates center for HQ
 	_hqCenterPos = [] call getLocation;
-	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];
+	// Gets position near center
+	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
+	// Place HQ near center
 	"Land_Cargo_HQ_V1_F" createVehicle _hqPos;
-
 	// Creates the radius
-	createMarker ["HQ_RADIUS", _hqCenterPos]; 
-	"HQ_RADIUS" setMarkerSize [10 * sqrt 360, 10 * sqrt 360];
-	"HQ_RADIUS" setMarkerBrush "FDiagonal";
-	"HQ_RADIUS" setMarkerShape "ELLIPSE";
-	"HQ_RADIUS" setMarkerColor "ColorGreen";
-	"HQ_RADIUS" setMarkerText "Enemy Zone";
-	"HQ_RADIUS" setMarkerAlpha 0.6;
-
+	["ZONE_HQ_RADIUS", _hqCenterPos, 10, 360, "ColorGreen", "HQ Zone", 0.6] call createRadiusMarker;
 	// Create text icon
-	createMarker ["HQ_ICON", _hqCenterPos];
-	"HQ_ICON" setMarkerShape "ICON"; 
-	"HQ_ICON" setMarkerText "HQ";
-	"HQ_ICON" setMarkerType "mil_triangle";
-	"HQ_ICON" setMarkerColor "ColorGreen";
+	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorGreen"] call createTextMarker;
 };
 
+// Main function
 main = {
 	// Create a zone
 	[] call createZone;
