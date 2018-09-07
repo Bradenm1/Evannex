@@ -19,6 +19,12 @@ _zone = objnull;
 _hqModel = "Land_Cargo_HQ_V1_F";
 // The model for the radio tower
 _radioTowerModel = "Land_TTowerBig_2_F";
+_radioTowerObject = objnull;
+// The model for the rescue bunker
+_rescueBunker = "Land_Cargo_House_V1_F";
+
+// The units around HQ
+_hqGroup = objnull;
 
 // Types
 _sides = [EAST, WEST];
@@ -149,7 +155,8 @@ selectRandomGroupToSpawn = {
 	{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
 	} foreach _groups;
 	// Check what side should be spawned given the group amounts for each side
-	_side = if (((_eastCount >= (_aiLimit / 2)) or (_eastCount > _westCount)) and ((_westCount <= (_aiLimit / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
+	//_side = if (((_eastCount >= (_aiLimit / 2)) or (_eastCount > _westCount)) and ((_westCount <= (_aiLimit / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
+	_side = 0;
 	// Picks random type of units
 	_index = floor random count _unitTypes;
 	// Selects unit side given the side
@@ -197,9 +204,9 @@ createZone = {
 	_zone = floor random count _zones;
 	_location = _zones select _zone;
 	// Creates the radius
-	["ZONE_RADIUS", _location, _radius, _maxDis, "ColorBlue", "Enemy Zone", 0.4] call createRadiusMarker;
+	["ZONE_RADIUS", _location, _radius, _maxDis, "ColorRed", "Enemy Zone", 0.4] call createRadiusMarker;
 	// Create text icon
-	["ZONE_ICON", _location, "Enemy Zone", "ColorGreen"] call createTextMarker;
+	["ZONE_ICON", _location, "Enemy Zone", "ColorBlue"] call createTextMarker;
 };
 
 // Creates the HQ
@@ -211,9 +218,10 @@ createHQ = {
 	// Place HQ near center
 	_hqModel createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_HQ_RADIUS", _hqCenterPos, 10, 360, "ColorGreen", "HQ Zone", 0.6] call createRadiusMarker;
+	["ZONE_HQ_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "HQ Zone", 0.3] call createRadiusMarker;
 	// Create text icon
-	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorGreen"] call createTextMarker;
+	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorBlue"] call createTextMarker;
+	_hqGroup = [ _hqPos, EAST, ["O_officer_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 };
 
 // Creates the RadioTower
@@ -223,11 +231,27 @@ createRadioTower = {
 	// Gets position near center
 	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
 	// Place RadioTower near center
-	_radioTowerModel createVehicle _hqPos;
+	_radioTowerObject = _radioTowerModel createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_RADIOTOWER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Radio Tower Zone", 0.6] call createRadiusMarker;
+	["ZONE_RADIOTOWER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Radio Tower Zone", 0.3] call createRadiusMarker;
 	// Create text icon
-	["ZONE_RADIOTOWER_ICON", _hqCenterPos, "Radio Tower", "ColorGreen"] call createTextMarker;
+	["ZONE_RADIOTOWER_ICON", _hqCenterPos, "Radio Tower", "ColorBlue"] call createTextMarker;
+};
+
+// Creates the RescueBunker
+createRescueBunker = {
+	// Creates center for RescueBunker
+	_hqCenterPos = [] call getLocation;
+	// Gets position near center
+	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
+	// Place RescueBunker near center
+	_rescueBunker createVehicle _hqPos;
+	// Creates the radius
+	["ZONE_RESCUEBUNKER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Rescue Bunker(s) Zone", 0.3] call createRadiusMarker;
+	// Create text icon
+	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call createTextMarker;
+	_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	units _toResuce select 0 switchMove "ace_captives_isHandcuffed";
 };
 
 // Main function
@@ -236,10 +260,11 @@ main = {
 	[] call createZone;
 	[] call createHQ;
 	[] call createRadioTower;
+	[] call createRescueBunker;
 	// Endless loop
 	while {True} do {
 		// Spawn AI untill reached limit
-		while {count _groups <= _aiLimit} do {
+		while {(count _groups <= _aiLimit) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
 			[] call selectRandomGroupToSpawn;
 			_totalSpawned = _totalSpawned + 1;
@@ -252,6 +277,8 @@ main = {
 			// Check group is empty, remove it from groups and delete it
 			if ((count (units _x)) == 0) then { _groups deleteAt (_groups find _x); deleteGroup _x;  _x = grpNull; _x = nil; };
 		} foreach _groups;
+		if ({alive _x} count units _hqGroup < 1) then { "ZONE_HQ_RADIUS" setMarkerColor "ColorBlue"; };
+		if (!alive _radioTowerObject) then { deleteMarker "ZONE_RADIOTOWER_RADIUS"; deleteMarker "ZONE_RADIOTOWER_ICON" };
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
 	};
