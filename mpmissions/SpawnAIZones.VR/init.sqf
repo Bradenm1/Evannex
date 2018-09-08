@@ -124,18 +124,45 @@ getLocation = {
  	_location getPos [_radius * sqrt random _minDis, random _maxDis];
 };
 
-// Single unit spawning
-spawnAI = {
+// Spawn given units at a certain location
+spawnGivenUnitsAt = {
 	// Getting the params
 	_group = _this select 0;
 	_spawnAmount = _this select 1;
+	_position = _this select 2;
+	_groupunits = _this select 3;
+	_applyToMainGroup = _this select 4;
+	_vectorAdd = _this select 5; // Adds to the spawn position each spawn, allows vehicles to not spawn inside one another...
+	// Number AI to spawn
+	for "_i" from 1 to _spawnAmount do  {
+		{
+			// Create and return the AI(s) group
+			_tempGroup = [_position, side _group, [_x],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+			// Place the AI(s) in that group into another group
+			units _tempGroup join _group;
+			_position = _position vectorAdd _vectorAdd;
+		} foreach _groupunits;
+	};
+	if (_applyToMainGroup == 1) then {_groups append [_group]};
+	_group;
+};
+
+// Single unit spawning at a certain location
+spawnRandomAIAt = {
+	// Getting the params
+	_group = _this select 0;
+	_spawnAmount = _this select 1;
+	_position = _this select 2;
+	_applyToMainGroup = _this select 3;
 	// Number AI to spawn
 	for "_i" from 1 to _spawnAmount do  {
 		// Create and return the AI(s) group
-		_tempGroup = [[] call getLocation, side _group, 1] call BIS_fnc_spawnGroup;
+		_tempGroup = [_position findEmptyPosition [0,100], side _group, 1] call BIS_fnc_spawnGroup;
 		// Place the AI(s) in that group into another group
 		units _tempGroup join _group;
 	};
+	if (_applyToMainGroup == 1) then {_groups append [_group]};
+	_group;
 };
 
 // Spawns a group
@@ -214,14 +241,15 @@ createHQ = {
 	// Creates center for HQ
 	_hqCenterPos = [] call getLocation;
 	// Gets position near center
-	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
+	_hqPos = _hqCenterPos getPos [15 * sqrt random 180, random 360];	
 	// Place HQ near center
 	_hqModel createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_HQ_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "HQ Zone", 0.3] call createRadiusMarker;
+	["ZONE_HQ_RADIUS", _hqCenterPos, 15, 360, "ColorRed", "HQ Zone", 0.3] call createRadiusMarker;
 	// Create text icon
 	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorBlue"] call createTextMarker;
 	_hqGroup = [ _hqPos, EAST, ["O_officer_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	[_hqGroup, 6, _hqPos, 0] call spawnRandomAIAt;
 };
 
 // Creates the RadioTower
@@ -250,8 +278,14 @@ createRescueBunker = {
 	["ZONE_RESCUEBUNKER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Rescue Bunker(s) Zone", 0.3] call createRadiusMarker;
 	// Create text icon
 	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call createTextMarker;
-	_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	units _toResuce select 0 switchMove "ace_captives_isHandcuffed";
+	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+};		
+
+// Spawn custom units
+createCustomUnits = {
+	[createGroup EAST, 1, [] call getLocation, ["O_Heli_Light_02_dynamicLoadout_F"], 1, [0,15,15]] call spawnGivenUnitsAt;
+	[createGroup EAST, 1, [] call getLocation, ["I_LT_01_AT_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	[createGroup EAST, 1, [] call getLocation, ["O_Plane_CAS_02_dynamicLoadout_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
 };
 
 // Main function
@@ -260,7 +294,8 @@ main = {
 	[] call createZone;
 	[] call createHQ;
 	[] call createRadioTower;
-	[] call createRescueBunker;
+	[] call createCustomUnits;
+	//[] call createRescueBunker;
 	// Endless loop
 	while {True} do {
 		// Spawn AI untill reached limit
