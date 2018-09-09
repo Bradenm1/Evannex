@@ -15,7 +15,7 @@ _units = [[[ // EAST
 	"OI_reconPatrol",
 	"OI_reconSentry",
 	"OI_reconTeam",
-	"OI_SniperTeam",
+	//"OI_SniperTeam",
 	"OIA_InfAssault",
 	"OIA_InfSentry",
 	"OIA_InfSquad",
@@ -45,9 +45,9 @@ _units = [[[ // EAST
 ], [
 	"OI_AttackTeam_UAV",
 	"OI_AttackTeam_UGV",
-	"OI_diverTeam",
-	"OI_diverTeam_Boat",
-	"OI_diverTeam_SDV",
+	//"OI_diverTeam",
+	//"OI_diverTeam_Boat",
+	//"OI_diverTeam_SDV",
 	"OI_ReconTeam_UAV",
 	"OI_ReconTeam_UGV",
 	"OI_SmallTeam_UAV"
@@ -95,6 +95,37 @@ _units = [[[ // EAST
 	"BUS_SmallTeam_UAV"
 ]]];
 
+unitChance = [
+	"O_Heli_Light_02_dynamicLoadout_F",
+	"I_LT_01_AT_F",
+	"O_Plane_CAS_02_dynamicLoadout_F",
+	"O_Truck_02_box_F",
+	"O_APC_Tracked_02_AA_F",
+	"O_MBT_02_cannon_F",
+	"O_Heli_Attack_02_F",
+	"O_MBT_02_arty_F",
+	"O_G_Offroad_01_armed_F",
+	"O_MRAP_02_gmg_F",
+	"O_Truck_02_medical_F",
+	"O_Truck_02_fuel_F",
+	"O_static_AT_F",
+	"O_static_AA_F",
+	"O_T_LSV_02_armed_F",
+	"I_GMG_01_high_F",
+	"I_HMG_01_A_F",
+	"I_HMG_01_high_F",
+	"I_HMG_01_F",
+	"I_G_Offroad_01_repair_F",
+	"I_MRAP_03_F",
+	"I_Heli_light_03_F",
+	"O_Quadbike_01_F",
+	"O_G_Van_01_transport_F",
+	"O_APC_Wheeled_02_rcws_F",
+	"O_UAV_01_F",
+	"O_UGV_01_rcws_F",
+	"O_Heli_Transport_04_box_F"
+];
+
 // Gets a random location on the plaer
 getLocation = {
 	_fun = compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
@@ -134,7 +165,7 @@ spawnRandomAIAt = {
 	// Number AI to spawn
 	for "_i" from 1 to _spawnAmount do  {
 		// Create and return the AI(s) group
-		_tempGroup = [_position findEmptyPosition [0,100], side _group, 1] call BIS_fnc_spawnGroup;
+		_tempGroup = [_position, side _group, 1] call BIS_fnc_spawnGroup;
 		// Place the AI(s) in that group into another group
 		units _tempGroup join _group;
 	};
@@ -146,18 +177,18 @@ spawnRandomAIAt = {
 spawnGroup = {
 	_createdGroup = [[] call getLocation, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup;
 	// Get position for the waypoint
-	_pos = [] call getLocation;
-	_createdGroup addWaypoint [_pos, 0];
+	//_pos = [] call getLocation;
+	//_createdGroup addWaypoint [_pos, 0];
 	_createdGroup;
 };
 
 // Selects and spawns random units
 selectRandomGroupToSpawn = {
-	_eastCount = 0;
-	_westCount = 0;
+	//_eastCount = 0;
+	//_westCount = 0;
 	// Check number of groups for each side
-	{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
-	} foreach br_AIGroups;
+	//{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
+	//} foreach br_AIGroups;
 	// Check what side should be spawned given the group amounts for each side
 	//_side = if (((_eastCount >= (br_min_ai_groups / 2)) or (_eastCount > _westCount)) and ((_westCount <= (br_min_ai_groups / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
 	_side = 0;
@@ -174,15 +205,18 @@ selectRandomGroupToSpawn = {
 
 // Spawn custom units
 createCustomUnits = {
-	[createGroup EAST, 1, [] call getLocation, ["O_Heli_Light_02_dynamicLoadout_F"], 1, [0,15,15]] call spawnGivenUnitsAt;
-	[createGroup EAST, 1, [] call getLocation, ["I_LT_01_AT_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	[createGroup EAST, 1, [] call getLocation, ["O_Plane_CAS_02_dynamicLoadout_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	[createGroup EAST, 1, [] call getLocation, ["O_Truck_02_box_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	[createGroup EAST, 1, [] call getLocation, ["O_APC_Tracked_02_AA_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	[createGroup EAST, 1, [] call getLocation, ["O_MBT_02_cannon_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	br_AIGroups append [[EAST, "OPF_F", "Infantry", "OIA_InfTeam"] call spawnGroup];
-	br_AIGroups append [[EAST, "OPF_F", "Infantry", "OIA_InfTeam"] call spawnGroup];
-	br_AIGroups append [[EAST, "OPF_F", "Infantry", "OIA_InfTeam"] call spawnGroup];
+	// Chance to spawn some unit
+	for "_i" from 1 to (random ((count unitChance) / 2)) do  {
+		[createGroup EAST, 1, [] call getLocation, [selectRandom unitChance], 1, [0,0,0]] call spawnGivenUnitsAt;
+	};
+	//[createGroup EAST, 1, [] call getLocation, ["O_Heli_Light_02_dynamicLoadout_F"], 1, [0,15,15]] call spawnGivenUnitsAt;
+	//[createGroup EAST, 1, [] call getLocation, ["I_LT_01_AT_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	//[createGroup EAST, 1, [] call getLocation, ["O_Plane_CAS_02_dynamicLoadout_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	//[createGroup EAST, 1, [] call getLocation, ["O_Truck_02_box_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	//[createGroup EAST, 1, [] call getLocation, ["O_APC_Tracked_02_AA_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	//[createGroup EAST, 1, [] call getLocation, ["O_MBT_02_cannon_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
+	([EAST, "OPF_F", "Infantry", "OI_SniperTeam"] call spawnGroup) setBehaviour "STEALTH";
+	([EAST, "OPF_F", "Infantry", "OI_SniperTeam"] call spawnGroup) setBehaviour "STEALTH";
 };
 
 spawnAI = {
@@ -196,12 +230,16 @@ spawnAI = {
 			br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
-		hint format ["Group Spawned - Total:  %1", count br_AIGroups];
+		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		// Delete groups where all units are dead
 		{	// Add waypoint to group (Will do for all groups)
 			_y = _x;
-			_pos = [] call getLocation;
-			_y addWaypoint [_pos, 0];
+			// Check number of waypoints, if less then 3 add more.
+			if (count (waypoints _y) < 3) then {
+				_pos = [] call getLocation;
+				_wp = _y addWaypoint [_pos, 0];
+				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
+			};
 			// Check group is empty, remove it from groups and delete it
 			if (({alive _x} count units _y) < 1) then { br_AIGroups deleteAt (br_AIGroups find _y); deleteGroup _y;  _y = grpNull; _y = nil; };
 		} foreach br_AIGroups;
