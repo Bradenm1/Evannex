@@ -1,0 +1,9 @@
+corpseManagerMode = 1;
+corpseLimit = 3;
+corpseRemovalMinTime = 10;
+corpseRemovalMaxTime = 20; 
+
+wreckManagerMode = 1;
+wreckLimit = 4;
+wreckRemovalMinTime = 60;
+briefing = -1;
