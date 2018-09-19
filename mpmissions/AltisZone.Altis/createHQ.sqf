@@ -27,7 +27,7 @@ createHQ = {
 	_hqPos = _hqCenterPos getPos [_zoneRadius * sqrt random 180, random 360];	
 	// Place HQ near center
 	_hqObj = "Land_Cargo_HQ_V1_F" createVehicle _hqPos;
-	_hqObj addEventHandler ["HandleDamage", {false}];
+
 	// Creates the radius
 	["ZONE_HQ_RADIUS", _hqCenterPos, _zoneRadius, 360, "ColorRed", "HQ Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
 	// Create text icon

@@ -128,8 +128,7 @@ _unitChance = [
 
 // Gets a random location on the plaer
 getLocation = {
-	_fun = compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
-	[] call _fun;
+	[] call compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
 };
 
 // Spawn given units at a certain location
@@ -173,38 +172,6 @@ spawnRandomAIAt = {
 	_group;
 };
 
-// Spawns a group
-spawnGroup = {
-	_createdGroup = [[] call getLocation, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup;
-	// Get position for the waypoint
-	//_pos = [] call getLocation;
-	//_createdGroup addWaypoint [_pos, 0];
-	_createdGroup;
-};
-
-// Selects and spawns random units
-selectRandomGroupToSpawn = {
-	//_eastCount = 0;
-	//_westCount = 0;
-	// Check number of groups for each side
-	//{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
-	//} foreach br_AIGroups;
-	// Check what side should be spawned given the group amounts for each side
-	//_side = if (((_eastCount >= (br_min_ai_groups / 2)) or (_eastCount > _westCount)) and ((_westCount <= (br_min_ai_groups / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
-	_side = 0;
-	// Picks random type of units
-	_index = floor random count _unitTypes;
-	// Selects unit side given the side
-	_type = _types select _side;
-	// Selects group side from the units array
-	br_AIGroupside = _units select _side;
-	// Selects the type of units to spawn
-	_unitGroup = br_AIGroupside select _index;
-	_group = [_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup] call spawnGroup;
-	_group setBehaviour "SAFE";
-	br_AIGroups append [_group];
-};
-
 // Spawn custom units
 createCustomUnits = {
 	// Chance to spawn some unit
@@ -217,8 +184,8 @@ createCustomUnits = {
 	//[createGroup EAST, 1, [] call getLocation, ["O_Truck_02_box_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
 	//[createGroup EAST, 1, [] call getLocation, ["O_APC_Tracked_02_AA_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
 	//[createGroup EAST, 1, [] call getLocation, ["O_MBT_02_cannon_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	([EAST, "OPF_F", "Infantry", "OI_SniperTeam"] call spawnGroup) setBehaviour "STEALTH";
-	([EAST, "OPF_F", "Infantry", "OI_SniperTeam"] call spawnGroup) setBehaviour "STEALTH";
+	//([EAST, "OPF_F", "Infantry", "OI_SniperTeam", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf") setBehaviour "STEALTH";
+	//([EAST, "OPF_F", "Infantry", "OI_SniperTeam", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf") setBehaviour "STEALTH";
 };
 
 spawnAI = {
@@ -228,7 +195,7 @@ spawnAI = {
 		// Spawn AI untill reached limit
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
-			//[] call selectRandomGroupToSpawn;
+			[_sides, 0, _unitTypes, _types, _units, [] call getLocation, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};

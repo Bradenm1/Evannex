@@ -111,80 +111,27 @@ getGroundUnitLocation = {
 	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 0, random 360];
 };
 
-// Gets a random location on the plaer
-getLocation = {
-	_fun = compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
-	[] call _fun;
-};
-
-// Spawn given units at a certain location
-spawnGivenUnitsAt = {
-	// Getting the params
-	_group = _this select 0;
-	_spawnAmount = _this select 1;
-	_position = _this select 2;
-	_groupunits = _this select 3;
-	_applyToMainGroup = _this select 4;
-	_vectorAdd = _this select 5; // Adds to the spawn position each spawn, allows vehicles to not spawn inside one another...
-	// Number AI to spawn
-	for "_i" from 1 to _spawnAmount do  {
-		{
-			// Create and return the AI(s) group
-			_tempGroup = [_position, side _group, [_x],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-			// Place the AI(s) in that group into another group
-			units _tempGroup join _group;
-			_position = _position vectorAdd _vectorAdd;
-		} foreach _groupunits;
-	};
-	if (_applyToMainGroup == 1) then {br_FriendlyAIGroups append [_group]};
-	_group;
-};
-
-// Spawns a group
-spawnGroup = {
-	_createdGroup = [[] call getGroundUnitLocation, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup;
-	_createdGroup;
-};
-
-// Selects and spawns random units
-selectRandomGroupToSpawn = {
-	//_eastCount = 0;
-	//_westCount = 0;
-	// Check number of groups for each side
-	//{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
-	//} foreach br_AIGroups;
-	// Check what side should be spawned given the group amounts for each side
-	//_side = if (((_eastCount >= (br_min_friendly_ai_groups / 2)) or (_eastCount > _westCount)) and ((_westCount <= (br_min_friendly_ai_groups / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
-	_side = 1;
-	// Picks random type of units
-	_index = floor random count _unitTypes;
-	// Selects unit side given the side
-	_type = _types select _side;
-	// Selects group side from the units array
-	br_AIGroupside = _units select _side;
-	// Selects the type of units to spawn
-	_unitGroup = br_AIGroupside select _index;
-	_group = [_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup] call spawnGroup;
-	_group setBehaviour "AWARE";
-	br_FriendlyAIGroups append [_group];
-};
-
 // Spawn custom units
-createCustomUnits = {
-	// Chance to spawn some unit
-	for "_i" from 1 to (random (count _unitChance)) do  {
-		([createGroup WEST, 1, [] call getGroundUnitLocation, [selectRandom _unitChance], 1, [0,_i * 50,0]] call spawnGivenUnitsAt) setBehaviour "AWARE";
-	};
+createCustomUnitsFriendly = {
+	//([createGroup WEST, 1, getMarkerPos "helicopter_transport_01", ["B_Heli_Transport_03_F"], 0, [0,0,0]] call spawnGivenUnitsAt);
+	_transportChopper = "B_Heli_Transport_03_F" createVehicle getMarkerPos "helicopter_transport_01";
+	_chopGroup = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	//_chopGroup = [[] call getGroundUnitLocation, WEST, 5] call BIS_fnc_spawnGroup;
+	_chopGroup addVehicle _transportChopper;
+	{
+		_x assignAsCargo _transportChopper;
+		[_x] orderGetIn true;
+	} foreach (units _chopGroup);
 };
 
 spawnFriendlyAI = {
 	// Spawn custom units
-	//[] call createCustomUnits;
+	[] call createCustomUnitsFriendly;
 	while {True} do {
 		// Spawn AI untill reached limit
-		while {((count br_FriendlyAIGroups) < br_min_friendly_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
+		while {((count br_FriendlyAIGroups) <= br_min_friendly_ai_groups)} do {
 			sleep _aiSpawnRate;
-			[] call selectRandomGroupToSpawn;
+			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_FriendlyAIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		// Delete groups where all units are dead
