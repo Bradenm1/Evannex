@@ -105,6 +105,7 @@ _unitChance = [
 	"B_APC_Tracked_01_AA_F",
 	"B_UGV_01_rcws_F"
 ];
+
 // Gets a random location on the plaer
 getGroundUnitLocation = {
 	// Gets a random location within the zone radius
@@ -114,24 +115,26 @@ getGroundUnitLocation = {
 // Spawn custom units
 createCustomUnitsFriendly = {
 	//([createGroup WEST, 1, getMarkerPos "helicopter_transport_01", ["B_Heli_Transport_03_F"], 0, [0,0,0]] call spawnGivenUnitsAt);
-	_transportChopper = "B_Heli_Transport_03_F" createVehicle getMarkerPos "helicopter_transport_01";
-	_chopGroup = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	//_transportChopper = "B_Heli_Transport_03_F" createVehicle getMarkerPos "helicopter_transport_01";
+	//_chopGroup = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	//br_FriendlyAIGroups append [_chopGroup];
 	//_chopGroup = [[] call getGroundUnitLocation, WEST, 5] call BIS_fnc_spawnGroup;
-	_chopGroup addVehicle _transportChopper;
-	{
-		_x assignAsCargo _transportChopper;
-		[_x] orderGetIn true;
-	} foreach (units _chopGroup);
+	//_chopGroup addVehicle _transportChopper;
+	//{
+	//	_x assignAsCargo _transportChopper;
+	//	[_x] orderGetIn true;
+	//} foreach (units _chopGroup);
 };
 
 spawnFriendlyAI = {
 	// Spawn custom units
-	[] call createCustomUnitsFriendly;
+	//[] call createCustomUnitsFriendly;
 	while {True} do {
 		// Spawn AI untill reached limit
-		while {((count br_FriendlyAIGroups) <= br_min_friendly_ai_groups)} do {
-			sleep _aiSpawnRate;
-			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_FriendlyAIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+		while {((count br_friendlyGroupsWaiting) <= br_min_friendly_ai_groups)} do {
+			//sleep _aiSpawnRate;
+			br_friendlyGroupsWaiting append [[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf"];
+			
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		// Delete groups where all units are dead

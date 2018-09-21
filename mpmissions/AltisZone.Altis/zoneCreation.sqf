@@ -7,9 +7,15 @@ br_zone_radius = 55; // Radius to spawn within
 br_total_groups_spawed = 0; // Total groups spawned
 br_AIGroups = []; // All spawned groups
 br_FriendlyAIGroups = []; // Firendly AI
+br_FriendlyZoneCommandGroups = [];
+br_helis_in_transit = [];
+br_heliGroups = [];
+br_friendlyGroupsWaiting = [];
 br_HQ_taken = 0;
 br_radio_tower_destoryed = 0;
 br_zone_taken = 0;
+br_heli_queue_size = 0;
+br_min_helis = 1;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
@@ -30,7 +36,8 @@ br_zones = [
 	getMarkerPos "marker_13",
 	getMarkerPos "marker_14",
 	getMarkerPos "marker_15",
-	getMarkerPos "marker_16"
+	getMarkerPos "marker_16",
+	getMarkerPos "marker_17"
 ];
 // Current zone
 br_current_zone = objnull;
@@ -86,6 +93,7 @@ main = {
 		null = execVM "createRadioTower.sqf";
 		//[] call createRescueBunker;
 		null = execVM "zoneSpawnAI.sqf";
+		null = execVM "createHelis.sqf";
 		null = execVM "friendlySpawnAI.sqf";
 		sleep 30;
 		// Waits untills most groups are dead, HQ is taken and radio tower is destoryed
