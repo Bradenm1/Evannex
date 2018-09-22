@@ -44,7 +44,7 @@ createHelis = {
 		//	sleep _aiSpawnRate;
 		//	[] call createCustomUnitsFriendly;
 		//};
-		if ((count br_friendlyGroupsWaiting > 0) && (!_carryingUnits)) then {
+		if ((count br_friendlyGroupsWaiting > 0)) then {
 			_group = br_friendlyGroupsWaiting select 0;
 			br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _group);
 			if ({(alive _x)} count (units _group) > 0) then {
@@ -52,24 +52,28 @@ createHelis = {
 				waitUntil { {_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group) };
 				//br_FriendlyAIGroups append [_chopperUnits];
 				br_helis_in_transit append [_chopperUnits];
-				_carryingUnits = true;
 				_chopperUnits setBehaviour "CARELESS";
-				_pos = [] call getLocation;
+				_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius + br_zone_radius) * sqrt br_max_radius_distance, 300, 24, 0, 20, 0] call BIS_fnc_findSafePos;
 				_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 				_wp = _chopperUnits addWaypoint [_pos, 0];
 				_wp setWaypointType "GETOUT";
 				_wp setWaypointStatements ["true", "heli land ""LAND"";"];
 				waitUntil {(getPos _helicopterVech select 2 > 10)};
 				waitUntil {(getPos _helicopterVech select 2 < 1)};
-				[_group, true] call commandGroupIntoChopper;
+				_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
+				_wp setWaypointType "GETIN";
 				br_FriendlyAIGroups append [_group];
-				{_x moveInDriver _helicopterVech} forEach units _chopperUnits;	
-				[_chopperUnits, false] call commandGroupIntoChopper;
+				
+				waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
+
 				_wp = _chopperUnits addWaypoint [getMarkerPos "helicopter_transport_01", 0];
 				_wp setWaypointType "GETOUT";
 				_wp setWaypointStatements ["true", "heli land ""LAND"";"];
+				[_group, true] call commandGroupIntoChopper;
 				waitUntil {(getPos _helicopterVech select 2 > 10)};
 				waitUntil {(getPos _helicopterVech select 2 < 1)};
+				_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
+				_wp setWaypointType "GETIN";
 			}
 		};
 		sleep _allSpawnedDelay;
