@@ -1,5 +1,5 @@
 // Number of AI to spawn each side
-br_min_ai_groups = 25; // Number of groups
+br_min_ai_groups = 0; // Number of groups
 br_min_friendly_ai_groups = 5;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
