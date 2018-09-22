@@ -10,7 +10,7 @@ _sides = [EAST, WEST];
 _types = ["OPF_F","BLU_F"];
 
 //_unitTypes = ["Infantry","Armored", "Motorized_MTP", "Mechanized", "SpecOps"];
-_unitTypes = ["Infantry", "Motorized_MTP", "Mechanized", "SpecOps"];
+_unitTypes = ["Infantry"];
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 _units = [[[ // EAST
@@ -55,18 +55,18 @@ _units = [[[ // EAST
 	"OI_SmallTeam_UAV"
 ]], 
 [[ // WEST
-	"BUS_InfSentry",
-	"BUS_InfSquad",
-	"BUS_InfAssault",
-	"BUS_InfSquad_Weapons",
-	"BUS_InfTeam",
-	"BUS_InfTeam_AA",
-	"BUS_InfTeam_AT",
-	"BUS_ReconPatrol",
-	"BUS_ReconSentry",
-	"BUS_ReconTeam",
-	"BUS_ReconSquad",
-	"BUS_SniperTeam"
+	//"BUS_InfSentry",
+	//"BUS_InfSquad",
+	"BUS_InfAssault"
+	//"BUS_InfSquad_Weapons",
+	//"BUS_InfTeam",
+	//"BUS_InfTeam_AA",
+	//"BUS_InfTeam_AT",
+	//"BUS_ReconPatrol",
+	//"BUS_ReconSentry",
+	//"BUS_ReconTeam",
+	//"BUS_ReconSquad",
+	//"BUS_SniperTeam"
 ],[
 	"BUS_SPGPlatoon_Scorcher",
 	"BUS_SPGSection_MLRS",
@@ -131,7 +131,7 @@ spawnFriendlyAI = {
 	//[] call createCustomUnitsFriendly;
 	while {True} do {
 		// Spawn AI untill reached limit
-		while {((count br_friendlyGroupsWaiting) <= br_min_friendly_ai_groups)} do {
+		while {((count br_friendlyGroupsWaiting) < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
 			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			

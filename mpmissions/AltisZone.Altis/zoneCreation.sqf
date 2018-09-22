@@ -1,6 +1,6 @@
 // Number of AI to spawn each side
 br_min_ai_groups = 25; // Number of groups
-br_min_friendly_ai_groups = 10;
+br_min_friendly_ai_groups = 1;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = 55; // Radius to spawn within
@@ -89,12 +89,14 @@ main = {
 		// Create a zone
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
-		null = execVM "createHQ.sqf";
-		null = execVM "createRadioTower.sqf";
+		execVM "createHQ.sqf";
+		execVM "createRadioTower.sqf";
 		//[] call createRescueBunker;
-		null = execVM "zoneSpawnAI.sqf";
-		null = execVM "createHelis.sqf";
-		null = execVM "friendlySpawnAI.sqf";
+		execVM "zoneSpawnAI.sqf";
+		["helicopter_transport_01"] execVM "createHelis.sqf";
+		["helicopter_transport_02"] execVM "createHelis.sqf";
+		["helicopter_transport_03"] execVM "createHelis.sqf";
+		execVM "friendlySpawnAI.sqf";
 		sleep 30;
 		// Waits untills most groups are dead, HQ is taken and radio tower is destoryed
 		waitUntil { (count br_AIGroups < 2) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
