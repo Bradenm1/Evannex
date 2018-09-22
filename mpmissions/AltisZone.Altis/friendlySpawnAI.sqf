@@ -133,7 +133,7 @@ spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {((count br_friendlyGroupsWaiting) <= br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
-			br_friendlyGroupsWaiting append [[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf"];
+			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
