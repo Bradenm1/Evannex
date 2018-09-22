@@ -72,6 +72,10 @@ createHelis = {
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
 					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
 					_wp setWaypointType "GETIN";
+					// Tell group to get out of chooper, it has landed...
+					[_group, true] call commandGroupIntoChopper;
+					_group setBehaviour "AWARE";					
+					_group setCombatMode "RED";
 					br_FriendlyAIGroups append [_group];
 					
 					waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) || [] call checkHeliDead};
@@ -79,7 +83,6 @@ createHelis = {
 					_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
 					_wp setWaypointType "GETOUT";
 					_wp setWaypointStatements ["true", "heli land ""LAND"";"];
-					[_group, true] call commandGroupIntoChopper;
 					waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
 					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
