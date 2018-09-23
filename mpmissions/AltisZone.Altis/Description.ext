@@ -1,3 +1,5 @@
+author = "Bradenm1";
+
 corpseManagerMode = 1;
 corpseLimit = 3;
 corpseRemovalMinTime = 10;
@@ -7,3 +9,19 @@ wreckManagerMode = 1;
 wreckLimit = 4;
 wreckRemovalMinTime = 60;
 briefing = -1;
+
+reviveMode = 1;
+aiKills = 1;
+enableItemsDropping = 0;
+
+disabledAI = 1;
+respawn = "base";
+respawnButton = 1;
+respawnDelay = 10;
+
+class Header
+{
+	gameType =  Sandbox;			// Game type
+	minPlayers =  1;			// minimum number of players the mission supports
+	maxPlayers = 32;			// maximum number of players the mission supports
+};
