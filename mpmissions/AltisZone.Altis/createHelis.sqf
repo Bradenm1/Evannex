@@ -47,8 +47,6 @@ checkHeliDead = {
 	if (({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech)) then {
 		false;
 	} else { 
-		deleteGroup _chopperUnits; 
-		deleteVehicle _helicopterVech;
 		true; 
 	};
 };
@@ -72,7 +70,7 @@ createHelis = {
 					//br_FriendlyAIGroups append [_chopperUnits];
 					br_helis_in_transit append [_chopperUnits];
 					_chopperUnits setBehaviour "CARELESS";
-					_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius + br_zone_radius) * sqrt br_max_radius_distance, 600, 24, 0, 20, 0] call BIS_fnc_findSafePos;
+					_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, 20, 0] call BIS_fnc_findSafePos;
 					_lzMarker = [format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
 					_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 					_wp = _chopperUnits addWaypoint [_pos, 0];
@@ -107,6 +105,7 @@ createHelis = {
 			};
 			sleep _allSpawnedDelay;
 		};
+		sleep 15;
 		// Do the below because the heli died
 		br_heliGroups deleteAt (br_heliGroups find _chopperUnits);
 		deleteGroup _chopperUnits;

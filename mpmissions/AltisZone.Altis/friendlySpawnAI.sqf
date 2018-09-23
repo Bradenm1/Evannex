@@ -134,6 +134,7 @@ spawnFriendlyAI = {
 		while {(((count br_friendlyGroupsWaiting) + (count br_FriendlyAIGroups) + (count br_groupsInTransit) - (count br_friendlyvehicles))  < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
 			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			sleep 5;
 			
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
