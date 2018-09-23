@@ -22,16 +22,16 @@ spawnRandomAIAt = {
 // Creates the HQ
 createHQ = {
 	// Creates center for HQ
-	_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
+	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
+	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 	// Gets position near center
-	_hqPos = _hqCenterPos getPos [_zoneRadius * sqrt random 180, random 360];	
+	_hqPos = _newPos getPos [_zoneRadius * sqrt random 180, random 360];	
 	// Place HQ near center
 	_hqObj = "Land_Cargo_HQ_V1_F" createVehicle _hqPos;
-
 	// Creates the radius
-	["ZONE_HQ_RADIUS", _hqCenterPos, _zoneRadius, 360, "ColorRed", "HQ Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
+	["ZONE_HQ_RADIUS", _newPos, _zoneRadius, 360, "ColorRed", "HQ Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_HQ_ICON", _hqCenterPos, "HQ", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	["ZONE_HQ_ICON", _newPos, "HQ", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
 	_hqGroup = [ _hqPos, EAST, ["O_officer_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 	[_hqGroup, 6, _hqPos, 0] call spawnRandomAIAt;
 

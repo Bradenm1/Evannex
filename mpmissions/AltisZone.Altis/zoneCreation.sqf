@@ -1,5 +1,5 @@
 // Number of AI to spawn each side
-br_min_ai_groups = 25; // Number of groups
+br_min_ai_groups = 18; // Number of groups
 br_min_friendly_ai_groups = 1;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
@@ -16,29 +16,12 @@ br_radio_tower_destoryed = 0;
 br_zone_taken = 0;
 br_heli_queue_size = 0;
 br_min_helis = 1;
+br_max_checks = 200;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
-br_zones = [
-	getMarkerPos "marker_0",
-	getMarkerPos "marker_1",
-	getMarkerPos "marker_2",
-	getMarkerPos "marker_3",
-	getMarkerPos "marker_4",
-	getMarkerPos "marker_5",
-	getMarkerPos "marker_6",
-	getMarkerPos "marker_7",
-	getMarkerPos "marker_8",
-	getMarkerPos "marker_9",
-	getMarkerPos "marker_10",
-	getMarkerPos "marker_11",
-	getMarkerPos "marker_12",
-	getMarkerPos "marker_13",
-	getMarkerPos "marker_14",
-	getMarkerPos "marker_15",
-	getMarkerPos "marker_16",
-	getMarkerPos "marker_17"
-];
+br_zones = [];
+
 // Current zone
 br_current_zone = objnull;
 
@@ -53,7 +36,7 @@ createZone = {
 };
 
 // Creates the RescueBunker
-/*createRescueBunker = {
+createRescueBunker = {
 	// Creates center for RescueBunker
 	_hqCenterPos = [] call getLocation;
 	// Gets position near center
@@ -65,7 +48,7 @@ createZone = {
 	// Create text icon
 	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
 	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-};*/	
+};
 
 // Called when the Zone is taken
 onTaken = {
@@ -83,9 +66,38 @@ onTaken = {
 	br_HQ_taken = 0;
 };
 
+// Get all heli and vehicle spawn locations
+createFriendlyTransportAndVehicles = {
+	for "_i" from 0 to br_max_checks do {
+		_endStringVeh = Format ["vehicle_spawn_%1", _i];
+		_endStringHeli = Format ["helicopter_transport_%1", _i];
+		if (getMarkerColor _endStringVeh == "") 
+		then {} else {  
+			[_endStringVeh] execVM "createVehicle.sqf";
+		};
+		if (getMarkerColor _endStringHeli == "") 
+		then {} else {  
+			[_endStringHeli] execVM "createHelis.sqf";
+		};
+	};
+};
+
+// Get all spawn locations
+getZoneSpawnLocations = {
+	for "_i" from 0 to br_max_checks do {
+		_endString = Format ["marker_%1", _i];
+		if (getMarkerColor _endString == "") 
+		then {} else {  
+			br_zones append [getMarkerPos _endString];
+		};
+	};
+};
+
 // Main function
 main = {
 	while {True} do {
+		// Get spawn locations
+		[] call getZoneSpawnLocations;
 		// Create a zone
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
@@ -93,18 +105,7 @@ main = {
 		execVM "createRadioTower.sqf";
 		//[] call createRescueBunker;
 		execVM "zoneSpawnAI.sqf";
-		for "_i" from 0 to 50 do {
-			_endStringVeh = Format ["vehicle_spawn_%1", _i];
-			_endStringHeli = Format ["helicopter_transport_%1", _i];
-			if (getMarkerColor _endStringVeh == "") 
-			then {} else {  
-				[_endStringVeh] execVM "createVehicle.sqf";
-			};
-			if (getMarkerColor _endStringHeli == "") 
-			then {} else {  
-				[_endStringHeli] execVM "createHelis.sqf";
-			};
-		};
+		[] call createFriendlyTransportAndVehicles;
 		execVM "friendlySpawnAI.sqf";
 		sleep 30;
 		// Waits untills most groups are dead, HQ is taken and radio tower is destoryed

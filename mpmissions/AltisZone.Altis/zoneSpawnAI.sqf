@@ -147,7 +147,7 @@ spawnGivenUnitsAt = {
 			_tempGroup = [_position, side _group, [_x],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 			// Place the AI(s) in that group into another group
 			units _tempGroup join _group;
-			_position = _position vectorAdd _vectorAdd;
+			//_position = _position vectorAdd _vectorAdd;
 		} foreach _groupunits;
 	};
 	if (_applyToMainGroup == 1) then {br_AIGroups append [_group]};
@@ -176,7 +176,9 @@ spawnRandomAIAt = {
 createCustomUnits = {
 	// Chance to spawn some unit
 	for "_i" from 1 to (random ((count _unitChance) / 2)) do  {
-		([createGroup EAST, 1, [] call getLocation, [selectRandom _unitChance], 1, [0,0,0]] call spawnGivenUnitsAt) setBehaviour "SAFE";
+		_pos = [] call getLocation;
+		_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
+		([createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call spawnGivenUnitsAt) setBehaviour "SAFE";
 	};
 	//[createGroup EAST, 1, [] call getLocation, ["O_Heli_Light_02_dynamicLoadout_F"], 1, [0,15,15]] call spawnGivenUnitsAt;
 	//[createGroup EAST, 1, [] call getLocation, ["I_LT_01_AT_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
@@ -195,7 +197,8 @@ spawnAI = {
 		// Spawn AI untill reached limit
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
-			[_sides, 0, _unitTypes, _types, _units, [] call getLocation, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
+			[_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
@@ -205,7 +208,8 @@ spawnAI = {
 			_y = _x;
 			// Check number of waypoints, if less then 3 add more.
 			if (count (waypoints _y) < 3) then {
-				_pos = [] call getLocation;
+				//_pos = [] call getLocation;
+				_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
 				_wp = _y addWaypoint [_pos, 0];
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 			};

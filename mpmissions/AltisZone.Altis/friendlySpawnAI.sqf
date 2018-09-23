@@ -142,7 +142,8 @@ spawnFriendlyAI = {
 			_y = _x;
 			// Check number of waypoints, if less then 3 add more.
 			if (count (waypoints _y) < 3) then {
-				_pos = [] call getLocation;
+				//_pos = [] call getLocation;
+				_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
 				_wp = _y addWaypoint [_pos, 0];
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 			};
