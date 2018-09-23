@@ -29,7 +29,10 @@ _unitChance = [
 	"B_T_LSV_01_armed_sand_F",
 	"B_T_MRAP_01_gmg_F",
 	"B_T_MRAP_01_hmg_F",
-	"B_T_UAV_03_F"
+	"B_T_UAV_03_F",
+	"B_G_Quadbike_01_F",
+	"B_Heli_Light_01_armed_F",
+	"B_Plane_CAS_01_F"
 ];
 
 // Spawn custom units
@@ -42,11 +45,13 @@ createVehicleUnit = {
 };
 
 runVehicleUnit = {
-	[] call createVehicleUnit;
 	while {True} do {
-		sleep _allSpawnedDelay;
+		[] call createVehicleUnit;
+		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
+		deleteGroup _vehicleGroup; 
+		deleteVehicle _vehicle;
 	};
 };
 
 //[] call runVehicleUnit;
-[] call createVehicleUnit;
+[] call runVehicleUnit;
