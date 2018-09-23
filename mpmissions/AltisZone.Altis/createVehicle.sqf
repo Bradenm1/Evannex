@@ -42,6 +42,7 @@ createVehicleUnit = {
 	_commander = driver _vehicle;
 	_vehicleGroup = group _commander;
 	br_FriendlyAIGroups append [_vehicleGroup];
+	br_friendlyvehicles append [_vehicleGroup];
 };
 
 runVehicleUnit = {
@@ -50,6 +51,8 @@ runVehicleUnit = {
 		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
 		deleteGroup _vehicleGroup; 
 		deleteVehicle _vehicle;
+		br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _vehicleGroup);
+		br_friendlyvehicles deleteAt (br_friendlyvehicles find _vehicleGroup);
 	};
 };
 

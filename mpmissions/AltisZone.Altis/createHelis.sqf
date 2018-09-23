@@ -65,6 +65,7 @@ createHelis = {
 				br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _group);
 				// Check if group is alive
 				if ({(alive _x)} count (units _group) > 0) then {
+					br_groupsInTransit append [_group];
 					[_group, false] call commandGroupIntoChopper;
 					waitUntil { {_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group) || [] call checkHeliDead };
 					//br_FriendlyAIGroups append [_chopperUnits];
@@ -86,6 +87,7 @@ createHelis = {
 					//[_group, true] call commandGroupIntoChopper;
 					_group setBehaviour "AWARE";					
 					_group setCombatMode "RED";
+					br_groupsInTransit deleteAt (br_groupsInTransit find _group);
 					br_FriendlyAIGroups append [_group];
 					{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 					

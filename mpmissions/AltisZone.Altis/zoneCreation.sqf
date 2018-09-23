@@ -1,16 +1,17 @@
 // Number of AI to spawn each side
 br_min_ai_groups = 18; // Number of groups
-br_min_friendly_ai_groups = 1;
+br_min_friendly_ai_groups = 5;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = 55; // Radius to spawn within
 br_total_groups_spawed = 0; // Total groups spawned
 br_AIGroups = []; // All spawned groups
 br_FriendlyAIGroups = []; // Firendly AI
-br_FriendlyZoneCommandGroups = [];
 br_helis_in_transit = [];
 br_heliGroups = [];
+br_groupsInTransit = [];
 br_friendlyGroupsWaiting = [];
+br_friendlyvehicles = [];
 br_HQ_taken = 0;
 br_radio_tower_destoryed = 0;
 br_zone_taken = 0;
