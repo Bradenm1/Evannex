@@ -19,7 +19,7 @@ commandGroupIntoChopper = {
 	};
 	{
 		//_x assignAsCargo _helicopterVech;
-		if (_getOut) then { _x action ["Eject",_helicopterVech]; } else { [_x] orderGetIn true; };
+		if (_getOut) then { _x action ["Eject", _helicopterVech]; } else { [_x] orderGetIn true; };
 	} foreach (units _group);
 };
 
@@ -37,12 +37,19 @@ createChopperUnit = {
 	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 	br_heliGroups append [_chopperUnits];
 	waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
+	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
 	//br_helisWaiting append [_chopper];
 };
 
 // Checks if units in chooper are dead but false is if they are alive
 checkHeliDead = {
-	if ({(alive _x)} count (units _chopperUnits) > 0) then { false; } else { true; };
+	if (({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech)) then {
+		false;
+	} else { 
+		deleteGroup _chopperUnits; 
+		deleteVehicle _helicopterVech;
+		true; 
+	};
 };
 
 createHelis = {
@@ -50,7 +57,7 @@ createHelis = {
 	while {True} do {
 		[] call createChopperUnit;
 		// Check if units inside chopper are dead
-		while {{(alive _x)} count (units _chopperUnits) > 0} do {
+		while {({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech)} do {
 			// Check if any groups are waiting
 			if ((count br_friendlyGroupsWaiting > 0)) then {
 				// Remove group from queue
@@ -67,16 +74,20 @@ createHelis = {
 					_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 					_wp = _chopperUnits addWaypoint [_pos, 0];
 					_wp setWaypointType "GETOUT";
-					_wp setWaypointStatements ["true", "heli land ""LAND"";"];
+					// Wait untill landed
 					waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
+					// Has landed
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
+					[_group, true] call commandGroupIntoChopper;
+					{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
 					_wp setWaypointType "GETIN";
 					// Tell group to get out of chooper, it has landed...
-					[_group, true] call commandGroupIntoChopper;
+					//[_group, true] call commandGroupIntoChopper;
 					_group setBehaviour "AWARE";					
 					_group setCombatMode "RED";
 					br_FriendlyAIGroups append [_group];
+					{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 					
 					waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) || [] call checkHeliDead};
 					_chopperUnits setBehaviour "SAFE";
@@ -96,6 +107,7 @@ createHelis = {
 		deleteGroup _chopperUnits;
 		_chopperUnits = grpNull;
 		_chopperUnits = nil;
+		deleteVehicle _helicopterVech;
 	};
 };
 

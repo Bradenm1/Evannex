@@ -93,9 +93,18 @@ main = {
 		execVM "createRadioTower.sqf";
 		//[] call createRescueBunker;
 		execVM "zoneSpawnAI.sqf";
-		["helicopter_transport_01"] execVM "createHelis.sqf";
-		["helicopter_transport_02"] execVM "createHelis.sqf";
-		["helicopter_transport_03"] execVM "createHelis.sqf";
+		for "_i" from 0 to 50 do {
+			_endStringVeh = Format ["vehicle_spawn_%1", _i];
+			_endStringHeli = Format ["helicopter_transport_%1", _i];
+			if (getMarkerColor _endStringVeh == "") 
+			then {} else {  
+				[_endStringVeh] execVM "createVehicle.sqf";
+			};
+			if (getMarkerColor _endStringHeli == "") 
+			then {} else {  
+				[_endStringHeli] execVM "createHelis.sqf";
+			};
+		};
 		execVM "friendlySpawnAI.sqf";
 		sleep 30;
 		// Waits untills most groups are dead, HQ is taken and radio tower is destoryed
