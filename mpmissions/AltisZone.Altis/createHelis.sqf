@@ -2,6 +2,7 @@ _allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
 _chopperUnits = nil;
 _helicopterVech = nil;
 _heliPad = _this select 0;
+_heliIndex = _this select 1;
 
 // Gets a random location on the plaer
 getGroundUnitLocation = {
@@ -72,6 +73,7 @@ createHelis = {
 					br_helis_in_transit append [_chopperUnits];
 					_chopperUnits setBehaviour "CARELESS";
 					_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius + br_zone_radius) * sqrt br_max_radius_distance, 600, 24, 0, 20, 0] call BIS_fnc_findSafePos;
+					_lzMarker = [format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
 					_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 					_wp = _chopperUnits addWaypoint [_pos, 0];
 					_wp setWaypointType "GETOUT";
@@ -84,7 +86,6 @@ createHelis = {
 					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
 					_wp setWaypointType "GETIN";
 					// Tell group to get out of chooper, it has landed...
-					//[_group, true] call commandGroupIntoChopper;
 					_group setBehaviour "AWARE";					
 					_group setCombatMode "RED";
 					br_groupsInTransit deleteAt (br_groupsInTransit find _group);
@@ -96,6 +97,8 @@ createHelis = {
 					_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
 					_wp setWaypointType "GETOUT";
 					_wp setWaypointStatements ["true", "heli land ""LAND"";"];
+					deleteVehicle _landMarker;
+					deleteMarker format ["LZ - %1", _heliIndex];
 					waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
 					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];

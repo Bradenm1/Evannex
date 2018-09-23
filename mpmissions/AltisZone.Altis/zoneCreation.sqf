@@ -78,7 +78,7 @@ createFriendlyTransportAndVehicles = {
 		};
 		if (getMarkerColor _endStringHeli == "") 
 		then {} else {  
-			[_endStringHeli] execVM "createHelis.sqf";
+			[_endStringHeli, _i] execVM "createHelis.sqf";
 		};
 	};
 };
