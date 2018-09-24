@@ -33,13 +33,15 @@ createHeliPad = {
 createChopperUnit = {
 	_helicopterVech = "B_Heli_Transport_03_F" createVehicle getMarkerPos _heliPad;
 	//createVehicleCrew _helicopterVech;
-	_chopperUnits = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	//_chopperUnits addVehicle _helicopterVech;
-	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
-	br_heliGroups append [_chopperUnits];
+	[] call createHeliUnits;
 	waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
-	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
 	//br_helisWaiting append [_chopper];
+};
+
+deleteOldChopperUnit = {
+	br_heliGroups deleteAt (br_heliGroups find _chopperUnits);
+	{ deleteVehicle _x } forEach units _chopperUnits;
+	deleteGroup _chopperUnits;
 };
 
 // Checks if units in chooper are dead but false is if they are alive
@@ -49,6 +51,14 @@ checkHeliDead = {
 	} else { 
 		true; 
 	};
+};
+
+createHeliUnits = {
+	_chopperUnits = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
+	//_chopperUnits addVehicle _helicopterVech;
+	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
+	br_heliGroups append [_chopperUnits];
 };
 
 createHelis = {
@@ -75,20 +85,15 @@ createHelis = {
 					_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 					_wp = _chopperUnits addWaypoint [_pos, 0];
 					_wp setWaypointType "GETOUT";
+					_helicopterVech engineOn true;
 					// Wait untill landed
 					waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
 					// Has landed
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
 					[_group, true] call commandGroupIntoChopper;
-					br_heliGroups deleteAt (br_heliGroups find _chopperUnits);
-					{ deleteVehicle _x } forEach units _chopperUnits;
-					deleteGroup _chopperUnits;
+					[] call deleteOldChopperUnit;
 					waitUntil { {_x in _helicopterVech} count (units _group) == 0};
-					_chopperUnits = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-					{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
-					//_chopperUnits addVehicle _helicopterVech;
-					{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
-					br_heliGroups append [_chopperUnits];
+					[] call createHeliUnits;
 					//_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
 					//_wp setWaypointType "GETIN";
 					// Tell group to get out of chooper, it has landed...
@@ -97,7 +102,7 @@ createHelis = {
 					br_groupsInTransit deleteAt (br_groupsInTransit find _group);
 					br_FriendlyAIGroups append [_group];
 					//waitUntil { {_x in _helicopterVech} count (units _group) == 0 count (units _chopperUnits) || [] call checkHeliDead};
-					_chopperUnits setBehaviour "SAFE";
+					//_chopperUnits setBehaviour "SAFE";
 					_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
 					_wp setWaypointType "GETOUT";
 					_wp setWaypointStatements ["true", "heli land ""LAND"";"];
@@ -105,9 +110,11 @@ createHelis = {
 					deleteMarker format ["LZ - %1", _heliIndex];
 					waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
 					waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
-					_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
-					_wp setWaypointType "GETIN";
+					[] call deleteOldChopperUnit;
+					[] call createHeliUnits;
+					_helicopterVech engineOn false;
 					_helicopterVech setFuel 1;
+					_helicopterVech setDamage 0;
 				}
 			};
 			sleep _allSpawnedDelay;
