@@ -1,6 +1,6 @@
 // Number of AI to spawn each side
-br_min_ai_groups = 15; // Number of groups
-br_min_friendly_ai_groups = 10;
+br_min_ai_groups = 25; // Number of groups
+br_min_friendly_ai_groups = 30;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = 55; // Radius to spawn within
@@ -70,14 +70,18 @@ onTaken = {
 // Get all heli and vehicle spawn locations
 createFriendlyTransportAndVehicles = {
 	for "_i" from 0 to br_max_checks do {
+		// Get marker prefixs
 		_endStringVeh = Format ["vehicle_spawn_%1", _i];
 		_endStringHeli = Format ["helicopter_transport_%1", _i];
+		// Check if markers exist
 		if (getMarkerColor _endStringVeh == "") 
 		then {} else {  
+			// If so create vehicle
 			[_endStringVeh] execVM "createVehicle.sqf";
 		};
 		if (getMarkerColor _endStringHeli == "") 
-		then {} else {  
+		then {} else {
+			// If so create vehicle     
 			[_endStringHeli, _i] execVM "createHelis.sqf";
 		};
 	};
@@ -86,7 +90,9 @@ createFriendlyTransportAndVehicles = {
 // Get all spawn locations
 getZoneSpawnLocations = {
 	for "_i" from 0 to br_max_checks do {
+		// Get marker prefix
 		_endString = Format ["marker_%1", _i];
+		// check if marker exists
 		if (getMarkerColor _endString == "") 
 		then {} else {  
 			br_zones append [getMarkerPos _endString];
