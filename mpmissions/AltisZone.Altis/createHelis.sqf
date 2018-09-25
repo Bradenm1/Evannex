@@ -58,7 +58,7 @@ checkHeliDead = {
 
 createHeliUnits = {
 	_chopperUnits = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
+	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; } forEach units _chopperUnits;
 	//_chopperUnits addVehicle _helicopterVech;
 	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 	{ _x setSkill 1 } forEach units _chopperUnits;
@@ -106,6 +106,7 @@ runTransportChopper = {
 						br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
 						_groups append [_x];
 						_Peps = _Peps + count units _x;
+						sleep 3;
 					};
 				};
 			};
