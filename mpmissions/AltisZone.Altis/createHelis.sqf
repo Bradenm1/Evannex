@@ -102,52 +102,53 @@ runTransportChopper = {
 		{
 			_unitsAlive = [_x] call getUnitsAlive;
 			if (_unitsAlive > 0) then {
-				if (((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") && (_x in br_friendlyGroupsWaiting)) then {
-					//if (_helicopterVech emptyPositions "cargo" >= _unitsAlive && _x in br_friendlyGroupsWaiting) then {
-						br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
-						_groups append [_x];
-						_Peps = _Peps + _unitsAlive;
-						sleep 3;
-					//};
+				if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
+					br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
+					_groups append [_x];
+					_Peps = _Peps + _unitsAlive;
+					sleep 3;
 				};
 			};
 		} forEach br_friendlyGroupsWaiting; 
-		// Check if group is alive
-		{ br_groupsInTransit append [_x]; } forEach _groups;
-		//br_groupsInTransit append [_group];
-		{ [_x, false] call commandGroupIntoChopper; } forEach _groups;
-		{ [_x] call waitForUntsToEnterChopper; } forEach _groups;
-		//br_FriendlyAIGroups a ppend [_chopperUnits];
-		br_helis_in_transit append [_chopperUnits];
-		_chopperUnits setBehaviour "CARELESS";
-		_pos = [] call createLandingSpotNearZone;
-		_wp = _chopperUnits addWaypoint [_pos, 0];
-		_wp setWaypointType "GETOUT";
-		_helicopterVech engineOn true;
-		// Wait untill landed
-		waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
-		// Has landed
-		waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
-		{ [_x, true] call commandGroupIntoChopper; } forEach _groups;
-		[] call deleteOldChopperUnit;
-		{ waitUntil { [_x] call getUnitsInHeli == 0}; } forEach _groups;
-		[] call createHeliUnits;
-		// Tell group to get out of chooper, it has landed...
-		{ _x setBehaviour "AWARE"; } forEach _groups;					
-		//_group setCombatMode "RED";
-		{ br_groupsInTransit deleteAt (br_groupsInTransit find _x); } forEach _groups;
-		{ br_FriendlyAIGroups append [_x]; } forEach _groups;
-		_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
-		_wp setWaypointType "GETOUT";
-		deleteVehicle _landMarker;
-		deleteMarker format ["LZ - %1", _heliIndex];
-		waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
-		waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
-		[] call deleteOldChopperUnit;
-		[] call createHeliUnits;
-		_helicopterVech engineOn false;
-		_helicopterVech setFuel 1;
-		_helicopterVech setDamage 0;		
+		if (count _groups > 0) then {
+			// Check if group is alive
+			{ br_groupsInTransit append [_x]; } forEach _groups;
+			//br_groupsInTransit append [_group];
+			{ [_x, false] call commandGroupIntoChopper; } forEach _groups;
+			{ [_x] call waitForUntsToEnterChopper; } forEach _groups;
+			//br_FriendlyAIGroups a ppend [_chopperUnits];
+			br_helis_in_transit append [_chopperUnits];
+			_chopperUnits setBehaviour "CARELESS";
+			_pos = [] call createLandingSpotNearZone;
+			_wp = _chopperUnits addWaypoint [_pos, 0];
+			_wp setWaypointType "GETOUT";
+			_helicopterVech engineOn true;
+			// Wait untill landed
+			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
+			// Has landed
+			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
+			{ [_x, true] call commandGroupIntoChopper; } forEach _groups;
+			[] call deleteOldChopperUnit;
+			{ waitUntil { [_x] call getUnitsInHeli == 0}; } forEach _groups;
+			[] call createHeliUnits;
+			// Tell group to get out of chooper, it has landed...
+			{ _x setBehaviour "AWARE"; } forEach _groups;					
+			//_group setCombatMode "RED";
+			{ br_groupsInTransit deleteAt (br_groupsInTransit find _x); } forEach _groups;
+			{ br_FriendlyAIGroups append [_x]; } forEach _groups;
+			_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
+			_wp setWaypointType "GETOUT";
+			deleteVehicle _landMarker;
+			deleteMarker format ["LZ - %1", _heliIndex];
+			_helicopterVech engineOn true;
+			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
+			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
+			[] call deleteOldChopperUnit;
+			[] call createHeliUnits;
+			_helicopterVech engineOn false;
+			_helicopterVech setFuel 1;
+			_helicopterVech setDamage 0;
+		};		
 	};
 };
 
@@ -203,10 +204,9 @@ createHelis = {
 	while {True} do {
 		[] call createChopperUnit;
 		// Check if units inside chopper are dead
-		sleep 10;
 		while {({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30);} do {
+			sleep 10;
 			if (_evacChopper) then { [] call runEvacChopper; } else { [] call runTransportChopper; };
-			sleep _allSpawnedDelay;
 		};
 		sleep 15;
 		// Do the below because the heli died

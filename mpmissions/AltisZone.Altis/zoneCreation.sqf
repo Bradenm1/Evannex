@@ -22,6 +22,7 @@ br_zone_taken = 0;
 br_heli_queue_size = 0;
 br_min_helis = 1;
 br_max_checks = "NChecks" call BIS_fnc_getParamValue;;
+br_radio_tower_enabled = TRUE;
 firstZone = TRUE;
 
 // Type of transport helicopters that can spawn
@@ -40,7 +41,7 @@ br_heli_units = [
 	"I_Heli_Transport_02_F",
 	"I_Heli_light_03_unarmed_F",
 	"O_Heli_Light_02_v2_F",
-	"O_Heli_Attack_02_black_F",
+	//"O_Heli_Attack_02_black_F",
 	"O_Heli_Transport_04_bench_F",
 	"O_Heli_Transport_04_covered_F"
 ];
@@ -132,6 +133,7 @@ onFirstZoneCreation = {
 	[] call createFriendlyTransportAndVehicles;
 	execVM "friendlySpawnAI.sqf";
 	execVM "commandFriendlyGroups.sqf";
+	execVM "garbageCollector.sqf";
 	firstZone = FALSE;
 };
 
@@ -169,7 +171,7 @@ main = {
 		[] call createZone;
 		execVM "playerTasking.sqf";
 		execVM "createHQ.sqf";
-		execVM "createRadioTower.sqf";
+		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone

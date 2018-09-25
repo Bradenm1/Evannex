@@ -36,8 +36,8 @@ class Params {
 	};
 	class NumberEnemyGroups {
 		title = "Min Enemy Groups Amount"; // Param name visible in the list
-		values[] = {0, 1, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 25; // Default value; must be listed in 'values' array, otherwise 0 is used
+		values[] = {0, 1, 5, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 15; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class ZoneRadius {
@@ -63,5 +63,5 @@ class Params {
 		values[] = {TRUE, FALSE};
 		// When 'texts' are missing, values will be displayed directly instead
 		default = TRUE;
-	}
+	};
 };
