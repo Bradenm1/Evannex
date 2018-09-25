@@ -58,4 +58,10 @@ class Params {
 		// When 'texts' are missing, values will be displayed directly instead
 		default = 1000;
 	};
+	class RadioTowerEnabled {
+		title = "Radio Towner Enabled?";
+		values[] = {TRUE, FALSE};
+		// When 'texts' are missing, values will be displayed directly instead
+		default = TRUE;
+	}
 };

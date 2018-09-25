@@ -24,6 +24,27 @@ br_min_helis = 1;
 br_max_checks = "NChecks" call BIS_fnc_getParamValue;;
 firstZone = TRUE;
 
+// Type of transport helicopters that can spawn
+br_heli_units = [
+	"B_Heli_Transport_03_F",
+	"B_Heli_Transport_03_unarmed_F",
+	"B_Heli_Transport_03_black_F",
+	"B_Heli_Transport_03_unarmed_green_F",
+	"B_CTRG_Heli_Transport_01_sand_F",
+	"B_CTRG_Heli_Transport_01_tropic_F",
+	//"B_T_VTOL_01_infantry_F",
+	//"B_T_VTOL_01_infantry_blue_F",
+	"B_Heli_Light_01_F",
+	"B_Heli_Transport_01_F",
+	"B_Heli_Transport_01_camo_F",
+	"I_Heli_Transport_02_F",
+	"I_Heli_light_03_unarmed_F",
+	"O_Heli_Light_02_v2_F",
+	"O_Heli_Attack_02_black_F",
+	"O_Heli_Transport_04_bench_F",
+	"O_Heli_Transport_04_covered_F"
+];
+
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
 br_zones = [];
@@ -84,12 +105,12 @@ createFriendlyTransportAndVehicles = {
 		if (getMarkerColor _endStringHeli == "") 
 		then {} else {
 			// If so create vehicle     
-			[_endStringHeli, _i, FALSE, "B_Heli_Transport_03_F"] execVM "createHelis.sqf";
+			[_endStringHeli, _i, FALSE, selectRandom br_heli_units] execVM "createHelis.sqf";
 		};
 		if (getMarkerColor _endStringHeliEvac == "") 
 		then {} else {
 			// If so create vehicle     
-			[_endStringHeliEvac, _i, TRUE, "B_Heli_Transport_03_black_F"] execVM "createHelis.sqf";
+			[_endStringHeliEvac, _i, TRUE, selectRandom br_heli_units] execVM "createHelis.sqf";
 		};
 	};
 };

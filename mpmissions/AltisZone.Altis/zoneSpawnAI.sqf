@@ -190,7 +190,17 @@ createCustomUnits = {
 	//([EAST, "OPF_F", "Infantry", "OI_SniperTeam", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf") setBehaviour "STEALTH";
 };
 
+// Delete groups in AIGroups
+deleteGroups = {
+	_group = _this select 0;
+	{ deleteVehicle _x } forEach (units _group);
+	deleteGroup _group;
+};
+
 spawnAI = {
+	// Delete existing units 
+	{ [_x] call deleteGroups; } forEach br_AIGroups;
+	br_AIGroups = [];
 	// Spawn custom units
 	[] call createCustomUnits;
 	while {br_zone_taken == 0} do {
