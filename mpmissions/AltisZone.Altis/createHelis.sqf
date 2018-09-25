@@ -59,6 +59,7 @@ createHeliUnits = {
 	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; } forEach units _chopperUnits;
 	//_chopperUnits addVehicle _helicopterVech;
 	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
+	{ _x setSkill 1 } forEach units _chopperUnits;
 	br_heliGroups append [_chopperUnits];
 };
 
@@ -102,7 +103,7 @@ createHelis = {
 					[] call createHeliUnits;
 					// Tell group to get out of chooper, it has landed...
 					_group setBehaviour "AWARE";					
-					_group setCombatMode "RED";
+					//_group setCombatMode "RED";
 					br_groupsInTransit deleteAt (br_groupsInTransit find _group);
 					br_FriendlyAIGroups append [_group];
 					_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];

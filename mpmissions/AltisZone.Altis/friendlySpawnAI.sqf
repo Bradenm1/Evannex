@@ -121,9 +121,10 @@ createCustomUnitsFriendly = {
 	//_chopGroup = [[] call getGroundUnitLocation, WEST, 5] call BIS_fnc_spawnGroup;
 	//_chopGroup addVehicle _transportChopper;
 	//{
-	//	_x assignAsCargo _transportChopper;
+	//	_x assignAsCargo _transsportChopper;
 	//	[_x] orderGetIn true;
 	//} foreach (units _chopGroup);
+	//_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
 };
 
 spawnFriendlyAI = {
@@ -133,9 +134,9 @@ spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {(((count br_friendlyGroupsWaiting) + (count br_FriendlyAIGroups) + (count br_groupsInTransit) - (count br_friendlyvehicles))  < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
-			[_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
-			sleep 5;
-			
+			_group = [_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			{ _x setSkill 1 } forEach units _group;
+			sleep 5;		
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		// Delete groups where all units are dead
@@ -150,7 +151,7 @@ spawnFriendlyAI = {
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 			};
 			// Check group is empty, remove it from groups and delete it
-			if (({alive _x} count units _y) < 1) then { br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _y); deleteGroup _y;  _y = grpNull; _y = nil; };
+			if (({alive _x} count units _y) < 1) then { br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil; };
 		} foreach br_FriendlyAIGroups;
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
