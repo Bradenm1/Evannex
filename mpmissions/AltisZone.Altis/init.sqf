@@ -5,7 +5,7 @@ if (isServer) then {
 
 // If it's a client
 if (hasInterface) then {
-	execVM "playerTasking.sqf";
+	//execVM "playerTasking.sqf";
 	// Allow zeus to see spawned things
 	execVM "addEditableZeus.sqf";
 	// Enable friendly markers
