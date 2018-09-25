@@ -25,3 +25,37 @@ class Header
 	minPlayers =  1;			// minimum number of players the mission supports
 	maxPlayers = 32;			// maximum number of players the mission supports
 };
+
+// Server params
+class Params {
+	class NumberFriendlyGroups {
+		title = "Min Friendly Ground Groups Amount"; // Param name visible in the list
+		values[] = {0, 1, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
+	};
+	class NumberEnemyGroups {
+		title = "Min Enemy Groups Amount"; // Param name visible in the list
+		values[] = {0, 1, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 25; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
+	};
+	class ZoneRadius {
+		title = "Zone Radius Size";
+		values[] = {1,5,10,15, 20, 30, 40, 50, 55, 60, 70, 80, 90, 100};
+		default = 55;
+	};
+	class AISkill {
+		title = "AI Skill (Not working)"; // Param name visible in the list
+		values[] = {0,1,2}; // Values; must be integers; has to have the same number of elements as 'texts'
+		texts[] = {"Recruit","Regular","Veteran"}; // Description of each selectable item
+		default = 1; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
+	};
+	class NChecks {
+		title = "Number of checks (Finds zones, spawners..)";
+		values[] = {10, 50, 100, 200, 300, 400, 500, 1000};
+		// When 'texts' are missing, values will be displayed directly instead
+		default = 1000;
+	};
+};

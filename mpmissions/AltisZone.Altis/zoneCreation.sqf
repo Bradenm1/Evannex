@@ -1,9 +1,9 @@
 // Number of AI to spawn each side
-br_min_ai_groups = 25; // Number of groups
-br_min_friendly_ai_groups = 10;
+br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
-br_zone_radius = 55; // Radius to spawn within
+br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_total_groups_spawed = 0; // Total groups spawned
 br_AIGroups = []; // All spawned groups
 br_FriendlyAIGroups = []; // Firendly AI
@@ -17,7 +17,7 @@ br_radio_tower_destoryed = 0;
 br_zone_taken = 0;
 br_heli_queue_size = 0;
 br_min_helis = 1;
-br_max_checks = 200;
+br_max_checks = "NChecks" call BIS_fnc_getParamValue;;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];

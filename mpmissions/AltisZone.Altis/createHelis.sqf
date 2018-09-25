@@ -3,6 +3,7 @@ _chopperUnits = nil;
 _helicopterVech = nil;
 _heliPad = _this select 0;
 _heliIndex = _this select 1;
+_landMarker = nil;
 
 // Gets a random location on the plaer
 getGroundUnitLocation = {
@@ -61,6 +62,13 @@ createHeliUnits = {
 	br_heliGroups append [_chopperUnits];
 };
 
+createLandingSpotNearZone = {
+	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
+	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
+	_pos;
+};
+
 createHelis = {
 	[] call createHeliPad;
 	while {True} do {
@@ -80,9 +88,7 @@ createHelis = {
 					//br_FriendlyAIGroups append [_chopperUnits];
 					br_helis_in_transit append [_chopperUnits];
 					_chopperUnits setBehaviour "CARELESS";
-					_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
-					_lzMarker = [format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
-					_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
+					_pos = [] call createLandingSpotNearZone;
 					_wp = _chopperUnits addWaypoint [_pos, 0];
 					_wp setWaypointType "GETOUT";
 					_helicopterVech engineOn true;
@@ -94,15 +100,11 @@ createHelis = {
 					[] call deleteOldChopperUnit;
 					waitUntil { {_x in _helicopterVech} count (units _group) == 0};
 					[] call createHeliUnits;
-					//_wp = _chopperUnits addWaypoint [getpos _helicopterVech, 0];
-					//_wp setWaypointType "GETIN";
 					// Tell group to get out of chooper, it has landed...
 					_group setBehaviour "AWARE";					
 					_group setCombatMode "RED";
 					br_groupsInTransit deleteAt (br_groupsInTransit find _group);
 					br_FriendlyAIGroups append [_group];
-					//waitUntil { {_x in _helicopterVech} count (units _group) == 0 count (units _chopperUnits) || [] call checkHeliDead};
-					//_chopperUnits setBehaviour "SAFE";
 					_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
 					_wp setWaypointType "GETOUT";
 					_wp setWaypointStatements ["true", "heli land ""LAND"";"];
@@ -121,10 +123,7 @@ createHelis = {
 		};
 		sleep 15;
 		// Do the below because the heli died
-		br_heliGroups deleteAt (br_heliGroups find _chopperUnits);
-		deleteGroup _chopperUnits;
-		_chopperUnits = grpNull;
-		_chopperUnits = nil;
+		[] call deleteOldChopperUnit;
 		deleteVehicle _helicopterVech;
 	};
 };

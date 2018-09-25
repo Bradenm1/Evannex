@@ -146,6 +146,7 @@ spawnFriendlyAI = {
 				//_pos = [] call getLocation;
 				_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
 				_wp = _y addWaypoint [_pos, 0];
+				_wp setWaypointType "DESTROY";
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 			};
 			// Check group is empty, remove it from groups and delete it
