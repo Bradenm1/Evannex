@@ -13,5 +13,5 @@ While {TRUE} do {
 		// Check group is empty, remove it from groups and delete it
 		if (({alive _x} count units _y) < 1) then { br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil; };
 	} foreach br_FriendlyAIGroups;
-	sleep 1;
+	sleep 5;
 }

@@ -1,6 +1,6 @@
 //_numbToSpawn = 3;  AI spawn per spawn rate
 _aiSpawnRate = 0; // Delay in seconds
-_allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
+_allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
 
 // Types
 _sides = [EAST, WEST];
@@ -149,9 +149,9 @@ _unitChance = [
 	"C_Kart_01_yellow_F"
 ];
 
-// Gets a random location on the plaer
-getLocation = {
-	[] call compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
+// Gets a safe zone within the zone
+getGroupEnemySpawn = {
+	[getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
 };
 
 // Spawn given units at a certain location
@@ -161,8 +161,7 @@ spawnGivenUnitsAt = {
 	_spawnAmount = _this select 1;
 	_position = _this select 2;
 	_groupunits = _this select 3;
-	_applyToMainGroup = _this select 4;
-	_vectorAdd = _this select 5; // Adds to the spawn position each spawn, allows vehicles to not spawn inside one another...
+	_vectorAdd = _this select 4; // Adds to the spawn position each spawn, allows vehicles to not spawn inside one another...
 	// Number AI to spawn
 	for "_i" from 1 to _spawnAmount do  {
 		{
@@ -173,44 +172,12 @@ spawnGivenUnitsAt = {
 			//_position = _position vectorAdd _vectorAdd;
 		} foreach _groupunits;
 	};
-	if (_applyToMainGroup == 1) then {br_AIGroups append [_group]};
-	_group;
-};
-
-// Single unit spawning at a certain location
-spawnRandomAIAt = {
-	// Getting the params
-	_group = _this select 0;
-	_spawnAmount = _this select 1;
-	_position = _this select 2;
-	_applyToMainGroup = _this select 3;
-	// Number AI to spawn
-	for "_i" from 1 to _spawnAmount do  {
-		// Create and return the AI(s) group
-		_tempGroup = [_position, side _group, 1] call BIS_fnc_spawnGroup;
-		// Place the AI(s) in that group into another group
-		units _tempGroup join _group;
-	};
-	if (_applyToMainGroup == 1) then {br_AIGroups append [_group]};
 	_group;
 };
 
 // Spawn custom units
 createCustomUnits = {
-	// Chance to spawn some unit
-	for "_i" from 1 to (random ((count _unitChance) / 2)) do  {
-		_pos = [] call getLocation;
-		_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
-		([createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call spawnGivenUnitsAt) setBehaviour "SAFE";
-	};
-	//[createGroup EAST, 1, [] call getLocation, ["O_Heli_Light_02_dynamicLoadout_F"], 1, [0,15,15]] call spawnGivenUnitsAt;
-	//[createGroup EAST, 1, [] call getLocation, ["I_LT_01_AT_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	//[createGroup EAST, 1, [] call getLocation, ["O_Plane_CAS_02_dynamicLoadout_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	//[createGroup EAST, 1, [] call getLocation, ["O_Truck_02_box_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	//[createGroup EAST, 1, [] call getLocation, ["O_APC_Tracked_02_AA_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	//[createGroup EAST, 1, [] call getLocation, ["O_MBT_02_cannon_F"], 1, [0,15,0]] call spawnGivenUnitsAt;
-	//([EAST, "OPF_F", "Infantry", "OI_SniperTeam", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf") setBehaviour "STEALTH";
-	//([EAST, "OPF_F", "Infantry", "OI_SniperTeam", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf") setBehaviour "STEALTH";
+	
 };
 
 // Delete groups in AIGroups
@@ -222,21 +189,26 @@ deleteGroups = {
 
 spawnAI = {
 	// Delete existing units 
-	{ [_x] call deleteGroups; } forEach br_AIGroups;
-	br_AIGroups = [];
+	//[] call deleteAllAI;
 	// Spawn custom units
 	[] call createCustomUnits;
 	while {br_zone_taken == 0} do {
 		// Spawn AI untill reached limit
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
-			_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
+			_newPos = [] call getGroupEnemySpawn;
 			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			{ _x setSkill 1 } forEach units _group;
-			//br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
-		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
+		// Spawn spawn special units untill 
+		while {(count br_special_ai_groups <= br_min_special_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
+			_newPos = [] call getGroupEnemySpawn;
+			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call spawnGivenUnitsAt;
+			{ _x setSkill 1 } forEach units _group;
+			br_special_ai_groups append [_group];
+			br_AIGroups append [_group];
+		};
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
 	};

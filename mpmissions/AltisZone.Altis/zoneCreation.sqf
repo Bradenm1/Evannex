@@ -1,11 +1,13 @@
 // Number of AI to spawn each side
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_total_groups_spawed = 0; // Total groups spawned
 br_AIGroups = []; // All spawned groups
+br_special_ai_groups = [];
 br_FriendlyGroundGroups = [];
 br_FriendlyAIGroups = []; // Firendly AI
 br_helis_in_transit = [];
@@ -23,34 +25,26 @@ br_zone_taken = 0;
 br_heli_queue_size = 0;
 br_min_helis = 1;
 br_radio_tower = nil;
-br_max_checks = "NChecks" call BIS_fnc_getParamValue;;
+br_max_checks = "NChecks" call BIS_fnc_getParamValue;
+br_enable_friendly_ai = 1;
 br_radio_tower_enabled = TRUE;
+br_hq_enabled = TRUE;
 br_first_Zone = TRUE;
-
-// Type of transport helicopters that can spawn
-br_heli_units = [
-	"B_Heli_Transport_03_F",
-	"B_Heli_Transport_03_unarmed_F",
-	"B_Heli_Transport_03_black_F",
-	"B_Heli_Transport_03_unarmed_green_F",
-	"B_CTRG_Heli_Transport_01_sand_F",
-	"B_CTRG_Heli_Transport_01_tropic_F",
-	"B_Heli_Light_01_F",
-	"B_Heli_Transport_01_F",
-	"B_Heli_Transport_01_camo_F",
-	"I_Heli_Transport_02_F",
-	"I_Heli_light_03_unarmed_F",
-	"O_Heli_Light_02_v2_F",
-	"O_Heli_Transport_04_bench_F",
-	"O_Heli_Transport_04_covered_F"
-];
+br_min_enemy_groups_for_capture = 2;
+// Use for AI who blow up Radio Tower
+br_blow_up_radio_tower = FALSE;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
 br_zones = [];
 
 // Current zone
-br_current_zone = objnull;
+br_current_zone = nil;
+
+// Gets a random location on the plaer
+getLocation = {
+	[] call compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
+};
 
 // Creates the zone
 createZone = {
@@ -76,48 +70,36 @@ createRescueBunker = {
 	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 };
 
-// Get all spawn locations
-getZoneSpawnLocations = {
-	for "_i" from 0 to br_max_checks do {
-		// Get marker prefix
-		_endString = Format ["marker_%1", _i];
-		// check if marker exists
-		if (getMarkerColor _endString == "") 
-		then {} else {  
-			br_zones append [getMarkerPos _endString];
-		};
-	};
+// Delete all enemy AI
+deleteAllAI = {
+	// Delete existing units 
+	{ [_x] call deleteGroups; } forEach br_AIGroups;
+	{ [_x] call deleteGroups; } forEach br_special_ai_groups;
+	br_AIGroups = [];
+	br_special_ai_groups = [];
 };
 
-// Get all heli and vehicle spawn locations
-createFriendlyTransportAndVehicles = {
+// Find all markers
+// Runs once per mission
+doChecks = {
 	for "_i" from 0 to br_max_checks do {
 		// Get marker prefixs
+		_endString = Format ["marker_%1", _i];
 		_endStringVeh = Format ["vehicle_spawn_%1", _i];
 		_endStringHeli = Format ["helicopter_transport_%1", _i];
 		_endStringHeliEvac = Format ["helicopter_evac_%1", _i];
 		_endStringBombSquad = Format ["bomb_squad_%1", _i];
 		// Check if markers exist
-		if (getMarkerColor _endStringVeh == "") 
-		then {} else {  
-			// If so create vehicle
-			[_endStringVeh] execVM "createVehicle.sqf";
-		};
-		if (getMarkerColor _endStringHeli == "") 
-		then {} else {
-			// If so create vehicle     
-			[_endStringHeli, _i, FALSE, selectRandom br_heli_units] execVM "createHelis.sqf";
-		};
-		if (getMarkerColor _endStringHeliEvac == "") 
-		then {} else {
-			// If so create vehicle     
-			[_endStringHeliEvac, _i, TRUE, selectRandom br_heli_units] execVM "createHelis.sqf";
-		};
-		if (getMarkerColor _endStringBombSquad == "")
-		then {} else  {
-			// If so create vehicle  
-			[_endStringBombSquad, _i] execVM "createRadioBombUnits.sqf";
-		};
+		if (getMarkerColor _endString != "") 
+		then { br_zones append [getMarkerPos _endString]; };
+		if (getMarkerColor _endStringVeh != "") 
+		then { [_endStringVeh] execVM "createVehicle.sqf"; };
+		if (getMarkerColor _endStringHeli != "") 
+		then { [_endStringHeli, _i, FALSE] execVM "createHelis.sqf"; };
+		if (getMarkerColor _endStringHeliEvac != "") 
+		then { [_endStringHeliEvac, _i, TRUE] execVM "createHelis.sqf"; };
+		if (getMarkerColor _endStringBombSquad != "")
+		then { [_endStringBombSquad, _i] execVM "createRadioBombUnits.sqf"; };
 	};
 };
 
@@ -127,18 +109,18 @@ onZoneTaken = {
 	["TaskSucceeded",["", "Zone Taken!"]] call bis_fnc_showNotification;
 	{ _x removeSimpleTask task; } forEach allPlayers;
 	br_zone_taken = 1;
+	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
 	deleteMarker "ZONE_HQ_RADIUS";
 	deleteMarker "ZONE_HQ_ICON";
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
-	{ _y = _x; br_AIGroups deleteAt (br_AIGroups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil; } foreach br_AIGroups;
+	[] call deleteAllAI;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
 onFirstZoneCreation = {
-	[] call createFriendlyTransportAndVehicles;
 	execVM "friendlySpawnAI.sqf";
 	execVM "commandFriendlyGroups.sqf";
 	execVM "garbageCollector.sqf";
@@ -172,13 +154,12 @@ onNewZoneCreation = {
 // Main function
 main = {
 	while {TRUE} do {
-		// Get spawn locations
-		[] call getZoneSpawnLocations;
-		// Create a zone
+		// Check for markers and do things
+		[] call doChecks;
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
 		execVM "playerTasking.sqf";
-		execVM "createHQ.sqf";
+		if (br_hq_enabled) then {execVM "createHQ.sqf";};
 		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
@@ -187,7 +168,7 @@ main = {
 		// Wait for a time for the zone to populate
 		sleep 30;
 		// Wait untill zone is taken
-		waitUntil { (count br_AIGroups < 2) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
+		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
 		[] call onZoneTaken;
 		sleep 5;
 	}

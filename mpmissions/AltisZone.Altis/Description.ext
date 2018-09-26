@@ -40,6 +40,12 @@ class Params {
 		default = 15; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
+	class  NumberEnemySpecialGroups {
+		title = "Number Of Special Enemy Groups"; // Param name visible in the list
+		values[] = {0, 1, 5, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 6; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
+	}
 	class ZoneRadius {
 		title = "Zone Radius Size";
 		values[] = {1,5,10,15, 20, 30, 40, 50, 55, 60, 70, 80, 90, 100};
@@ -60,6 +66,12 @@ class Params {
 	};
 	class RadioTowerEnabled {
 		title = "Radio Towner Enabled?";
+		values[] = {TRUE, FALSE};
+		// When 'texts' are missing, values will be displayed directly instead
+		default = TRUE;
+	};
+	class HQEnabled {
+		title = "HQ Enabled?";
 		values[] = {TRUE, FALSE};
 		// When 'texts' are missing, values will be displayed directly instead
 		default = TRUE;

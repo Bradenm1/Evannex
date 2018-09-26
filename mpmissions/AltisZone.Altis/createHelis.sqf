@@ -1,11 +1,32 @@
-_allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
+// The group of units
 _chopperUnits = nil;
+// The helicopter
 _helicopterVech = nil;
+// The position where the AI will spawn
 _heliPad = _this select 0;
 _heliIndex = _this select 1;
+// If te helicopter is a evac helicopter or not
 _evacChopper = _this select 2;
-_chopperToSpawn = _this select 3;
+// Used to tell the AI where to land
 _landMarker = nil;
+
+// Type of transport helicopters that can spawn
+br_heli_units = [
+	"B_Heli_Transport_03_F",
+	"B_Heli_Transport_03_unarmed_F",
+	"B_Heli_Transport_03_black_F",
+	"B_Heli_Transport_03_unarmed_green_F",
+	"B_CTRG_Heli_Transport_01_sand_F",
+	"B_CTRG_Heli_Transport_01_tropic_F",
+	"B_Heli_Light_01_F",
+	"B_Heli_Transport_01_F",
+	"B_Heli_Transport_01_camo_F",
+	"I_Heli_Transport_02_F",
+	"I_Heli_light_03_unarmed_F",
+	"O_Heli_Light_02_v2_F",
+	"O_Heli_Transport_04_bench_F",
+	"O_Heli_Transport_04_covered_F"
+];
 
 // Gets a random location on the plaer
 getGroundUnitLocation = {
@@ -13,6 +34,7 @@ getGroundUnitLocation = {
 	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 0, random 360];
 };
 
+// Commands groups in or out of the chopper
 commandGroupIntoChopper = {
 	_group = _this select 0;
 	_getOut = _this select 1;
@@ -34,7 +56,7 @@ createHeliPad = {
 
 // Spawn custom units
 createChopperUnit = {
-	_helicopterVech = _chopperToSpawn createVehicle getMarkerPos _heliPad;
+	_helicopterVech = (selectrandom br_heli_units) createVehicle getMarkerPos _heliPad;
 	//createVehicleCrew _helicopterVech;
 	[] call createHeliUnits;
 	waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
@@ -49,13 +71,10 @@ deleteOldChopperUnit = {
 
 // Checks if units in chooper are dead but false is if they are alive
 checkHeliDead = {
-	if (({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30)) then {
-		false;
-	} else { 
-		true; 
-	};
+	if (({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30)) then { false;} else { true; };
 };
 
+// Creates the helicopter units
 createHeliUnits = {
 	_chopperUnits = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
@@ -65,6 +84,7 @@ createHeliUnits = {
 	br_heliGroups append [_chopperUnits];
 };
 
+// Gets the LZ for the zone
 createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
 	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
@@ -72,6 +92,7 @@ createLandingSpotNearZone = {
 	_pos;
 };
 
+// Get how many units from a group are in the chopper
 getUnitsInHeli = {
 	_tempGroup = _this select 0;
 	_count = 0;
@@ -79,6 +100,7 @@ getUnitsInHeli = {
 	_count;
 };
 
+// Get units alive in a group
 getUnitsAlive = {
 	_tempGroup = _this select 0;
 	_count = 0;
@@ -86,6 +108,7 @@ getUnitsAlive = {
 	_count;
 };
 
+// Wait for a group to enter the chopper
 waitForUntsToEnterChopper = {
 	_tempGroup = _this select 0;
 	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 };
@@ -199,17 +222,20 @@ runEvacChopper = {
 	};
 };
 
+// Run AI
 createHelis = {
+	// Create the base helipad
 	[] call createHeliPad;
 	while {True} do {
+		// Create chopper units
 		[] call createChopperUnit;
-		// Check if units inside chopper are dead
+		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
 		while {({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30);} do {
 			sleep 10;
 			if (_evacChopper) then { [] call runEvacChopper; } else { [] call runTransportChopper; };
 		};
 		sleep 15;
-		// Do the below because the heli died
+		// Do the below because the heli died or some bullcrap happened
 		[] call deleteOldChopperUnit;
 		deleteVehicle _helicopterVech;
 	};
