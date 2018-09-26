@@ -208,9 +208,9 @@ spawnAI = {
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
 			_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
-			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
-			{ _x setSkill 1 } forEach units _group;
-			br_total_groups_spawed = br_total_groups_spawed + 1;
+			//_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			//{ _x setSkill 1 } forEach units _group;
+			//br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];

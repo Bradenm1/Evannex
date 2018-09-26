@@ -16,14 +16,16 @@ br_groupsInTransit = [];
 br_friendlyGroupsWaiting = []; // Waiting at base for pickup
 br_friendlyGroupsWatingForEvac = []; // Waiting at zone after capture
 br_friendlyvehicles = [];
+br_friendlyRadioBombers = [];
 br_HQ_taken = 0;
 br_radio_tower_destoryed = 0;
 br_zone_taken = 0;
 br_heli_queue_size = 0;
 br_min_helis = 1;
+br_radio_tower = nil;
 br_max_checks = "NChecks" call BIS_fnc_getParamValue;;
 br_radio_tower_enabled = TRUE;
-firstZone = TRUE;
+br_first_Zone = TRUE;
 
 // Type of transport helicopters that can spawn
 br_heli_units = [
@@ -33,15 +35,12 @@ br_heli_units = [
 	"B_Heli_Transport_03_unarmed_green_F",
 	"B_CTRG_Heli_Transport_01_sand_F",
 	"B_CTRG_Heli_Transport_01_tropic_F",
-	//"B_T_VTOL_01_infantry_F",
-	//"B_T_VTOL_01_infantry_blue_F",
 	"B_Heli_Light_01_F",
 	"B_Heli_Transport_01_F",
 	"B_Heli_Transport_01_camo_F",
 	"I_Heli_Transport_02_F",
 	"I_Heli_light_03_unarmed_F",
 	"O_Heli_Light_02_v2_F",
-	//"O_Heli_Attack_02_black_F",
 	"O_Heli_Transport_04_bench_F",
 	"O_Heli_Transport_04_covered_F"
 ];
@@ -126,6 +125,9 @@ onZoneTaken = {
 	deleteMarker "ZONE_ICON";
 	deleteMarker "ZONE_HQ_RADIUS";
 	deleteMarker "ZONE_HQ_ICON";
+	deleteMarker "ZONE_RADIOTOWER_ICON";
+	deleteMarker "ZONE_RADIOTOWER_RADIUS";
+	{ _y = _x; br_AIGroups deleteAt (br_AIGroups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil; } foreach br_AIGroups;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
@@ -134,7 +136,7 @@ onFirstZoneCreation = {
 	execVM "friendlySpawnAI.sqf";
 	execVM "commandFriendlyGroups.sqf";
 	execVM "garbageCollector.sqf";
-	firstZone = FALSE;
+	br_first_Zone = FALSE;
 };
 
 // On new zone creation after AI and everything has been placed do the following...
@@ -175,12 +177,14 @@ main = {
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone
-		if (firstZone) then { [] call onFirstZoneCreation } else { [] call onNewZoneCreation; };
+		if (br_first_Zone) then { [] call onFirstZoneCreation } else { [] call onNewZoneCreation; };
+		execVM "createRadioBombUnits.sqf";
 		// Wait for a time for the zone to populate
 		sleep 30;
 		// Wait untill zone is taken
 		waitUntil { (count br_AIGroups < 2) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
 		[] call onZoneTaken;
+		sleep 5;
 	}
 };
 
