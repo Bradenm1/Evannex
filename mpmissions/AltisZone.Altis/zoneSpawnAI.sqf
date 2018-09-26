@@ -123,7 +123,30 @@ _unitChance = [
 	"O_APC_Wheeled_02_rcws_F",
 	"O_UAV_01_F",
 	"O_UGV_01_rcws_F",
-	"O_Heli_Transport_04_box_F"
+	"O_Heli_Transport_04_box_F",
+	"O_Mortar_01_F",
+	"O_G_Mortar_01_F",
+	"O_UAV_02_F",
+	"O_UAV_02_CAS_F",
+	"O_UGV_01_F",
+	"O_Truck_03_transport_F",
+	"O_Truck_03_ammo_F",
+	"O_Truck_03_device_F",
+	"O_Static_Designator_02_F",
+	"O_T_UAV_04_CAS_F",
+	"O_Plane_Fighter_02_F",
+	"O_Plane_CAS_02_Cluster_F",
+	"O_Plane_Fighter_02_Cluster_F",
+	"O_MBT_04_cannon_F",
+	"O_T_MBT_04_cannon_F",
+	"O_MBT_04_command_F",
+	"O_T_MBT_04_command_F",
+	"O_Radar_System_02_F",
+	"O_SAM_System_04_F",
+	"O_Plane_Fighter_02_Stealth_F",
+	"I_MRAP_03_gmg_F",
+	"I_MRAP_03_hmg_F",
+	"C_Kart_01_yellow_F"
 ];
 
 // Gets a random location on the plaer
@@ -208,8 +231,8 @@ spawnAI = {
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
 			_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
-			//_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
-			//{ _x setSkill 1 } forEach units _group;
+			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			{ _x setSkill 1 } forEach units _group;
 			//br_total_groups_spawed = br_total_groups_spawed + 1;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};

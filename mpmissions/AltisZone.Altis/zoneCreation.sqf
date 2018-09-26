@@ -96,6 +96,7 @@ createFriendlyTransportAndVehicles = {
 		_endStringVeh = Format ["vehicle_spawn_%1", _i];
 		_endStringHeli = Format ["helicopter_transport_%1", _i];
 		_endStringHeliEvac = Format ["helicopter_evac_%1", _i];
+		_endStringBombSquad = Format ["bomb_squad_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endStringVeh == "") 
 		then {} else {  
@@ -111,6 +112,11 @@ createFriendlyTransportAndVehicles = {
 		then {} else {
 			// If so create vehicle     
 			[_endStringHeliEvac, _i, TRUE, selectRandom br_heli_units] execVM "createHelis.sqf";
+		};
+		if (getMarkerColor _endStringBombSquad == "")
+		then {} else  {
+			// If so create vehicle  
+			[_endStringBombSquad, _i] execVM "createRadioBombUnits.sqf";
 		};
 	};
 };
@@ -178,7 +184,6 @@ main = {
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { [] call onFirstZoneCreation } else { [] call onNewZoneCreation; };
-		execVM "createRadioBombUnits.sqf";
 		// Wait for a time for the zone to populate
 		sleep 30;
 		// Wait untill zone is taken
