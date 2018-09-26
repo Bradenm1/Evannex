@@ -38,10 +38,15 @@ runRaidoBombUnit = {
 				_wp setWaypointType "MOVE";
 				_wp setWaypointSpeed "FULL";
 				_wp setWaypointStatements ["true", "touchOffBomb = TRUE;"];
-				waitUntil { (getpos (leader _bombGroup)) distance (getpos br_radio_tower) < 1500 };
+				waitUntil { 
+					(((getpos (leader _bombGroup)) distance (getpos br_radio_tower) < 1500)
+					 || (touchOffBomb)
+					  || (br_radio_tower_destoryed == 1)
+					   || ({(alive _x)} count (units _bombGroup) == 0)); 
+				};
 				{[_x] allowGetIn false; _x action ["Eject", vehicle _x]} forEach (units _bombGroup);
-				waitUntil { (touchOffBomb || br_radio_tower_destoryed == 0 || {(alive _x)} count (units _bombGroup) == 0); };
-				[] call placeBomb;;
+				waitUntil { ((touchOffBomb) || (br_radio_tower_destoryed == 1) || ({(alive _x)} count (units _bombGroup) == 0)); };
+				if (({(alive _x)} count (units _bombGroup) > 0) && (br_radio_tower_destoryed == 0)) then  { [] call placeBomb; };
 			}
 			//sleep 10;
 		};
