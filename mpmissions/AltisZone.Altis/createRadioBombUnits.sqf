@@ -6,6 +6,7 @@ _spawnPad = _this select 0;
 _bombIndex = _this select 1;
 // The vehicle the group is using
 _transportVech = nil;
+_getOutOfVechRadius = 400;
 
 // Creat the units
 createBombUnits = {
@@ -43,7 +44,7 @@ runRadioBombUnit = {
 				_wp setWaypointSpeed "FULL";
 				_wp setWaypointStatements ["true", "br_blow_up_radio_tower = TRUE;"];
 				// Wait until group is within a given range
-				waitUntil { (((getpos (leader _bombGroup)) distance (getpos br_radio_tower) < 1500) || (br_blow_up_radio_tower) || (br_radio_tower_destoryed == 1) || ({(alive _x)} count (units _bombGroup) == 0)); };
+				waitUntil { (((getpos (leader _bombGroup)) distance (getpos br_radio_tower) < _getOutOfVechRadius) || (br_blow_up_radio_tower) || (br_radio_tower_destoryed == 1) || ({(alive _x)} count (units _bombGroup) == 0)); };
 				// Tell group to get out of transport vehicle
 				{[_x] allowGetIn false; _x action ["Eject", vehicle _x]} forEach (units _bombGroup);
 				// Wait untill group has reached radio tower

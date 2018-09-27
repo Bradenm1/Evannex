@@ -70,6 +70,13 @@ createRescueBunker = {
 	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 };
 
+// Delete groups in AIGroups
+deleteGroups = {
+	_group = _this select 0;
+	{ deleteVehicle _x } forEach (units _group);
+	deleteGroup _group;
+};
+
 // Delete all enemy AI
 deleteAllAI = {
 	// Delete existing units 
@@ -117,6 +124,9 @@ onZoneTaken = {
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
 	[] call deleteAllAI;
+	br_radio_tower_destoryed = 0;
+	br_HQ_taken = 0;
+	br_zone_taken = 0;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
@@ -153,9 +163,9 @@ onNewZoneCreation = {
 
 // Main function
 main = {
+	// Check for markers and do things
+	[] call doChecks;
 	while {TRUE} do {
-		// Check for markers and do things
-		[] call doChecks;
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
 		execVM "playerTasking.sqf";
@@ -166,7 +176,7 @@ main = {
 		// Check if it's the first zone
 		if (br_first_Zone) then { [] call onFirstZoneCreation } else { [] call onNewZoneCreation; };
 		// Wait for a time for the zone to populate
-		sleep 30;
+		sleep 120;
 		// Wait untill zone is taken
 		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
 		[] call onZoneTaken;

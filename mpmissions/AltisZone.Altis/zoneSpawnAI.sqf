@@ -180,13 +180,6 @@ createCustomUnits = {
 	
 };
 
-// Delete groups in AIGroups
-deleteGroups = {
-	_group = _this select 0;
-	{ deleteVehicle _x } forEach (units _group);
-	deleteGroup _group;
-};
-
 spawnAI = {
 	// Delete existing units 
 	//[] call deleteAllAI;
