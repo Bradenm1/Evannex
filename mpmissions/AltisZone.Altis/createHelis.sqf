@@ -111,6 +111,7 @@ getUnitsAlive = {
 // Wait for a group to enter the chopper
 waitForUntsToEnterChopper = {
 	_tempGroup = _this select 0;
+	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
 	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 };
 };
 
@@ -140,16 +141,16 @@ runTransportChopper = {
 			{ [_x, false] call commandGroupIntoChopper; } forEach _groups;
 			{ [_x] call waitForUntsToEnterChopper; } forEach _groups;
 			//br_FriendlyAIGroups a ppend [_chopperUnits];
-			br_helis_in_transit append [_chopperUnits];
+			//br_helis_in_transit append [_chopperUnits];
 			_chopperUnits setBehaviour "CARELESS";
 			_pos = [] call createLandingSpotNearZone;
 			_wp = _chopperUnits addWaypoint [_pos, 0];
 			_wp setWaypointType "GETOUT";
 			_helicopterVech engineOn true;
 			// Wait untill landed
-			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
+			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead || !(isEngineOn _helicopterVech)};
 			// Has landed
-			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
+			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead || !(isEngineOn _helicopterVech)};
 			{ [_x, true] call commandGroupIntoChopper; } forEach _groups;
 			[] call deleteOldChopperUnit;
 			{ waitUntil { [_x] call getUnitsInHeli == 0}; } forEach _groups;
@@ -164,8 +165,8 @@ runTransportChopper = {
 			deleteVehicle _landMarker;
 			deleteMarker format ["LZ - %1", _heliIndex];
 			_helicopterVech engineOn true;
-			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
-			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
+			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead || !(isEngineOn _helicopterVech)};
+			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead || !(isEngineOn _helicopterVech)};
 			[] call deleteOldChopperUnit;
 			[] call createHeliUnits;
 			_helicopterVech engineOn false;
@@ -184,7 +185,7 @@ runEvacChopper = {
 			br_groupsInTransit append [_group];
 			_group setBehaviour "SAFE";	
 			//br_FriendlyAIGroups append [_chopperUnits];
-			br_helis_in_transit append [_chopperUnits];
+			//br_helis_in_transit append [_chopperUnits];
 			_chopperUnits setBehaviour "CARELESS";
 			_pos = [getpos (leader _group), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
 			[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
@@ -208,12 +209,13 @@ runEvacChopper = {
 			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call checkHeliDead};
 			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call checkHeliDead};
 			[] call deleteOldChopperUnit;
+			br_friendlyGroupsWaiting append [_group];
 			[_group, true] call commandGroupIntoChopper;
 			waitUntil { {_x in _helicopterVech} count (units _group) == 0};
 			{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _group);
 			_group setBehaviour "SAFE";	
 			br_groupsInTransit deleteAt (br_groupsInTransit find _group);
-			br_friendlyGroupsWaiting append [_group];
+			//br_friendlyGroupsWaiting append [_group];
 			[] call createHeliUnits;
 			_helicopterVech engineOn false;
 			_helicopterVech setFuel 1;

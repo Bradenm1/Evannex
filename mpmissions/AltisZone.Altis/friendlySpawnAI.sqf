@@ -137,7 +137,7 @@ spawnFriendlyAI = {
 			_group = [_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			br_FriendlyGroundGroups append [_group];
 			{ _x setSkill 1 } forEach units _group;
-			sleep 1;		
+			sleep 3;		
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		// Save memory instead of constant checking

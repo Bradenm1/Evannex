@@ -31,8 +31,9 @@ br_radio_tower_enabled = TRUE;
 br_hq_enabled = TRUE;
 br_first_Zone = TRUE;
 br_min_enemy_groups_for_capture = 2;
-// Use for AI who blow up Radio Tower
-br_blow_up_radio_tower = FALSE;
+br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
+// The max distance for AI to be from the center of the zone before they get delete (If a car crashes, unit wonders too far, etc..)
+br_max_ai_distance_before_delete = 3000;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
@@ -133,6 +134,7 @@ onZoneTaken = {
 onFirstZoneCreation = {
 	execVM "friendlySpawnAI.sqf";
 	execVM "commandFriendlyGroups.sqf";
+	execVM "checkFriendyAIPositions.sqf";
 	execVM "garbageCollector.sqf";
 	br_first_Zone = FALSE;
 };
@@ -168,9 +170,9 @@ main = {
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
-		execVM "playerTasking.sqf";
 		if (br_hq_enabled) then {execVM "createHQ.sqf";};
 		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
+		execVM "playerTasking.sqf";
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone

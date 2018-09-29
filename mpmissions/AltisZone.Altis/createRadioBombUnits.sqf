@@ -14,11 +14,14 @@ createBombUnits = {
 	// Delete if existing group
 	_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
 	(leader _bombGroup) moveInDriver _transportVech;
-	{ if (_x != (leader _bombGroup)) then { _x assignAsCargo _transportVech; [_x] orderGetIn true; }; } forEach (units _bombGroup);
+	{ if (_x != (leader _bombGroup)) then { _x assignAsCargo _transportVech; [_x] orderGetIn true; (leader _bombGroup); _x moveInCargo _transportVech; }; } forEach (units _bombGroup);
 	// Give each unit a sactelCharge
+	{ _oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack; } forEach (units _bombGroup);
 	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _bombGroup);
 	br_friendlyRadioBombers append [_bombGroup];
 	waitUntil { {_x in _transportVech} count (units _bombGroup) == {(alive _x)} count (units _bombGroup) };
+	// Wait a second
+	sleep 1;
 };
 
 // Tell the unit to touchoff the bomb
