@@ -36,9 +36,9 @@ runRadioBombUnit = {
 		br_blow_up_radio_tower = FALSE;
 		[] call createBombUnits;
 		// Idle group if no radio tower
-		waitUntil { br_radio_tower_destoryed == 0 };
+		waitUntil { ((br_radio_tower_destoryed == 0) && (!br_zone_taken)) };
 		// Check if units are dead and radio tower is not blown up
-		while {({(alive _x)} count (units _bombGroup) > 0) && (br_radio_tower_destoryed == 0)} do {
+		while {({(alive _x)} count (units _bombGroup) > 0) && (br_radio_tower_destoryed == 0) && (!br_zone_taken)} do {
 			// Check if any groups are waiting
 			if (count (waypoints _bombGroup) < 2) then {
 				_wp = _bombGroup addWaypoint [getpos br_radio_tower, 0];

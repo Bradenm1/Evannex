@@ -2,7 +2,7 @@
 _zoneRadius = 15;
 
 // Single unit spawning at a certain location
-spawnRandomAIAt = {
+br_fnc_spawnRandomAIAt = {
 	// Getting the params
 	_group = _this select 0;
 	_spawnAmount = _this select 1;
@@ -20,7 +20,7 @@ spawnRandomAIAt = {
 };
 
 // Creates the HQ
-createHQ = {
+br_fnc_createHQ = {
 	// Creates center for HQ
 	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
 	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, 20, 0] call BIS_fnc_findSafePos;
@@ -33,15 +33,17 @@ createHQ = {
 	// Create text icon
 	["ZONE_HQ_ICON", _newPos, "HQ", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
 	_hqGroup = [ _hqPos, EAST, ["O_officer_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	[_hqGroup, 6, _hqPos, 0] call spawnRandomAIAt;
+	[_hqGroup, 6, _hqPos, 0] call br_fnc_spawnRandomAIAt;
 
+	br_HQ_taken = 0;
+	
 	waitUntil { ({alive _x} count units _hqGroup < 1); };
 
-	[] call onTaken;
+	[] call br_fnc_onTaken;
 };
 
 // Called when the HQ is taken
-onTaken = {
+br_fnc_onTaken = {
 	["TaskSucceeded",["", "HQ Taken"]] call bis_fnc_showNotification;
 
 	"ZONE_HQ_RADIUS" setMarkerColor "ColorBlue"; 
@@ -49,4 +51,4 @@ onTaken = {
 	br_HQ_taken = 1;
 };
 
-[] call createHQ;
+[] call br_fnc_createHQ;

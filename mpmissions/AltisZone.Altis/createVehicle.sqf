@@ -38,7 +38,7 @@ _unitChance = [
 ];
 
 // Spawn custom units
-createVehicleUnit = {
+br_fnc_createVehicleUnit = {
 	_vehicle = selectrandom _unitChance createVehicle getMarkerPos _spawnPad;
 	createVehicleCrew _vehicle;
 	_commander = driver _vehicle;
@@ -47,9 +47,9 @@ createVehicleUnit = {
 	br_friendlyvehicles append [_vehicleGroup];
 };
 
-runVehicleUnit = {
+br_fnc_runVehicleUnit = {
 	while {True} do {
-		[] call createVehicleUnit;
+		[] call br_fnc_createVehicleUnit;
 		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
 		deleteGroup _vehicleGroup; 
 		deleteVehicle _vehicle;
@@ -58,5 +58,4 @@ runVehicleUnit = {
 	};
 };
 
-//[] call runVehicleUnit;
-[] call runVehicleUnit;
+[] call br_fnc_runVehicleUnit;

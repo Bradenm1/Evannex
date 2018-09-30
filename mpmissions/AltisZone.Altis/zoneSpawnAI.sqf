@@ -150,12 +150,12 @@ _unitChance = [
 ];
 
 // Gets a safe zone within the zone
-getGroupEnemySpawn = {
+br_fnc_getGroupEnemySpawn = {
 	[getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 5, 0, 60, 0] call BIS_fnc_findSafePos;
 };
 
 // Spawn given units at a certain location
-spawnGivenUnitsAt = {
+br_fnc_spawnGivenUnitsAt = {
 	// Getting the params
 	_group = _this select 0;
 	_spawnAmount = _this select 1;
@@ -176,28 +176,28 @@ spawnGivenUnitsAt = {
 };
 
 // Spawn custom units
-createCustomUnits = {
+br_fnc_createCustomUnits = {
 	
 };
 
-spawnAI = {
+br_fnc_spawnAI = {
 	// Delete existing units 
 	//[] call deleteAllAI;
 	// Spawn custom units
-	[] call createCustomUnits;
-	while {br_zone_taken == 0} do {
+	[] call br_fnc_createCustomUnits;
+	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
 		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
-			_newPos = [] call getGroupEnemySpawn;
+			_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			{ _x setSkill 1 } forEach units _group;
 			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
-			_newPos = [] call getGroupEnemySpawn;
-			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call spawnGivenUnitsAt;
+			_newPos = [] call br_fnc_getGroupEnemySpawn;
+			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			{ _x setSkill 1 } forEach units _group;
 			br_special_ai_groups append [_group];
 			br_AIGroups append [_group];
@@ -207,4 +207,4 @@ spawnAI = {
 	};
 };
 
-[] call spawnAI;
+[] call br_fnc_spawnAI;

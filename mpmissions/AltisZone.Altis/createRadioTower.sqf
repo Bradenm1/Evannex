@@ -2,7 +2,7 @@
 _zoneRadius = 10;
 
 // Creates the RadioTower
-createRadioTower = {
+br_fnc_createRadioTower = {
 	// Creates center for RadioTower
 	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
 	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 3, 0, 20, 0] call BIS_fnc_findSafePos;
@@ -15,20 +15,23 @@ createRadioTower = {
 	// Create text icon
 	["ZONE_RADIOTOWER_ICON", _newPos, "Radio Tower", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
 
+	br_radio_tower_destoryed = 0;
+	
 	waitUntil { !alive br_radio_tower};
-
-	[] call onDestory;
+	
+	[] call br_fnc_onDestory;
 };
 
 // Once object has been Destroyed do the following
-onDestory = {
+br_fnc_onDestory = {
 	["TaskSucceeded",["", "Radio Tower Destroyed"]] call bis_fnc_showNotification;
 
 	// Delete the markers
 	deleteMarker "ZONE_RADIOTOWER_RADIUS"; 
 	deleteMarker "ZONE_RADIOTOWER_ICON";
+	deleteVehicle br_radio_tower;
 
 	br_radio_tower_destoryed = 1;
 };
 
-[] call createRadioTower;
+[] call br_fnc_createRadioTower;

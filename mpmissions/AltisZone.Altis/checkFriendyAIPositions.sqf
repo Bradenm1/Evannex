@@ -1,5 +1,5 @@
 // Checks units too far from the zone and delete them
-deleteDumbAI = {
+br_fnc_deleteDumbAI = {
 	_group = _this select 0;
 	{
 		_y = _x;
@@ -8,7 +8,7 @@ deleteDumbAI = {
 };
 
 While {TRUE} do {
-	[br_friendlyRadioBombers] call deleteDumbAI;
-	[br_FriendlyAIGroups] call deleteDumbAI;
+	[br_friendlyRadioBombers] call br_fnc_deleteDumbAI;
+	[br_FriendlyAIGroups] call br_fnc_deleteDumbAI;
 	sleep 30;
 };

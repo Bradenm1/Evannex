@@ -2,7 +2,7 @@ _delayForAssignment = 5;
 task = nil;
 
 // Creates a task for the player
-createPlayerTask = {
+br_fnc_createPlayerTask = {
 	_markerPos = getMarkerPos "ZONE_ICON";
 	{
 		task = _x createSimpleTask ["TAKE_THE_ZONE"];
@@ -17,4 +17,4 @@ createPlayerTask = {
 // Allows zone to be created before an assignment can happen if host.
 sleep _delayForAssignment;
 
-[] call createPlayerTask;
+[] call br_fnc_createPlayerTask;

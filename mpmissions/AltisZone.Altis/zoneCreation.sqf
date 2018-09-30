@@ -21,7 +21,7 @@ br_friendlyvehicles = [];
 br_friendlyRadioBombers = [];
 br_HQ_taken = 0;
 br_radio_tower_destoryed = 0;
-br_zone_taken = 0;
+br_zone_taken = FALSE;
 br_heli_queue_size = 0;
 br_min_helis = 1;
 br_radio_tower = nil;
@@ -31,9 +31,9 @@ br_radio_tower_enabled = TRUE;
 br_hq_enabled = TRUE;
 br_first_Zone = TRUE;
 br_min_enemy_groups_for_capture = 2;
-br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
-// The max distance for AI to be from the center of the zone before they get delete (If a car crashes, unit wonders too far, etc..)
 br_max_ai_distance_before_delete = 3000;
+// Use for AI who blow up Radio Tower
+br_blow_up_radio_tower = FALSE;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
@@ -113,10 +113,10 @@ doChecks = {
 
 // Called when zone is taken
 onZoneTaken = {
+	br_zone_taken = TRUE;
 	task setTaskState "Succeeded";
 	["TaskSucceeded",["", "Zone Taken!"]] call bis_fnc_showNotification;
 	{ _x removeSimpleTask task; } forEach allPlayers;
-	br_zone_taken = 1;
 	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
@@ -125,9 +125,8 @@ onZoneTaken = {
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
 	[] call deleteAllAI;
-	br_radio_tower_destoryed = 0;
-	br_HQ_taken = 0;
-	br_zone_taken = 0;
+	sleep 5;
+	br_zone_taken = FALSE;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
@@ -170,9 +169,9 @@ main = {
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call createZone;
+		execVM "playerTasking.sqf";
 		if (br_hq_enabled) then {execVM "createHQ.sqf";};
 		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
-		execVM "playerTasking.sqf";
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone
@@ -182,7 +181,6 @@ main = {
 		// Wait untill zone is taken
 		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
 		[] call onZoneTaken;
-		sleep 5;
 	}
 };
 

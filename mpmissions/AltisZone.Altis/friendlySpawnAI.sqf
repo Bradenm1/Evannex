@@ -107,34 +107,24 @@ _unitChance = [
 ];
 
 // Gets a random location on the plaer
-getGroundUnitLocation = {
+br_fnc_getGroundUnitLocation = {
 	// Gets a random location within the zone radius
-	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 0, random 360];
+	getMarkerPos "marker_ai_spawn_friendly_ground_units" getPos [4 * sqrt random 180, random 360];
 };
 
 // Spawn custom units
-createCustomUnitsFriendly = {
-	//([createGroup WEST, 1, getMarkerPos "helicopter_transport_01", ["B_Heli_Transport_03_F"], 0, [0,0,0]] call spawnGivenUnitsAt);
-	//_transportChopper = "B_Heli_Transport_03_F" createVehicle getMarkerPos "helicopter_transport_01";
-	//_chopGroup = [[] call getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	//br_FriendlyAIGroups append [_chopGroup];
-	//_chopGroup = [[] call getGroundUnitLocation, WEST, 5] call BIS_fnc_spawnGroup;
-	//_chopGroup addVehicle _transportChopper;
-	//{
-	//	_x assignAsCargo _transsportChopper;
-	//	[_x] orderGetIn true;
-	//} foreach (units _chopGroup);
-	//_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", [] call getLocation] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
+br_fnc_createCustomUnitsFriendly = {
+	
 };
 
-spawnFriendlyAI = {
+br_fnc_spawnFriendlyAI = {
 	// Spawn custom units
-	//[] call createCustomUnitsFriendly;
+	[] call br_fnc_createCustomUnitsFriendly;
 	while {True} do {
 		// Spawn AI untill reached limit
 		while {(((count br_friendlyGroupsWaiting) + (count br_FriendlyAIGroups) + (count br_groupsInTransit) - (count br_friendlyvehicles))  < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
-			_group = [_sides, 1, _unitTypes, _types, _units, [] call getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			_group = [_sides, 1, _unitTypes, _types, _units, [] call br_fnc_getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			br_FriendlyGroundGroups append [_group];
 			{ _x setSkill 1 } forEach units _group;
 			sleep 3;		
@@ -145,4 +135,4 @@ spawnFriendlyAI = {
 	};
 };
 
-[] call spawnFriendlyAI;
+[] call br_fnc_spawnFriendlyAI;
