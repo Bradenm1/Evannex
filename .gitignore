@@ -1,0 +1,9 @@
+# User-specific files
+*.Arma3Profile
+*.json
+*.cfg
+
+# Dirs
+[Cc]ompositions/
+[Ss]aved/
+[Uu]serSaved/
