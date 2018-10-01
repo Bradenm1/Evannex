@@ -12,7 +12,7 @@ _getOutOfVechRadius = 400;
 br_fnc_createBombUnits = {
 	_transportVech = "B_G_Van_01_transport_F" createVehicle getMarkerPos _spawnPad;
 	// Delete if existing group
-	_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
+	_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "functions\fn_spawnGroup.sqf";
 	(leader _bombGroup) moveInDriver _transportVech;
 	{ if (_x != (leader _bombGroup)) then { _x assignAsCargo _transportVech; [_x] orderGetIn true; (leader _bombGroup); _x moveInCargo _transportVech; }; } forEach (units _bombGroup);
 	// Give each unit a sactelCharge

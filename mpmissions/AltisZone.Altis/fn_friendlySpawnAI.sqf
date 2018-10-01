@@ -124,9 +124,9 @@ br_fnc_spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {(((count br_friendlyGroupsWaiting) + (count br_FriendlyAIGroups) + (count br_groupsInTransit) - (count br_friendlyvehicles))  < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
-			_group = [_sides, 1, _unitTypes, _types, _units, [] call br_fnc_getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
+			_group = [_sides, 1, _unitTypes, _types, _units, [] call br_fnc_getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\fn_selectRandomGroupToSpawn.sqf";
 			br_FriendlyGroundGroups append [_group];
-			{ _x setSkill 1 } forEach units _group;
+			{ _x setSkill br_ai_skill } forEach units _group;
 			sleep 3;		
 		};
 		//hint format ["Group Spawned - Total:  %1", count br_AIGroups];

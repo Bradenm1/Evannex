@@ -18,18 +18,17 @@ br_friendlyRadioBombers = [];
 br_HQ_taken = 0;
 br_radio_tower_destoryed = 0;
 br_zone_taken = FALSE;
-br_heli_queue_size = 0;
-br_min_helis = 1;
 br_radio_tower = nil;
 br_max_checks = "NChecks" call BIS_fnc_getParamValue;
-br_enable_friendly_ai = 1;
+//br_enable_friendly_ai = 1;
 br_radio_tower_enabled = TRUE;
 br_hq_enabled = TRUE;
 br_first_Zone = TRUE;
-br_min_enemy_groups_for_capture = 2;
-br_max_ai_distance_before_delete = 3000;
+br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue;
+br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 // Use for AI who blow up Radio Tower
 br_blow_up_radio_tower = FALSE;
+br_ai_skill = 1;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
@@ -38,22 +37,17 @@ br_zones = [];
 // Current zone
 br_current_zone = nil;
 
-// Gets a random location on the plaer
-br_fnc_getLocation = {
-	[] call compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
-};
-
 // Creates the zone
 br_fnc_createZone = {
 	br_current_zone = selectRandom br_zones;
 	// Creates the radius
-	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "functions\createRadiusMarker.sqf");
+	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 };
 
 // Creates the RescueBunker
-br_fnc_createRescueBunker = {
+/*br_fnc_createRescueBunker = {
 	// Creates center for RescueBunker
 	_hqCenterPos = [] call br_fnc_getLocation;
 	// Gets position near center
@@ -61,11 +55,11 @@ br_fnc_createRescueBunker = {
 	// Place RescueBunker near center
 	"Land_Cargo_House_V1_F" createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_RESCUEBUNKER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Rescue Bunker(s) Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
+	["ZONE_RESCUEBUNKER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Rescue Bunker(s) Zone", 0.3] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-};
+};*/
 
 // Delete groups in AIGroups
 br_fnc_deleteGroups = {
@@ -97,13 +91,13 @@ br_fnc_doChecks = {
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
 		if (getMarkerColor _endStringVeh != "") 
-		then { [_endStringVeh] execVM "createVehicle.sqf"; };
+		then { [_endStringVeh] execVM "fn_createVehicle.sqf"; };
 		if (getMarkerColor _endStringHeli != "") 
-		then { [_endStringHeli, _i, FALSE] execVM "createHelis.sqf"; };
+		then { [_endStringHeli, _i, FALSE] execVM "fn_createHelis.sqf"; };
 		if (getMarkerColor _endStringHeliEvac != "") 
-		then { [_endStringHeliEvac, _i, TRUE] execVM "createHelis.sqf"; };
+		then { [_endStringHeliEvac, _i, TRUE] execVM "fn_createHelis.sqf"; };
 		if (getMarkerColor _endStringBombSquad != "")
-		then { [_endStringBombSquad, _i] execVM "createRadioBombUnits.sqf"; };
+		then { [_endStringBombSquad, _i] execVM "fn_createRadioBombUnits.sqf"; };
 	};
 };
 
@@ -127,10 +121,10 @@ br_fnc_onZoneTaken = {
 
 // On first zone creation after AI and everything has been placed do the following...
 br_fnc_onFirstZoneCreation = {
-	execVM "friendlySpawnAI.sqf";
-	execVM "commandFriendlyGroups.sqf";
-	execVM "checkFriendyAIPositions.sqf";
-	execVM "garbageCollector.sqf";
+	execVM "fn_friendlySpawnAI.sqf";
+	execVM "fn_commandFriendlyGroups.sqf";
+	execVM "fn_checkFriendyAIPositions.sqf";
+	execVM "fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
 };
 
@@ -165,11 +159,11 @@ br_fnc_main = {
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call br_fnc_createZone;
-		execVM "playerTasking.sqf";
-		if (br_hq_enabled) then {execVM "createHQ.sqf";};
-		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
-		execVM "zoneSpawnAI.sqf";
-		execVM "commandEnemyGroups.sqf";
+		execVM "fn_playerTasking.sqf";
+		if (br_hq_enabled) then {execVM "fn_createHQ.sqf";};
+		if (br_radio_tower_enabled) then {execVM "fn_createRadioTower.sqf"};
+		execVM "fn_zoneSpawnAI.sqf";
+		execVM "fn_commandEnemyGroups.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { [] call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Wait for a time for the zone to populate

@@ -24,7 +24,7 @@ _type = _types select _side;
 _AIGroupside = _units select _side;
 // Selects the type of units to spawn
 _unitGroup = _AIGroupside select _index;
-_group = [_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup, _location] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
+_group = [_sides select _side, _type, _unitTypes select _index, selectrandom _unitGroup, _location] call compile preprocessFileLineNumbers "functions\fn_spawnGroup.sqf";
 _group setBehaviour "SAFE";
 _mainGroup append [_group];
 _group;

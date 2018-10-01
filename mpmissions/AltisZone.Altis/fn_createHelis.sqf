@@ -80,14 +80,14 @@ br_fnc_createHeliUnits = {
 	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
 	//_chopperUnits addVehicle _helicopterVech;
 	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
-	{ _x setSkill 1 } forEach units _chopperUnits;
+	{ _x setSkill br_ai_skill } forEach units _chopperUnits;
 	br_heliGroups append [_chopperUnits];
 };
 
 // Gets the LZ for the zone
 br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
-	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 	_pos;
 };
@@ -189,7 +189,7 @@ br_fnc_runEvacChopper = {
 			//br_helis_in_transit append [_chopperUnits];
 			_chopperUnits setBehaviour "CARELESS";
 			_pos = [getpos (leader _group), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
-			[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\createTextMarker.sqf");
+			[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 			_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 			_wp = _chopperUnits addWaypoint [_pos, 0];
 			_wp setWaypointType "GETOUT";

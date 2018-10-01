@@ -11,9 +11,9 @@ br_fnc_createRadioTower = {
 	// Place RadioTower near center
 	br_radio_tower = "Land_TTowerBig_2_F" createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_RADIOTOWER_RADIUS", _newPos, 10, 360, "ColorRed", "Radio Tower Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
+	["ZONE_RADIOTOWER_RADIUS", _newPos, 10, 360, "ColorRed", "Radio Tower Zone", 0.3] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_RADIOTOWER_ICON", _newPos, "Radio Tower", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	["ZONE_RADIOTOWER_ICON", _newPos, "Radio Tower", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 
 	br_radio_tower_destoryed = 0;
 	

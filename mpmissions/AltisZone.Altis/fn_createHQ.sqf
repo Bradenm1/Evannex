@@ -29,9 +29,9 @@ br_fnc_createHQ = {
 	// Place HQ near center
 	_hqObj = "Land_Cargo_HQ_V1_F" createVehicle _hqPos;
 	// Creates the radius
-	["ZONE_HQ_RADIUS", _newPos, _zoneRadius, 360, "ColorRed", "HQ Zone", 0.3] call (compile preProcessFile "functions\createRadiusMarker.sqf");
+	["ZONE_HQ_RADIUS", _newPos, _zoneRadius, 360, "ColorRed", "HQ Zone", 0.3] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_HQ_ICON", _newPos, "HQ", "ColorBlue"] call (compile preProcessFile "functions\createTextMarker.sqf");
+	["ZONE_HQ_ICON", _newPos, "HQ", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 	_hqGroup = [ _hqPos, EAST, ["O_officer_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 	[_hqGroup, 6, _hqPos, 0] call br_fnc_spawnRandomAIAt;
 
