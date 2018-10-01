@@ -49,6 +49,13 @@ br_fnc_commandGroupIntoChopper = {
 	} foreach (units _group);
 };
 
+// Eject all crew
+br_fnc_ejectCrew = {
+	{
+		_x action ["Eject", _helicopterVech]; _x leaveVehicle _helicopterVech;
+	} foreach (crew _helicopterVech);
+};
+
 // Create a landing pad
 br_fnc_createHeliPad = {
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", getMarkerPos _heliPad, [], 0, "CAN_COLLIDE" ];
@@ -115,68 +122,109 @@ br_fnc_waitForUntsToEnterChopper = {
 	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 };
 };
 
+br_fnc_movetoAndLand = {
+	_pos = _this select 0; // Position to land
+	// If group already exists delete it
+	[] call br_fnc_deleteOldChopperUnit;
+	// Create units
+	[] call br_fnc_createHeliUnits;
+	_helicopterVech setFuel 1;
+	_chopperUnits setBehaviour "CARELESS";
+	_wp = _chopperUnits addWaypoint [_pos, 0];
+	_wp setWaypointType "GETOUT";
+	_helicopterVech engineOn true;
+	// Wait untill landed
+	waitUntil {(getPos _helicopterVech select 2 > 10) || [] call br_fnc_checkHeliDead || !(isEngineOn _helicopterVech) || br_zone_taken};
+	// Has landed
+	waitUntil {(getPos _helicopterVech select 2 < 1) || [] call br_fnc_checkHeliDead || br_zone_taken};
+	[] call br_fnc_deleteOldChopperUnit;
+	_helicopterVech engineOn false;
+};
+
+// Find groups waiting for transport
+br_fuc_findGroupsInQueue = {
+	// Group to append to
+	_groups = _this select 0;
+	// Number of people
+	_Peps = 0;	
+	{
+		_unitsAlive = [_x] call br_fnc_getUnitsAlive;
+		if (_unitsAlive > 0) then {
+			if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
+				br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
+				_groups append [_x];
+				_Peps = _Peps + _unitsAlive;
+				sleep 3;
+			};
+		};
+	} forEach br_friendlyGroupsWaiting;
+	_groups;
+};
+
+// Check if any players are waiting at chopper and return them
+br_fuc_playersInChopper = {
+	_group = [];
+	{
+		if (_x in _helicopterVech) then { _group append [group _x] };
+	} forEach allPlayers;	
+	_group;
+};
+
+// Go and land at zone
+br_fuc_landGroupAtZone = {
+	_groups = _this select 0;
+	// Add groups to transit
+	{ br_groupsInTransit append [_x]; } forEach _groups;
+	// Command groups into helicopter
+	{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
+	// Wait for the units to enter the helicopter
+	{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
+	// Generate landing zone and move to it and land
+	[[] call br_fnc_createLandingSpotNearZone] call br_fnc_movetoAndLand;
+	// Tell the groups to getout
+	[] call br_fnc_ejectCrew;
+	// Wait untill all units are out
+	{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0}; } forEach _groups;
+	// Set group as aware
+	{ _x setBehaviour "AWARE"; } forEach _groups;	
+	// Remove groups from transit
+	{ br_groupsInTransit deleteAt (br_groupsInTransit find _x); } forEach _groups;
+	// Move groups into commanding zone group
+	{ br_FriendlyAIGroups append [_x]; } forEach _groups;
+	// Delete un-needed things
+	deleteVehicle _landMarker;
+	deleteMarker format ["LZ - %1", _heliIndex];
+	// Goto helipad and land
+	[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
+	// Create a temp group
+	[] call br_fnc_createHeliUnits;
+	// Refill
+	_helicopterVech setFuel 1;
+	// Reset healths
+	_helicopterVech setDamage 0;
+};
+
 // If the chopper is transport
 br_fnc_runTransportChopper = {
-	_groups = [];
 	// Check if any groups are waiting
 	if (count br_friendlyGroupsWaiting > 0) then {
-		// Remove group from queue
-		//_group = br_friendlyGroupsWaiting select 0;
-		_Peps = 0;	
-		{
-			_unitsAlive = [_x] call br_fnc_getUnitsAlive;
-			if (_unitsAlive > 0) then {
-				if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
-					br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
-					_groups append [_x];
-					_Peps = _Peps + _unitsAlive;
-					sleep 3;
-				};
-			};
-		} forEach br_friendlyGroupsWaiting; 
+		_groups = [];
+		// Get some waiting groups, if any
+		_groups = [_groups] call br_fuc_findGroupsInQueue; 
 		if (count _groups > 0) then {
-			// Check if group is alive
-			{ br_groupsInTransit append [_x]; } forEach _groups;
-			//br_groupsInTransit append [_group];
-			{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
-			{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
-			//br_FriendlyAIGroups a ppend [_chopperUnits];
-			//br_helis_in_transit append [_chopperUnits];
-			_chopperUnits setBehaviour "CARELESS";
-			_pos = [] call br_fnc_createLandingSpotNearZone;
-			_wp = _chopperUnits addWaypoint [_pos, 0];
-			_wp setWaypointType "GETOUT";
-			_helicopterVech engineOn true;
-			// Wait untill landed
-			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call br_fnc_checkHeliDead || !(isEngineOn _helicopterVech) || br_zone_taken};
-			// Has landed
-			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call br_fnc_checkHeliDead || br_zone_taken};
-			{ [_x, true] call br_fnc_commandGroupIntoChopper; } forEach _groups;
-			[] call br_fnc_deleteOldChopperUnit;
-			{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0}; } forEach _groups;
-			[] call br_fnc_createHeliUnits;
-			// Tell group to get out of chooper, it has landed...
-			{ _x setBehaviour "AWARE"; } forEach _groups;					
-			//_group setCombatMode "RED";
-			{ br_groupsInTransit deleteAt (br_groupsInTransit find _x); } forEach _groups;
-			{ br_FriendlyAIGroups append [_x]; } forEach _groups;
-			_wp = _chopperUnits addWaypoint [getMarkerPos _heliPad, 0];
-			_wp setWaypointType "GETOUT";
-			deleteVehicle _landMarker;
-			deleteMarker format ["LZ - %1", _heliIndex];
-			_helicopterVech engineOn true;
-			waitUntil {(getPos _helicopterVech select 2 > 10) || [] call br_fnc_checkHeliDead || !(isEngineOn _helicopterVech)};
-			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call br_fnc_checkHeliDead};
-			[] call br_fnc_deleteOldChopperUnit;
-			[] call br_fnc_createHeliUnits;
-			_helicopterVech engineOn false;
-			_helicopterVech setFuel 1;
-			_helicopterVech setDamage 0;
+			[_groups] call br_fuc_landGroupAtZone;
 		};		
+	} else { 
+		// Check if any players are waiting in helicopter
+		_playersGroups = [] call br_fuc_playersInChopper;
+		if (count _playersGroups > 0) then {
+			[_playersGroups] call br_fuc_landGroupAtZone;
+		};
 	};
 };
 
 // If the chopper is evac
+// using an old system...
 br_fnc_runEvacChopper = {
 	if ((count br_friendlyGroupsWatingForEvac > 0)) then {
 		_group = br_friendlyGroupsWatingForEvac select 0;
@@ -210,7 +258,7 @@ br_fnc_runEvacChopper = {
 			waitUntil {(getPos _helicopterVech select 2 < 1) || [] call br_fnc_checkHeliDead};
 			[] call br_fnc_deleteOldChopperUnit;
 			br_friendlyGroupsWaiting append [_group];
-			[_group, true] call br_fnc_commandGroupIntoChopper;
+			[] call br_fnc_ejectCrew;
 			waitUntil { {_x in _helicopterVech} count (units _group) == 0};
 			{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _group);
 			_group setBehaviour "SAFE";	
