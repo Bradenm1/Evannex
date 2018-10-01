@@ -17,7 +17,7 @@ br_friendlyvehicles = []; // Friendly armor
 br_friendlyRadioBombers = []; // The bombers groups which attemped to blow up the radio tower
 br_HQ_taken = FALSE; // If the HQ is taken
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
-br_zone_taken = FALSE; // If the zone is taken
+br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_radio_tower = nil; // The radio tower
 br_hq = nil; // The HQ
 br_max_checks = "Checks" call BIS_fnc_getParamValue;
@@ -116,7 +116,6 @@ br_fnc_onZoneTaken = {
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
 	[] call br_fnc_deleteAllAI;
 	sleep 5;
-	br_zone_taken = FALSE;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
@@ -126,6 +125,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "fn_commandFriendlyGroups.sqf";
 		execVM "fn_checkFriendyAIPositions.sqf";
 	};
+	execVM "fn_commandEnemyGroups.sqf";
 	execVM "fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
 };
@@ -164,10 +164,11 @@ br_fnc_main = {
 		execVM "fn_playerTasking.sqf";
 		if (br_hq_enabled) then {execVM "fn_createHQ.sqf";};
 		if (br_radio_tower_enabled) then {execVM "fn_createRadioTower.sqf"};
-		execVM "fn_zoneSpawnAI.sqf";
-		execVM "fn_commandEnemyGroups.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { [] call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
+		// Set taken as false
+		br_zone_taken = FALSE;
+		execVM "fn_zoneSpawnAI.sqf";
 		// Wait for a time for the zone to populate
 		sleep 120;
 		// Wait untill zone is taken
