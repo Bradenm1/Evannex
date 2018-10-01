@@ -1,0 +1,20 @@
+{
+    "users": {
+        "USER_ed8119c4357fe49dab5eabe30be2afec73da1f58": {
+            "statsEnabled": true,
+            "statsHistory": {
+                "statsRevision": 144923,
+                "statsEnabled": {
+                    "statsChangeRev": -1,
+                    "statsChangeReason": 0,
+                    "statsChangeSource": 0
+                },
+                "statsDisabled": {
+                    "statsChangeRev": -1,
+                    "statsChangeReason": 0,
+                    "statsChangeSource": 0
+                }
+            }
+        }
+    }
+}
