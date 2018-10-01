@@ -15,7 +15,7 @@ br_fnc_createRadioTower = {
 	// Create text icon
 	["ZONE_RADIOTOWER_ICON", _newPos, "Radio Tower", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
 
-	br_radio_tower_destoryed = 0;
+	br_radio_tower_destoryed = FALSE;
 	
 	waitUntil { !alive br_radio_tower};
 	
@@ -31,7 +31,7 @@ br_fnc_onDestory = {
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteVehicle br_radio_tower;
 
-	br_radio_tower_destoryed = 1;
+	br_radio_tower_destoryed = TRUE;
 };
 
 [] call br_fnc_createRadioTower;

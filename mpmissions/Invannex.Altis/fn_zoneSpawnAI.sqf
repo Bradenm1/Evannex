@@ -187,14 +187,14 @@ br_fnc_spawnAI = {
 	[] call br_fnc_createCustomUnits;
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
-		while {(count br_AIGroups <= br_min_ai_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
+		while {(count br_AIGroups <= br_min_ai_groups) && (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			sleep _aiSpawnRate;
 			_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\fn_selectRandomGroupToSpawn.sqf";
 			{ _x setSkill br_ai_skill } forEach units _group;
 		};
 		// Spawn spawn special units untill 
-		while {(count br_special_ai_groups <= br_min_special_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
+		while {(count br_special_ai_groups <= br_min_special_groups) && (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {
 			_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			{ _x setSkill br_ai_skill } forEach units _group;

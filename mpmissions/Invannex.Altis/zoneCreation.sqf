@@ -6,35 +6,35 @@ br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_AIGroups = []; // All spawned groups
-br_special_ai_groups = [];
-br_FriendlyGroundGroups = [];
-br_FriendlyAIGroups = []; // Firendly AI
-br_heliGroups = [];
-br_groupsInTransit = [];
+br_special_ai_groups = []; // Enemy special groups
+br_FriendlyGroundGroups = []; // Friendly ground units
+br_FriendlyAIGroups = []; // All Firendly AI
+br_heliGroups = []; // Helicopters
+br_groupsInTransit = []; // Groups in transit to the zone via helicopters
 br_friendlyGroupsWaiting = []; // Waiting at base for pickup
 br_friendlyGroupsWatingForEvac = []; // Waiting at zone after capture
-br_friendlyvehicles = [];
-br_friendlyRadioBombers = [];
-br_HQ_taken = 0;
-br_radio_tower_destoryed = 0;
-br_zone_taken = FALSE;
-br_radio_tower = nil;
-br_max_checks = "NChecks" call BIS_fnc_getParamValue;
-//br_enable_friendly_ai = 1;
+br_friendlyvehicles = []; // Friendly armor
+br_friendlyRadioBombers = []; // The bombers groups which attemped to blow up the radio tower
+br_HQ_taken = FALSE; // If the HQ is taken
+br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
+br_zone_taken = FALSE; // If the zone is taken
+br_radio_tower = nil; // The radio tower
+br_hq = nil; // The HQ
+br_max_checks = "Checks" call BIS_fnc_getParamValue;
+br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_radio_tower_enabled = TRUE;
-br_hq_enabled = TRUE;
-br_first_Zone = TRUE;
+br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
+br_first_Zone = TRUE; // If it's the first zone
 br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue;
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
-// Use for AI who blow up Radio Tower
-br_blow_up_radio_tower = FALSE;
+br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
 br_ai_skill = 1;
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];
 br_zones = [];
 
-// Current zone
+// Current selected zone
 br_current_zone = nil;
 
 // Creates the zone
@@ -90,13 +90,13 @@ br_fnc_doChecks = {
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
-		if (getMarkerColor _endStringVeh != "") 
+		if ((getMarkerColor _endStringVeh != "") && (br_enable_friendly_ai)) 
 		then { [_endStringVeh] execVM "fn_createVehicle.sqf"; };
-		if (getMarkerColor _endStringHeli != "") 
+		if ((getMarkerColor _endStringHeli != "") && (br_enable_friendly_ai))
 		then { [_endStringHeli, _i, FALSE] execVM "fn_createHelis.sqf"; };
-		if (getMarkerColor _endStringHeliEvac != "") 
+		if ((getMarkerColor _endStringHeliEvac != "") && (br_enable_friendly_ai))
 		then { [_endStringHeliEvac, _i, TRUE] execVM "fn_createHelis.sqf"; };
-		if (getMarkerColor _endStringBombSquad != "")
+		if ((getMarkerColor _endStringBombSquad != "") && (br_enable_friendly_ai))
 		then { [_endStringBombSquad, _i] execVM "fn_createRadioBombUnits.sqf"; };
 	};
 };
@@ -121,9 +121,11 @@ br_fnc_onZoneTaken = {
 
 // On first zone creation after AI and everything has been placed do the following...
 br_fnc_onFirstZoneCreation = {
-	execVM "fn_friendlySpawnAI.sqf";
-	execVM "fn_commandFriendlyGroups.sqf";
-	execVM "fn_checkFriendyAIPositions.sqf";
+	if (br_enable_friendly_ai) then {
+		execVM "fn_friendlySpawnAI.sqf";
+		execVM "fn_commandFriendlyGroups.sqf";
+		execVM "fn_checkFriendyAIPositions.sqf";
+	};
 	execVM "fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
 };
@@ -169,7 +171,7 @@ br_fnc_main = {
 		// Wait for a time for the zone to populate
 		sleep 120;
 		// Wait untill zone is taken
-		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
+		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed) and (br_HQ_taken); };
 		[] call br_fnc_onZoneTaken;
 	}
 };

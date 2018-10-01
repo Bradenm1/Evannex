@@ -97,15 +97,6 @@ _units = [[[ // EAST
 	"BUS_SmallTeam_UAV"
 ]]];
 
-_unitChance = [
-	"B_MRAP_01_gmg_F",
-	"B_MRAP_01_hmg_F",
-	"B_G_Offroad_01_armed_F",
-	"B_MBT_01_cannon_F",
-	"B_APC_Tracked_01_AA_F",
-	"B_UGV_01_rcws_F"
-];
-
 // Gets a random location on the plaer
 br_fnc_getGroundUnitLocation = {
 	// Gets a random location within the zone radius

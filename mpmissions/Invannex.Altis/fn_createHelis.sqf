@@ -172,7 +172,6 @@ br_fnc_runTransportChopper = {
 			_helicopterVech engineOn false;
 			_helicopterVech setFuel 1;
 			_helicopterVech setDamage 0;
-			deleteMarker format ["LZ - %1", _heliIndex];
 		};		
 	};
 };

@@ -34,7 +34,15 @@ _unitChance = [
 	"I_LT_01_AA_F",
 	"I_LT_01_scout_F",
 	"I_LT_01_AT_F",
-	"C_Kart_01_Red_F"
+	"C_Kart_01_Red_F",
+	"B_AFV_Wheeled_01_cannon_F",
+	"B_T_AFV_Wheeled_01_cannon_F",
+	"B_AFV_Wheeled_01_up_cannon_F",
+	"B_T_AFV_Wheeled_01_up_cannon_F",
+	"B_APC_Tracked_01_AA_F",
+	"B_APC_Tracked_01_rcws_F",
+	"B_Heli_Attack_01_F",
+	"B_UGV_01_F"
 ];
 
 // Spawn custom units
