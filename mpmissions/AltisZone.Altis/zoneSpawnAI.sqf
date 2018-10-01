@@ -192,7 +192,6 @@ br_fnc_spawnAI = {
 			_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [_sides, 0, _unitTypes, _types, _units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\selectRandomGroupToSpawn.sqf";
 			{ _x setSkill 1 } forEach units _group;
-			//hint format ["Group Spawned - Total:  %1", count br_AIGroups];
 		};
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) and (getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")} do {

@@ -109,7 +109,7 @@ _unitChance = [
 // Gets a random location on the plaer
 br_fnc_getGroundUnitLocation = {
 	// Gets a random location within the zone radius
-	getMarkerPos "marker_ai_spawn_friendly_ground_units" getPos [4 * sqrt random 180, random 360];
+	getMarkerPos "marker_ai_spawn_friendly_ground_units" getPos [2 * sqrt random 180, random 360];
 };
 
 // Spawn custom units

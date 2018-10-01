@@ -9,7 +9,7 @@ _transportVech = nil;
 _getOutOfVechRadius = 400;
 
 // Creat the units
-createBombUnits = {
+br_fnc_createBombUnits = {
 	_transportVech = "B_G_Van_01_transport_F" createVehicle getMarkerPos _spawnPad;
 	// Delete if existing group
 	_bombGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "functions\spawnGroup.sqf";
@@ -25,16 +25,16 @@ createBombUnits = {
 };
 
 // Tell the unit to touchoff the bomb
-placeBomb = {
+br_fnc_placeBomb = {
 	_bomb = "satchelcharge_remote_ammo" createVehicle getPos br_radio_tower;
 	_bomb setDamage 1;
 };
 
 // AI script for the group
-runRadioBombUnit = {
+br_fnc_runRadioBombUnit = {
 	while {TRUE} do {
 		br_blow_up_radio_tower = FALSE;
-		[] call createBombUnits;
+		[] call br_fnc_createBombUnits;
 		// Idle group if no radio tower
 		waitUntil { ((br_radio_tower_destoryed == 0) && (!br_zone_taken)) };
 		// Check if units are dead and radio tower is not blown up
@@ -53,7 +53,7 @@ runRadioBombUnit = {
 				// Wait untill group has reached radio tower
 				waitUntil { ((br_blow_up_radio_tower) || (br_radio_tower_destoryed == 1) || ({(alive _x)} count (units _bombGroup) == 0)); };
 				// Touch off bomb at radio tower if still alive and radio tower not already blown up
-				if (({(alive _x)} count (units _bombGroup) > 0) && (br_radio_tower_destoryed == 0)) then  { [] call placeBomb; };
+				if (({(alive _x)} count (units _bombGroup) > 0) && (br_radio_tower_destoryed == 0)) then  { [] call br_fnc_placeBomb; };
 			}
 		};
 		{ deleteVehicle _x; } forEach (units _bombGroup);
@@ -63,4 +63,4 @@ runRadioBombUnit = {
 	};
 };
 
-[] call runRadioBombUnit;
+[] call br_fnc_runRadioBombUnit;

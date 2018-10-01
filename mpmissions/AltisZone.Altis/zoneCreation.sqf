@@ -39,12 +39,12 @@ br_zones = [];
 br_current_zone = nil;
 
 // Gets a random location on the plaer
-getLocation = {
+br_fnc_getLocation = {
 	[] call compile preprocessFileLineNumbers "functions\getRandomLocation.sqf";
 };
 
 // Creates the zone
-createZone = {
+br_fnc_createZone = {
 	br_current_zone = selectRandom br_zones;
 	// Creates the radius
 	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "functions\createRadiusMarker.sqf");
@@ -53,9 +53,9 @@ createZone = {
 };
 
 // Creates the RescueBunker
-createRescueBunker = {
+br_fnc_createRescueBunker = {
 	// Creates center for RescueBunker
-	_hqCenterPos = [] call getLocation;
+	_hqCenterPos = [] call br_fnc_getLocation;
 	// Gets position near center
 	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
 	// Place RescueBunker near center
@@ -68,24 +68,24 @@ createRescueBunker = {
 };
 
 // Delete groups in AIGroups
-deleteGroups = {
+br_fnc_deleteGroups = {
 	_group = _this select 0;
 	{ deleteVehicle _x } forEach (units _group);
 	deleteGroup _group;
 };
 
 // Delete all enemy AI
-deleteAllAI = {
+br_fnc_deleteAllAI = {
 	// Delete existing units 
-	{ [_x] call deleteGroups; } forEach br_AIGroups;
-	{ [_x] call deleteGroups; } forEach br_special_ai_groups;
+	{ [_x] call br_fnc_deleteGroups; } forEach br_AIGroups;
+	{ [_x] call br_fnc_deleteGroups; } forEach br_special_ai_groups;
 	br_AIGroups = [];
 	br_special_ai_groups = [];
 };
 
 // Find all markers
 // Runs once per mission
-doChecks = {
+br_fnc_doChecks = {
 	for "_i" from 0 to br_max_checks do {
 		// Get marker prefixs
 		_endString = Format ["marker_%1", _i];
@@ -108,7 +108,7 @@ doChecks = {
 };
 
 // Called when zone is taken
-onZoneTaken = {
+br_fnc_onZoneTaken = {
 	br_zone_taken = TRUE;
 	task setTaskState "Succeeded";
 	["TaskSucceeded",["", "Zone Taken!"]] call bis_fnc_showNotification;
@@ -120,13 +120,13 @@ onZoneTaken = {
 	deleteMarker "ZONE_HQ_ICON";
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
-	[] call deleteAllAI;
+	[] call br_fnc_deleteAllAI;
 	sleep 5;
 	br_zone_taken = FALSE;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
-onFirstZoneCreation = {
+br_fnc_onFirstZoneCreation = {
 	execVM "friendlySpawnAI.sqf";
 	execVM "commandFriendlyGroups.sqf";
 	execVM "checkFriendyAIPositions.sqf";
@@ -135,7 +135,7 @@ onFirstZoneCreation = {
 };
 
 // On new zone creation after AI and everything has been placed do the following...
-onNewZoneCreation = {
+br_fnc_onNewZoneCreation = {
 	// Delete all waypoints for vehicles
 	{  
 		while {(count (waypoints _x)) > 0} do {
@@ -159,25 +159,25 @@ onNewZoneCreation = {
 };
 
 // Main function
-main = {
+br_fnc_main = {
 	// Check for markers and do things
-	[] call doChecks;
+	[] call br_fnc_doChecks;
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
-		[] call createZone;
+		[] call br_fnc_createZone;
 		execVM "playerTasking.sqf";
 		if (br_hq_enabled) then {execVM "createHQ.sqf";};
 		if (br_radio_tower_enabled) then {execVM "createRadioTower.sqf"};
 		execVM "zoneSpawnAI.sqf";
 		execVM "commandEnemyGroups.sqf";
 		// Check if it's the first zone
-		if (br_first_Zone) then { [] call onFirstZoneCreation } else { [] call onNewZoneCreation; };
+		if (br_first_Zone) then { [] call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Wait for a time for the zone to populate
 		sleep 120;
 		// Wait untill zone is taken
 		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed == 1) and (br_HQ_taken == 1); };
-		[] call onZoneTaken;
+		[] call br_fnc_onZoneTaken;
 	}
 };
 
-[] call main;
+[] call br_fnc_main;
