@@ -114,6 +114,7 @@ br_fnc_onZoneTaken = {
 	deleteMarker "ZONE_HQ_ICON";
 	deleteMarker "ZONE_RADIOTOWER_ICON";
 	deleteMarker "ZONE_RADIOTOWER_RADIUS";
+	// Delete all AI left at zone
 	[] call br_fnc_deleteAllAI;
 	sleep 5;
 };
@@ -170,7 +171,7 @@ br_fnc_main = {
 		br_zone_taken = FALSE;
 		execVM "fn_zoneSpawnAI.sqf";
 		// Wait for a time for the zone to populate
-		sleep 120;
+		sleep 60;
 		// Wait untill zone is taken
 		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed) and (br_HQ_taken); };
 		[] call br_fnc_onZoneTaken;
