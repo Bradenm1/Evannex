@@ -2,6 +2,8 @@
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
 br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
+br_sides = [EAST, WEST];
+br_side_types = ["OPF_F","BLU_F"];
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
@@ -29,6 +31,91 @@ br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getPar
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
 br_ai_skill = 1;
+
+// Below units are in-order below given the _sides and _unitTypes positions 
+br_units = [[[ // EAST
+	"OI_reconPatrol",
+	"OI_reconSentry",
+	"OI_reconTeam",
+	"OI_SniperTeam",
+	"OIA_InfAssault",
+	"OIA_InfSentry",
+	"OIA_InfSquad",
+	"OIA_InfSquad_Weapons",
+	"OIA_InfTeam",
+	"OIA_InfTeam_AA",
+	"OIA_InfTeam_AT",
+	"OIA_ReconSquad"
+],[
+	//"OIA_SPGPlatoon_Scorcher",
+	//"OIA_SPGSection_Scorcher",
+	"OIA_TankPlatoon",
+	"OIA_TankPlatoon_AA",
+	"OIA_TankSection"
+],[
+	"OIA_MotInf_AA",
+	"OIA_MotInf_AT",
+	"OIA_MotInf_GMGTeam",
+	"OIA_MotInf_MGTeam",
+	"OIA_MotInf_MortTeam",
+	"OIA_MotInf_Team"
+], [
+	"OIA_MechInf_AA",
+	"OIA_MechInf_AT",
+	"OIA_MechInf_Support",
+	"OIA_MechInfSquad"
+], [
+	"OI_AttackTeam_UAV",
+	"OI_AttackTeam_UGV",
+	//"OI_diverTeam",
+	//"OI_diverTeam_Boat",
+	//"OI_diverTeam_SDV",
+	"OI_ReconTeam_UAV",
+	"OI_ReconTeam_UGV",
+	"OI_SmallTeam_UAV"
+]], 
+[[ // WEST
+	"BUS_InfSentry",
+	"BUS_InfSquad",
+	"BUS_InfAssault",
+	"BUS_InfSquad_Weapons",
+	"BUS_InfTeam",
+	"BUS_InfTeam_AA",
+	"BUS_InfTeam_AT",
+	"BUS_ReconPatrol",
+	"BUS_ReconSentry",
+	"BUS_ReconTeam",
+	"BUS_ReconSquad",
+	"BUS_SniperTeam"
+],[
+	"BUS_SPGPlatoon_Scorcher",
+	"BUS_SPGSection_MLRS",
+	"BUS_SPGSection_Scorcher",
+	"BUS_TankPlatoon",
+	"BUS_TankPlatoon_AA",
+	"BUS_TankSection"
+],[
+	"BUS_MotInf_AA",
+	"BUS_MotInf_AT",
+	"BUS_MotInf_GMGTeam",
+	"BUS_MotInf_MGTeam",
+	"BUS_MotInf_MortTeam",
+	"BUS_MotInf_Team"
+], [
+	"BUS_MechInf_AA",
+	"BUS_MechInf_AT",
+	"BUS_MechInf_Support",
+	"BUS_MechInfSquad"
+], [
+	"BUS_AttackTeam_UAV",
+	"BUS_AttackTeam_UGV",
+	"BUS_diverTeam",
+	"BUS_diverTeam_Boat",
+	"BUS_diverTeam_SDV",
+	"BUS_ReconTeam_UAV",
+	"BUS_ReconTeam_UGV",
+	"BUS_SmallTeam_UAV"
+]]];
 
 // Zone Locations
 //_zones = [position player, getMarkerPos "zone_01"];

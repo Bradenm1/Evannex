@@ -1,1 +1,1 @@
-[_this select 4, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3)] call BIS_fnc_spawnGroup;
+[_this select 4, _this select 0, (configFile >> "CfgGroups" >> str(_this select 0) >> _this select 1 >> _this select 2 >> _this select 3), [], [], [br_ai_skill, br_ai_skill]] call BIS_fnc_spawnGroup;
