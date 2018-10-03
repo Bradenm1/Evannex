@@ -15,7 +15,7 @@ _units = [[[ // EAST
 	"OI_reconPatrol",
 	"OI_reconSentry",
 	"OI_reconTeam",
-	//"OI_SniperTeam",
+	"OI_SniperTeam",
 	"OIA_InfAssault",
 	"OIA_InfSentry",
 	"OIA_InfSquad",

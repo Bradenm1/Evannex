@@ -17,7 +17,7 @@ _units = [[[ // EAST
 	"OI_reconPatrol",
 	"OI_reconSentry",
 	"OI_reconTeam",
-	//"OI_SniperTeam",
+	"OI_SniperTeam",
 	"OIA_InfAssault",
 	"OIA_InfSentry",
 	"OIA_InfSquad",
@@ -27,8 +27,8 @@ _units = [[[ // EAST
 	"OIA_InfTeam_AT",
 	"OIA_ReconSquad"
 ],[
-	//"OIA_SPGPlatoon_Scorcher",
-	//"OIA_SPGSection_Scorcher",
+	"OIA_SPGPlatoon_Scorcher",
+	"OIA_SPGSection_Scorcher",
 	"OIA_TankPlatoon",
 	"OIA_TankPlatoon_AA",
 	"OIA_TankSection"
@@ -47,9 +47,9 @@ _units = [[[ // EAST
 ], [
 	"OI_AttackTeam_UAV",
 	"OI_AttackTeam_UGV",
-	//"OI_diverTeam",
-	//"OI_diverTeam_Boat",
-	//"OI_diverTeam_SDV",
+	"OI_diverTeam",
+	"OI_diverTeam_Boat",
+	"OI_diverTeam_SDV",
 	"OI_ReconTeam_UAV",
 	"OI_ReconTeam_UGV",
 	"OI_SmallTeam_UAV"
