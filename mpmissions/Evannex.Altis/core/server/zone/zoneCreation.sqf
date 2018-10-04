@@ -31,6 +31,7 @@ br_first_Zone = TRUE; // If it's the first zone
 br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue;
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
+br_command_delay = 5;
 br_ai_skill = 1;
 
 // Below units are in-order below given the _sides and _unitTypes positions 
@@ -252,7 +253,7 @@ br_fnc_main = {
 		[] call br_fnc_createZone;
 		execVM "core\server\task\fn_playerTasking.sqf";
 		//if (br_hq_enabled) then {execVM "core\server\fn_createHQ.sqf";};
-		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken", ["O_officer_F"], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken", ["O_officer_F"], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed", [], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };

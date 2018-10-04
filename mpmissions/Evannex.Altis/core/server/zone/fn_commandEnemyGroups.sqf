@@ -16,5 +16,5 @@ While {TRUE} do {
 		_y = _x;
 		if (({alive _x} count units _y) < 1) then { br_special_ai_groups deleteAt (br_special_ai_groups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil;};
 	} forEach br_special_ai_groups;
-	sleep 5;
+	sleep br_command_delay;
 }

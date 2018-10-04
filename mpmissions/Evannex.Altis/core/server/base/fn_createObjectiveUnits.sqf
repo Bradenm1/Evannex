@@ -32,12 +32,27 @@ br_fnc_placeBomb = {
 	(_objective select 1) setDamage 1;
 };
 
+// Kill all groups at objective
+br_fnc_goKillPeople = {
+	for "_i" from 0 to count (_objective select 2) do
+	{
+		_group = (_objective select 2) select _i;
+		{
+			_wp = _bombGroup addWaypoint [getpos _x, 0];
+			_wp setWaypointFormation "WEDGE";
+			_wp setWaypointType "DESTROY";
+			_wp setWaypointSpeed "FULL";
+			waitUntil { !(alive _x) };
+		} forEach (units _group);
+	};
+};
+
 br_fnc_DoObjective = {
 	_obj = _this select 0;
 	switch (_obj) do {
-		case "Destory & Kill": { call br_fnc_placeBomb; };
+		case "Destory & Kill": { call br_fnc_goKillPeople; call br_fnc_placeBomb; };
 		case "Destory": { call br_fnc_placeBomb; };
-		case "Kill": { };
+		case "Kill": { call br_fnc_goKillPeople; };
 		default { hint "Objective Error in command group"};
 	};
 };
@@ -46,7 +61,7 @@ br_fnc_DoObjective = {
 br_fnc_runRadioBombUnit = {
 	while {TRUE} do {
 		[] call br_fnc_createBombUnits;
-		waitUntil { !br_zone_taken };
+		waitUntil { !br_zone_taken && count br_objectives > 0};
 		// Idle group if no radio tower
 		_foundObjective = FALSE;
 		while {!_foundObjective} do {
@@ -65,7 +80,7 @@ br_fnc_runRadioBombUnit = {
 			if (count (waypoints _bombGroup) < 2) then {
 				_wp = _bombGroup addWaypoint [getpos (_objective select 1), 0];
 				_wp setWaypointFormation "WEDGE";
-				_wp setWaypointType "MOVE";
+				_wp setWaypointType "DESTROY";
 				_wp setWaypointSpeed "FULL";
 				_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
 				// Wait until group is within a given range
