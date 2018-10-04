@@ -78,7 +78,7 @@ br_fnc_deleteOldChopperUnit = {
 
 // Checks if units in chooper are dead but false is if they are alive
 br_fnc_checkHeliDead = {
-	if (({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30)) then { false;} else { true; };
+	if (({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)}) then { false;} else { true; };
 };
 
 // Creates the helicopter units
@@ -143,9 +143,9 @@ br_fnc_movetoAndLand = {
 	_wp setWaypointType "GETOUT";
 	_helicopterVech engineOn true;
 	// Wait untill landed
-	waitUntil {(getPos _helicopterVech select 2 > 10) || [] call br_fnc_checkHeliDead || !(isEngineOn _helicopterVech) || br_zone_taken};
+	waitUntil {(getPos _helicopterVech select 2 > 10) || {[] call br_fnc_checkHeliDead} || {!(isEngineOn _helicopterVech)} || {br_zone_taken}};
 	// Has landed
-	waitUntil {(getPos _helicopterVech select 2 < 1) || [] call br_fnc_checkHeliDead || br_zone_taken};
+	waitUntil {(getPos _helicopterVech select 2 < 1) || {[] call br_fnc_checkHeliDead} || {br_zone_taken}};
 	[] call br_fnc_deleteOldChopperUnit;
 	_helicopterVech engineOn false;
 };
@@ -247,7 +247,7 @@ br_fnc_runEvacChopper = {
 		// Switch groups weapons (Sometimes they just stand holding binoculars and won't get in..)
 		{_x selectweapon primaryWeapon _x} foreach (units _group);
 		// Wait untill units are in
-		waitUntil { {_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 };
+		waitUntil { {{_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group)} || {[] call br_fnc_checkHeliDead} || {_helicopterVech emptyPositions "cargo" == 0} };
 		// Delete LZ
 		deleteVehicle _landMarker;
 		deleteMarker format ["EVAC - %1", _heliIndex];
@@ -273,7 +273,7 @@ br_fnc_createHelis = {
 		// Create chopper units
 		[] call br_fnc_createChopperUnit;
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
-		while {({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30);} do {
+		while {({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)};} do {
 			sleep 10;
 			if (_evacChopper) then { [] call br_fnc_runEvacChopper; } else { [] call br_fnc_runTransportChopper; };
 			_helicopterVech setFuel 1;

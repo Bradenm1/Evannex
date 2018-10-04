@@ -177,13 +177,13 @@ br_fnc_doChecks = {
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
-		if ((getMarkerColor _endStringVeh != "") && (br_enable_friendly_ai)) 
+		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
 		then { [_endStringVeh] execVM "fn_createVehicle.sqf"; };
-		if ((getMarkerColor _endStringHeli != "") && (br_enable_friendly_ai))
+		if ((getMarkerColor _endStringHeli != "") && {(br_enable_friendly_ai)})
 		then { [_endStringHeli, _i, FALSE] execVM "fn_createHelis.sqf"; };
-		if ((getMarkerColor _endStringHeliEvac != "") && (br_enable_friendly_ai))
+		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})
 		then { [_endStringHeliEvac, _i, TRUE] execVM "fn_createHelis.sqf"; };
-		if ((getMarkerColor _endStringBombSquad != "") && (br_enable_friendly_ai))
+		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
 		then { [_endStringBombSquad, _i] execVM "fn_createRadioBombUnits.sqf"; };
 	};
 };
