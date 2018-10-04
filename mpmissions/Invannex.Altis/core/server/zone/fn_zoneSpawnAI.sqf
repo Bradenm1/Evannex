@@ -1,3 +1,5 @@
+_spawningMarker = _this select 0;
+
 //_numbToSpawn = 3;  AI spawn per spawn rate
 _aiSpawnRate = 0; // Delay in seconds
 _allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
@@ -95,19 +97,19 @@ br_fnc_spawnAI = {
 	[] call br_fnc_createCustomUnits;
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
-		while {(count br_AIGroups <= br_min_ai_groups) && {(getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")}} do {
+		while {(count br_AIGroups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			sleep _aiSpawnRate;
 			_newPos = [] call br_fnc_getGroupEnemySpawn;
-			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "functions\fn_selectRandomGroupToSpawn.sqf";
+			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			//{ _x setSkill br_ai_skill; _x;  } forEach units _group;
-			[_group] call compile preprocessFileLineNumbers "functions\fn_setRandomDirection.sqf";
+			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 		};
 		// Spawn spawn special units untill 
-		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor "ZONE_RADIOTOWER_RADIUS" == "ColorRed")}} do {
+		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			//{ _x setSkill br_ai_skill } forEach units _group;
-			[_group] call compile preprocessFileLineNumbers "functions\fn_setRandomDirection.sqf";
+			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			br_special_ai_groups append [_group];
 			br_AIGroups append [_group];
 		};

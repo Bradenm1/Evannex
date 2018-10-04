@@ -1,8 +1,8 @@
 // If it's a client
 if (hasInterface) then {
 	// Disable annoying crap
-	execVM "fn_setPlayerSettings.sqf";
+	execVM "core\client\fn_setPlayerSettings.sqf";
 };
 
 // Enable friendly markers
-execVM "QS_icons.sqf";
+execVM "core\client\QS_icons.sqf";

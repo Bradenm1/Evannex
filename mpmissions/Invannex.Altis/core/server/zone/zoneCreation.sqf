@@ -21,6 +21,7 @@ br_HQ_taken = FALSE; // If the HQ is taken
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_radio_tower = nil; // The radio tower
+br_objectives = [];
 br_hq = nil; // The HQ
 br_max_checks = "Checks" call BIS_fnc_getParamValue;
 br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
@@ -128,9 +129,9 @@ br_current_zone = nil;
 br_fnc_createZone = {
 	br_current_zone = selectRandom br_zones;
 	// Creates the radius
-	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
+	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
+	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
 };
 
 // Creates the RescueBunker
@@ -178,13 +179,13 @@ br_fnc_doChecks = {
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringVeh] execVM "fn_createVehicle.sqf"; };
+		then { [_endStringVeh] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringHeli != "") && {(br_enable_friendly_ai)})
-		then { [_endStringHeli, _i, FALSE] execVM "fn_createHelis.sqf"; };
+		then { [_endStringHeli, _i, FALSE] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})
-		then { [_endStringHeliEvac, _i, TRUE] execVM "fn_createHelis.sqf"; };
+		then { [_endStringHeliEvac, _i, TRUE] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
-		then { [_endStringBombSquad, _i] execVM "fn_createRadioBombUnits.sqf"; };
+		then { [_endStringBombSquad, _i] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
 	};
 };
 
@@ -209,12 +210,12 @@ br_fnc_onZoneTaken = {
 // On first zone creation after AI and everything has been placed do the following...
 br_fnc_onFirstZoneCreation = {
 	if (br_enable_friendly_ai) then {
-		execVM "fn_friendlySpawnAI.sqf";
-		execVM "fn_commandFriendlyGroups.sqf";
-		execVM "fn_checkFriendyAIPositions.sqf";
+		execVM "core\server\base\fn_friendlySpawnAI.sqf";
+		execVM "core\server\zone\fn_commandFriendlyGroups.sqf";
+		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
 	};
-	execVM "fn_commandEnemyGroups.sqf";
-	execVM "fn_garbageCollector.sqf";
+	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
+	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
 };
 
@@ -249,14 +250,15 @@ br_fnc_main = {
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call br_fnc_createZone;
-		execVM "fn_playerTasking.sqf";
-		if (br_hq_enabled) then {execVM "fn_createHQ.sqf";};
-		if (br_radio_tower_enabled) then {execVM "fn_createRadioTower.sqf"};
+		execVM "core\server\task\fn_playerTasking.sqf";
+		//if (br_hq_enabled) then {execVM "core\server\fn_createHQ.sqf";};
+		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken", ["O_officer_F"], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed", [], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		// Check if it's the first zone
-		if (br_first_Zone) then { [] call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
+		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false
 		br_zone_taken = FALSE;
-		execVM "fn_zoneSpawnAI.sqf";
+		["ZONE_Radio_Tower_RADIUS"] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken

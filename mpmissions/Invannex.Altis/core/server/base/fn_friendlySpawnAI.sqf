@@ -25,7 +25,7 @@ br_fnc_spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {(((count br_friendlyGroupsWaiting) + (count br_FriendlyAIGroups) + (count br_groupsInTransit) - (count br_friendlyvehicles))  < br_min_friendly_ai_groups)} do {
 			//sleep _aiSpawnRate;
-			_group = [br_sides, 1, _unitTypes, br_side_types, br_units, [] call br_fnc_getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "functions\fn_selectRandomGroupToSpawn.sqf";
+			_group = [br_sides, 1, _unitTypes, br_side_types, br_units, [] call br_fnc_getGroundUnitLocation, br_friendlyGroupsWaiting] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			br_FriendlyGroundGroups append [_group];
 			//{ _x setSkill br_ai_skill; _x; _x setVectorDir [random 360, random 360, random 360];  } forEach units _group;
 			sleep 3;		
