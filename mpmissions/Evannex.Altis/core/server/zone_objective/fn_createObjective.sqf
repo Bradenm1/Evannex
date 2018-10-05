@@ -6,11 +6,13 @@ _deleteMarkerOnCapture = _this select 4;
 _textOnTaken = _this select 5;
 _groupsIfKill = _this select 6;
 _mattersToObjectiveSquad = _this select 7;
+_requiresCompletedToCaptureZone = _this select 8;
 
 _spawnedObj = nil;
 _groupsToKill = [];
 _radiusName = format ["ZONE_%1_RADIUS", _zoneName];
 _textName = format ["ZONE_%1_ICON", _zoneName];
+_zoneVarName = format ["br_%1", _zoneName];
 
 // Spawn given units at a certain location
 br_fnc_spawnGivenUnitsAt = {
@@ -53,6 +55,7 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 
 // Creates the Objective
 br_fnc_createObjective = {
+	missionNamespace setVariable [_zoneVarName, FALSE];
 	// Creates center for HQ
 	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
 	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, 20, 0] call BIS_fnc_findSafePos;
@@ -64,8 +67,7 @@ br_fnc_createObjective = {
 	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 0.3] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
 	// Create text icon
 	[_textName, _newPos, _zoneName, "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
-	//missionNamespace setVariable [("br_" + _zoneName), FALSE];
-	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad]];
+	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
 	[] call br_fnc_onTaken;
 };
@@ -77,7 +79,7 @@ br_fnc_onTaken = {
 	if (_deleteMarkerOnCapture) then { deleteMarker _radiusName; deleteMarker _textName; } 
 	else { _radiusName setMarkerColor "ColorBlue"; };
 
-	//missionNamespace setVariable ["br_" + _zoneName, TRUE]; 
+	missionNamespace setVariable [_zoneVarName, TRUE]; 
 };
 
 [] call br_fnc_createObjective;

@@ -199,12 +199,9 @@ br_fnc_onZoneTaken = {
 	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
-	deleteMarker "ZONE_HQ_RADIUS";
-	deleteMarker "ZONE_HQ_ICON";
-	deleteMarker "ZONE_RADIOTOWER_ICON";
-	deleteMarker "ZONE_RADIOTOWER_RADIUS";
 	// Delete all AI left at zone
 	[] call br_fnc_deleteAllAI;
+	br_objectives = [];
 	sleep 5;
 };
 
@@ -253,8 +250,9 @@ br_fnc_main = {
 		[] call br_fnc_createZone;
 		execVM "core\server\task\fn_playerTasking.sqf";
 		//if (br_hq_enabled) then {execVM "core\server\fn_createHQ.sqf";};
-		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken", ["O_officer_F"], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
-		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed", [], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		["EMP", 15, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false
@@ -262,8 +260,9 @@ br_fnc_main = {
 		["ZONE_Radio_Tower_RADIUS"] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
 		// Wait for a time for the zone to populate
 		sleep 60;
-		// Wait untill zone is taken
-		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) and (br_radio_tower_destoryed) and (br_HQ_taken); };
+		// Wait untill zone is taken and objectives are completed
+		{ waitUntil { _x select 6 || {missionNamespace getVariable (_x select 5)} }; } forEach br_objectives;
+		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
 	}
 };

@@ -34,19 +34,21 @@ br_fnc_placeBomb = {
 
 // Kill all groups at objective
 br_fnc_goKillPeople = {
-	for "_i" from 0 to count (_objective select 2) do
-	{
-		_group = (_objective select 2) select _i;
-		{
-			_wp = _bombGroup addWaypoint [getpos _x, 0];
-			_wp setWaypointFormation "WEDGE";
-			_wp setWaypointType "DESTROY";
-			_wp setWaypointSpeed "FULL";
-			waitUntil { !(alive _x) };
-		} forEach (units _group);
+	_groups = _objective select 2;
+	if (count _groups > 0) then {
+		for "_i" from 0 to count _groups do {
+			{
+				_wp = _bombGroup addWaypoint [group _x, 0];
+				_wp setWaypointFormation "WEDGE";
+				_wp setWaypointType "DESTROY";
+				_wp setWaypointSpeed "FULL";
+				waitUntil { !(alive _x) };
+			} forEach (units (_groups select _i));
+		};	
 	};
 };
 
+// Do the objectives
 br_fnc_DoObjective = {
 	_obj = _this select 0;
 	switch (_obj) do {
@@ -57,25 +59,26 @@ br_fnc_DoObjective = {
 	};
 };
 
+// Find objective
+br_fnc_findObjective = {
+	_foundObjective = FALSE;
+	while {!_foundObjective} do {
+		_objective = selectRandom br_objectives;
+		if ( (_objective select 4) ) then { _foundObjective = TRUE; }
+		else { sleep 10; };
+	};
+};
+
 // AI script for the group
 br_fnc_runRadioBombUnit = {
 	while {TRUE} do {
 		[] call br_fnc_createBombUnits;
 		waitUntil { !br_zone_taken && count br_objectives > 0};
+		[] call br_fnc_findObjective;
 		// Idle group if no radio tower
-		_foundObjective = FALSE;
-		while {!_foundObjective} do {
-			//{ 
-			//	 if ( (_x select 4) ) then { _foundObjective = TRUE; _objective = br_objectives select _objectIndex; };
-			//	 _objectIndex = _objectIndex + 1; 
-			//} forEach br_objectives;
-			_objective = selectRandom br_objectives;
-			if ( (_objective select 4) ) then { _foundObjective = TRUE; }
-			else { sleep 10; };
-		};
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
 		// Check if units are dead and radio tower is not blown up
-		while {({(alive _x)} count (units _bombGroup) > 0) && {!(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} && {(!br_zone_taken)}} do {
+		while {({(alive _x)} count (units _bombGroup) > 0) && {!(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} && {(!br_zone_taken)} && {!(missionNamespace getVariable (_objective select 5))}} do {
 			// Check if any groups are waiting
 			if (count (waypoints _bombGroup) < 2) then {
 				_wp = _bombGroup addWaypoint [getpos (_objective select 1), 0];
@@ -84,13 +87,15 @@ br_fnc_runRadioBombUnit = {
 				_wp setWaypointSpeed "FULL";
 				_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
 				// Wait until group is within a given range
-				waitUntil { (((getpos (leader _bombGroup)) distance (getpos (_objective select 1)) < _getOutOfVechRadius) || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _bombGroup) == 0)}); };
+				waitUntil { (((getpos (leader _bombGroup)) distance (getpos (_objective select 1)) < _getOutOfVechRadius) || {missionNamespace getVariable (_objective select 5)} || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _bombGroup) == 0)}); };
 				// Tell group to get out of transport vehicle
-				{[_x] allowGetIn false; _x action ["Eject", vehicle _x]} forEach (units _bombGroup);
-				// Wait untill group has reached radio tower
-				waitUntil { ((missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {({(alive _x)} count (units _bombGroup) == 0)}); };
-				// Touch off bomb at radio tower if still alive and radio tower not already blown up
-				if (({(alive _x)} count (units _bombGroup) > 0) && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then  { [(_objective select 3)] call br_fnc_DoObjective; };
+				if (!(missionNamespace getVariable (_objective select 5))) then { 
+					{[_x] allowGetIn false; _x action ["Eject", vehicle _x]} forEach (units _bombGroup); 
+					// Wait untill group has reached radio tower
+					waitUntil { ((missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {missionNamespace getVariable (_objective select 5)} || {({(alive _x)} count (units _bombGroup) == 0)}); };
+					// Touch off bomb at radio tower if still alive and radio tower not already blown up
+					if (({(alive _x)} count (units _bombGroup) > 0) && {!(missionNamespace getVariable (_objective select 5))} && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then  { [(_objective select 3)] call br_fnc_DoObjective; };	
+				};
 			}
 		}; 
 		br_objectives deleteAt (br_objectives find _objective);
