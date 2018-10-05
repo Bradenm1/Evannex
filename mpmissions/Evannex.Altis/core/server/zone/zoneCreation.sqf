@@ -252,7 +252,7 @@ br_fnc_main = {
 		//if (br_hq_enabled) then {execVM "core\server\fn_createHQ.sqf";};
 		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
-		["EMP", 15, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";
+		["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false

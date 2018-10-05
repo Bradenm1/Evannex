@@ -53,6 +53,11 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 	};
 };
 
+// Delete markers
+br_fnc_deleteObjMarkers = {
+	deleteMarker _radiusName; deleteMarker _textName;
+};
+
 // Creates the Objective
 br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
@@ -76,10 +81,22 @@ br_fnc_createObjective = {
 br_fnc_onTaken = {
 	["TaskSucceeded",["", _textOnTaken]] call bis_fnc_showNotification;
 
-	if (_deleteMarkerOnCapture) then { deleteMarker _radiusName; deleteMarker _textName; } 
+	if (_deleteMarkerOnCapture) then { [] call br_fnc_deleteObjMarkers; } 
 	else { _radiusName setMarkerColor "ColorBlue"; };
 
 	missionNamespace setVariable [_zoneVarName, TRUE]; 
+
+	waitUntil { br_zone_taken };
+
+	[] call br_fnc_onZoneTakenAfterComplete;
+};
+
+// When zone is taken after 
+br_fnc_onZoneTakenAfterComplete = {
+	// Do some cleanup
+	[] call br_fnc_deleteObjMarkers;
+	sleep 120;
+	deleteVehicle _spawnedObj;
 };
 
 [] call br_fnc_createObjective;
