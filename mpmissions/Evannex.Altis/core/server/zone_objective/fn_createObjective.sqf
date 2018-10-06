@@ -63,7 +63,7 @@ br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
 	// Creates center for HQ
 	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
-	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, 20, 0] call BIS_fnc_findSafePos;
+	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
 	// Gets position near center
 	_pos = [_newPos, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 	// Place HQ near center

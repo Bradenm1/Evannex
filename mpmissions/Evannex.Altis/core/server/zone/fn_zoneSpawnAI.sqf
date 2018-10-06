@@ -58,7 +58,8 @@ _unitChance = [
 	"O_Plane_Fighter_02_Stealth_F",
 	"I_MRAP_03_gmg_F",
 	"I_MRAP_03_hmg_F",
-	"C_Kart_01_yellow_F"
+	"C_Kart_01_yellow_F",
+	"O_T_VTOL_02_infantry_F"
 ];
 
 // Gets a safe zone within the zone

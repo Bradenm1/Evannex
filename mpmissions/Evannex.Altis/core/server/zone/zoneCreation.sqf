@@ -33,7 +33,10 @@ br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getPar
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
 br_command_delay = 5; // Command delay for both enemy and friendly zone AI
+br_randomly_find_zone = FALSE; // Finds a random position on the map intead of using markers
 br_ai_skill = 1;
+br_objective_max_angle = 0.25;
+br_heli_land_max_angle = 0.25;
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -129,7 +132,11 @@ br_current_zone = nil;
 
 // Creates the zone
 br_fnc_createZone = {
-	br_current_zone = selectRandom br_zones;
+	if (br_randomly_find_zone) then {
+		br_current_zone = selectRandom br_zones;
+	} else {
+		br_current_zone = [[], 0, -1, 0, 0, 25, 0] call BIS_fnc_findSafePos;
+	};
 	// Creates the radius
 	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
 	// Create text icon
@@ -173,11 +180,11 @@ br_fnc_deleteAllAI = {
 br_fnc_doChecks = {
 	for "_i" from 0 to br_max_checks do {
 		// Get marker prefixs
-		_endString = Format ["marker_%1", _i];
+		_endString = Format ["zone_spawn_%1", _i];
 		_endStringVeh = Format ["vehicle_spawn_%1", _i];
 		_endStringHeli = Format ["helicopter_transport_%1", _i];
 		_endStringHeliEvac = Format ["helicopter_evac_%1", _i];
-		_endStringBombSquad = Format ["bomb_squad_%1", _i];
+		_endStringBombSquad = Format ["objective_squad_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
