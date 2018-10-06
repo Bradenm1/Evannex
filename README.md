@@ -7,12 +7,13 @@ Arma 3 - AI vs AI Gamemode
 ## Features:
 ---
 - Mini central intelligences controlling both enemy & friendly AI
-- Friendly AI transport, evac and armored vehicles
-- Friendly bomb squad sent to destory the radio tower
-- Randomly generated enemy zones (Includeing HQ & radio tower)
-- Randomly generated enemy and friendly units
-- Customizeable
+- Friendly AI transport, evac & armored vehicles
+- Friendly squads which do the objectives
+- Randomly generated enemy zones (Includeing the objectives)
+- Randomly generated enemy & friendly units (Given a list)
+- Customizeable & dynamic systems
 - Easy to add suppot for custom maps
 - Friendly units respawn as something new
+- Networked tasks
 - DLC support
 - SP & MP support
