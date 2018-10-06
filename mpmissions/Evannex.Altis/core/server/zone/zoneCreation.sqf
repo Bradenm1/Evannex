@@ -9,6 +9,7 @@ br_max_radius_distance = 360; // Outter limit
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_AIGroups = []; // All spawned groups
 br_special_ai_groups = []; // Enemy special groups
+br_enemy_vehicle_objects = [];
 br_FriendlyGroundGroups = []; // Friendly ground units
 br_FriendlyAIGroups = []; // All Firendly AI
 br_heliGroups = []; // Helicopters
@@ -164,6 +165,7 @@ br_fnc_deleteAllAI = {
 	{ [_x] call br_fnc_deleteGroups; } forEach br_special_ai_groups;
 	br_AIGroups = [];
 	br_special_ai_groups = [];
+	br_enemy_vehicle_objects = [];
 };
 
 // Find all markers
@@ -238,6 +240,9 @@ br_fnc_onNewZoneCreation = {
 			br_friendlyGroupsWatingForEvac append [_x];
 		}
 	} forEach br_FriendlyGroundGroups;
+	{
+		deleteVehicle _x;
+	} forEach br_enemy_vehicle_objects;
 };
 
 // Main function
