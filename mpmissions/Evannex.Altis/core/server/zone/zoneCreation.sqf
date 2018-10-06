@@ -195,8 +195,8 @@ br_fnc_doChecks = {
 // Called when zone is taken
 br_fnc_onZoneTaken = {
 	br_zone_taken = TRUE;
-	[[["Zone Taken!"],"core\server\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
-	[[[],"core\server\task\fn_completeZoneTask.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
+	[[["Zone Taken!"],"core\client\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
+	[[[],"core\client\task\fn_completeZoneTask.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
@@ -267,7 +267,7 @@ br_fnc_main = {
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
-		{ waitUntil { _x select 6 || {missionNamespace getVariable (_x select 5)} }; } forEach br_objectives;
+		{ if (_x select 6) then { waitUntil { missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
 		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
 	}

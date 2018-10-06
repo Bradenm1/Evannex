@@ -81,7 +81,7 @@ br_fnc_createObjective = {
 
 // Called when the HQ is taken
 br_fnc_onTaken = {
-	[[[_textOnTaken],"core\server\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
+	[[[_textOnTaken],"core\client\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 
 	if (_deleteMarkerOnCapture) then { [] call br_fnc_deleteObjMarkers; } 
 	else { _radiusName setMarkerColor "ColorBlue"; };
