@@ -1,12 +1,12 @@
 _spawningMarker = _this select 0;
 
-//_numbToSpawn = 3;  AI spawn per spawn rate
 _aiSpawnRate = 0; // Delay in seconds
 _allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
 
 //_unitTypes = ["Infantry","Armored", "Motorized_MTP", "Mechanized", "SpecOps"];
 _unitTypes = ["Infantry", "Motorized_MTP", "Mechanized", "SpecOps"];
 
+// The list of units that have a chance to spawn
 _unitChance = [
 	"O_Heli_Light_02_dynamicLoadout_F",
 	"I_LT_01_AT_F",
@@ -87,14 +87,8 @@ br_fnc_spawnGivenUnitsAt = {
 	_group;
 };
 
-// Spawn custom units
-br_fnc_createCustomUnits = {
-	
-};
-
+// run main
 br_fnc_spawnAI = {
-	// Spawn custom units
-	[] call br_fnc_createCustomUnits;
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
 		while {(count br_AIGroups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {

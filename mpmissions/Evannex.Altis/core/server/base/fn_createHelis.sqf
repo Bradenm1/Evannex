@@ -1,14 +1,9 @@
-// The group of units
-_chopperUnits = nil;
-// The helicopter
-_helicopterVech = nil;
-// The position where the AI will spawn
-_heliPad = _this select 0;
-_heliIndex = _this select 1;
-// If te helicopter is a evac helicopter or not
-_evacChopper = _this select 2;
-// Used to tell the AI where to land
-_landMarker = nil;
+_heliPad = _this select 0; // The position where the AI will spawn
+_heliIndex = _this select 1; // The index of the helictoper given other helicopters
+_evacChopper = _this select 2; // If te helicopter is a evac helicopter or not
+_chopperUnits = nil; // The group in the heli
+_helicopterVech = nil; // The helicopter
+_landMarker = nil; // Used to tell the AI where to land
 
 // Type of transport helicopters that can spawn
 br_heli_units = [

@@ -1,8 +1,8 @@
-_allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
-_vehicleGroup = nil;
-_vehicle = nil;
-_spawnPad = _this select 0;
+_vehicleGroup = nil; // The group in the vehicle
+_vehicle = nil; // The vehicle
+_spawnPad = _this select 0; // The spawnpad for it
 
+// The list of things that have a chance to spawn
 _unitChance = [
 	"B_MRAP_01_gmg_F",
 	"B_MRAP_01_hmg_F",
@@ -47,18 +47,27 @@ _unitChance = [
 
 // Spawn custom units
 br_fnc_createVehicleUnit = {
+	// Select a random unit from the above list to spawn
 	_vehicle = selectrandom _unitChance createVehicle getMarkerPos _spawnPad;
+	// Create its crew
 	createVehicleCrew _vehicle;
+	// Get the vehicle commander
 	_commander = driver _vehicle;
+	// Get the group from the commander
 	_vehicleGroup = group _commander;
+	// Apply the zone AI to the vehicle
 	br_FriendlyAIGroups append [_vehicleGroup];
 	br_friendlyvehicles append [_vehicleGroup];
 };
 
+// run the vehicle
 br_fnc_runVehicleUnit = {
 	while {True} do {
+		// Spawn vehicle
 		[] call br_fnc_createVehicleUnit;
+		// Wait untill they die
 		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
+		// Do some cleanup cause they died
 		deleteGroup _vehicleGroup; 
 		deleteVehicle _vehicle;
 		br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _vehicleGroup);

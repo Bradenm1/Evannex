@@ -1,18 +1,18 @@
 _zoneName = _this select 0; // Has to be unique mission will have issues if not
-_zoneRadius = _this select 1;
-_objectToUse = _this select 2;
-_objective = _this select 3;
-_deleteMarkerOnCapture = _this select 4;
-_textOnTaken = _this select 5;
-_groupsIfKill = _this select 6;
-_mattersToObjectiveSquad = _this select 7;
-_requiresCompletedToCaptureZone = _this select 8;
+_zoneRadius = _this select 1; // Radius of the zone
+_objectToUse = _this select 2; // Object to use such as a building or vehicle
+_objective = _this select 3; // The objective type
+_deleteMarkerOnCapture = _this select 4; // If the marker is deleted on capture
+_textOnTaken = _this select 5; // Text when object is completed
+_groupsIfKill = _this select 6; // units to spawn at objective
+_mattersToObjectiveSquad = _this select 7; // If the friendly AI will ignore this objective
+_requiresCompletedToCaptureZone = _this select 8; // If the capture of the main zone requires the capture of this zone
 
 _spawnedObj = nil;
-_groupsToKill = [];
+_groupsToKill = []; // Groups spawned at objective
 _radiusName = format ["ZONE_%1_RADIUS", _zoneName];
 _textName = format ["ZONE_%1_ICON", _zoneName];
-_zoneVarName = format ["br_%1", _zoneName];
+_zoneVarName = format ["br_%1", _zoneName]; // Used to check if objective has been completed outside this local script
 
 // Spawn given units at a certain location
 br_fnc_spawnGivenUnitsAt = {
@@ -73,19 +73,23 @@ br_fnc_createObjective = {
 	// Create text icon
 	[_textName, _newPos, _zoneName, "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
 	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
+	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
+	// Take the objective
 	[] call br_fnc_onTaken;
 };
 
 // Called when the HQ is taken
 br_fnc_onTaken = {
-	["TaskSucceeded",["", _textOnTaken]] call bis_fnc_showNotification;
+	[[[_textOnTaken],"core\server\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 
 	if (_deleteMarkerOnCapture) then { [] call br_fnc_deleteObjMarkers; } 
 	else { _radiusName setMarkerColor "ColorBlue"; };
 
+	// Set objective as taken
 	missionNamespace setVariable [_zoneVarName, TRUE]; 
 
+	// Wait untill main zone is taken
 	waitUntil { br_zone_taken };
 
 	[] call br_fnc_onZoneTakenAfterComplete;

@@ -21,17 +21,17 @@ br_HQ_taken = FALSE; // If the HQ is taken
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_radio_tower = nil; // The radio tower
-br_objectives = [];
+br_objectives = []; // Objectives at the zone
 br_hq = nil; // The HQ
-br_max_checks = "Checks" call BIS_fnc_getParamValue;
+br_max_checks = "Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_radio_tower_enabled = TRUE;
 br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_first_Zone = TRUE; // If it's the first zone
-br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue;
+br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
-br_command_delay = 5;
+br_command_delay = 5; // Command delay for both enemy and friendly zone AI
 br_ai_skill = 1;
 
 // Below units are in-order below given the _sides and _unitTypes positions 
@@ -193,9 +193,8 @@ br_fnc_doChecks = {
 // Called when zone is taken
 br_fnc_onZoneTaken = {
 	br_zone_taken = TRUE;
-	task setTaskState "Succeeded";
-	["TaskSucceeded",["", "Zone Taken!"]] call bis_fnc_showNotification;
-	{ _x removeSimpleTask task; } forEach allPlayers;
+	[[["Zone Taken!"],"core\server\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
+	[[[],"core\server\task\fn_completeZoneTask.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
@@ -248,10 +247,12 @@ br_fnc_main = {
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call br_fnc_createZone;
-		execVM "core\server\task\fn_playerTasking.sqf";
-		//if (br_hq_enabled) then {execVM "core\server\fn_createHQ.sqf";};
+		execVM "core\server\task\fn_playerZoneTasking.sqf";
+		// Create HQ
 		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		// Create radio tower
 		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		// Create EMP thingy. This was added as a test
 		["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
