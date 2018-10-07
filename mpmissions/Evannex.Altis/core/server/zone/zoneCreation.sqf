@@ -133,9 +133,9 @@ br_current_zone = nil;
 // Creates the zone
 br_fnc_createZone = {
 	if (br_randomly_find_zone) then {
-		br_current_zone = selectRandom br_zones;
-	} else {
 		br_current_zone = [[], 0, -1, 0, 0, 25, 0] call BIS_fnc_findSafePos;
+	} else {
+		br_current_zone = selectRandom br_zones;
 	};
 	// Creates the radius
 	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
