@@ -37,6 +37,7 @@ br_randomly_find_zone = FALSE; // Finds a random position on the map intead of u
 br_ai_skill = 1;
 br_objective_max_angle = 0.25;
 br_heli_land_max_angle = 0.25;
+br_empty_vehicles_in_garbage_collection = [];
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST

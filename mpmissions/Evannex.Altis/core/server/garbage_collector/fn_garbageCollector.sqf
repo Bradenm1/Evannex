@@ -1,5 +1,3 @@
-_emptyEnemyVehicles = [];
-
 while {TRUE} do {
 	{
 		deleteVehicle _x;
@@ -7,13 +5,15 @@ while {TRUE} do {
 	} forEach allDead;
 	{
 		if ((count (crew _x)) == 0) then {
-			_emptyEnemyVehicles append [_x];
+			br_empty_vehicles_in_garbage_collection append [_x];
 		};
 	} forEach br_enemy_vehicle_objects;
-	for [{_i=(count _emptyEnemyVehicles)}, {_i > 5}, {_i=_i-1}] do {
-		deleteVehicle (_emptyEnemyVehicles select _i);
-		_emptyEnemyVehicles deleteAt _i;
-		sleep 0.01;
+	if ((count br_empty_vehicles_in_garbage_collection) > 5) then {
+		for [{_i=0}, {_i < 5}, {_i=_i+1}] do {
+			deleteVehicle (br_empty_vehicles_in_garbage_collection select _i);
+			br_empty_vehicles_in_garbage_collection deleteAt _i;
+			sleep 0.01;
+		};
 	};
 	sleep 60;
 };

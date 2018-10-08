@@ -69,7 +69,7 @@ br_fnc_runVehicleUnit = {
 		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
 		// Do some cleanup cause they died
 		deleteGroup _vehicleGroup; 
-		deleteVehicle _vehicle;
+		if (!alive _vehicle) then { deleteVehicle _vehicle; } else { br_empty_vehicles_in_garbage_collection append [_vehicle]; };
 		br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _vehicleGroup);
 		br_friendlyvehicles deleteAt (br_friendlyvehicles find _vehicleGroup);
 	};
