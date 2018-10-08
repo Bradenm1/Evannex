@@ -1,5 +1,8 @@
 title = "Evannex";
 author = "Bradenm1";
+onLoadName = "Evannex";
+onLoadMission = "An AI vs AI gamemode";
+loadScreen = "textures\load_screen.paa";
 
 corpseManagerMode = 1;
 corpseLimit = 3;
@@ -20,8 +23,7 @@ respawn = "base";
 respawnButton = 1;
 respawnDelay = 10;
 
-class Header
-{
+class Header {
 	gameType =  Sandbox;			// Game type
 	minPlayers =  1;			// minimum number of players the mission supports
 	maxPlayers = 32;			// maximum number of players the mission supports
@@ -88,6 +90,12 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 1;
     };
+	class ZeusSeesAI {
+		title = "Allow Zeus to see spawned AI";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+	}
 	class Fatigue {
         title = "Player Fatigue";
         values[] = {0,1};

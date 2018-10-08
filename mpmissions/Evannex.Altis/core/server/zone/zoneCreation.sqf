@@ -1,44 +1,44 @@
 // Number of AI to spawn each side
-br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
+br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
+br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
+br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
 br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
-br_sides = [EAST, WEST];
+br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_max_checks = "Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
+br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_side_types = ["OPF_F","BLU_F"];
+br_empty_vehicles_in_garbage_collection = [];
+br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
+br_friendly_objective_groups = []; // The objective groups which complete objectives
+br_friendly_groups_waiting = []; // Waiting at base for pickup
+br_friendly_ground_groups = []; // Friendly ground units
+br_enemy_vehicle_objects = [];
+br_friendly_ai_groups = []; // All Firendly AI
+br_special_ai_groups = []; // Enemy special groups
+br_groups_in_transit = []; // Groups in transit to the zone via helicopters
+br_friendly_vehicles = []; // Friendly armor
+br_sides = [EAST, WEST];
+br_heliGroups = []; // Helicopters
+br_objectives = []; // Objectives at the zone
+br_ai_groups = []; // All spawned groups
+br_zones = []; // Zone Locations
+br_spawn_enemy_to_player_dis = 300; // Won't let AI in the zone spawn within this distance to a player
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
-br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
-br_ai_groups = []; // All spawned groups
-br_special_ai_groups = []; // Enemy special groups
-br_enemy_vehicle_objects = [];
-br_friendly_ground_groups = []; // Friendly ground units
-br_friendly_ai_groups = []; // All Firendly AI
-br_heliGroups = []; // Helicopters
-br_groups_in_transit = []; // Groups in transit to the zone via helicopters
-br_friendly_groups_waiting = []; // Waiting at base for pickup
-br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
-br_friendly_vehicles = []; // Friendly armor
-br_friendly_objective_groups = []; // The bombers groups which attemped to blow up the radio tower
-br_HQ_taken = FALSE; // If the HQ is taken
-br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
-br_zone_taken = TRUE; // If the zone is taken.. start off at true
-br_radio_tower = nil; // The radio tower
-br_objectives = []; // Objectives at the zone
-br_hq = nil; // The HQ
-br_max_checks = "Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
-br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
-br_radio_tower_enabled = TRUE;
-br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
-br_first_Zone = TRUE; // If it's the first zone
-br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
-br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
-br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
-br_command_delay = 5; // Command delay for both enemy and friendly zone AI
-br_randomly_find_zone = FALSE; // Finds a random position on the map intead of using markers
-br_ai_skill = 1;
 br_objective_max_angle = 0.25;
 br_heli_land_max_angle = 0.25;
-br_empty_vehicles_in_garbage_collection = [];
-br_spawn_enemy_to_player_dis = 300;
+br_command_delay = 5; // Command delay for both enemy and friendly zone AI
+br_ai_skill = 1;
+br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
+br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
+br_randomly_find_zone = FALSE; // Finds a random position on the map intead of using markers
+br_radio_tower_enabled = TRUE;
+br_zone_taken = TRUE; // If the zone is taken.. start off at true
+br_first_Zone = TRUE; // If it's the first zone
+br_HQ_taken = FALSE; // If the HQ is taken
+br_current_zone = nil; // Current selected zone
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -125,13 +125,6 @@ br_units = [[[ // EAST
 	"BUS_SmallTeam_UAV"
 ]]];
 
-// Zone Locations
-//_zones = [position player, getMarkerPos "zone_01"];
-br_zones = [];
-
-// Current selected zone
-br_current_zone = nil;
-
 // Creates the zone
 br_fnc_createZone = {
 	if (br_randomly_find_zone) then {
@@ -144,21 +137,6 @@ br_fnc_createZone = {
 	// Create text icon
 	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
 };
-
-// Creates the RescueBunker
-/*br_fnc_createRescueBunker = {
-	// Creates center for RescueBunker
-	_hqCenterPos = [] call br_fnc_getLocation;
-	// Gets position near center
-	_hqPos = _hqCenterPos getPos [10 * sqrt random 180, random 360];	
-	// Place RescueBunker near center
-	"Land_Cargo_House_V1_F" createVehicle _hqPos;
-	// Creates the radius
-	["ZONE_RESCUEBUNKER_RADIUS", _hqCenterPos, 10, 360, "ColorRed", "Rescue Bunker(s) Zone", 0.3] call (compile preProcessFile "functions\fn_createRadiusMarker.sqf");
-	// Create text icon
-	["ZONE_RESCUEBUNKER_ICON", _hqCenterPos, "Rescue Bunker(s)", "ColorBlue"] call (compile preProcessFile "functions\fn_createTextMarker.sqf");
-	//_toResuce = [ _hqPos, CIVILIAN, ["C_man_polo_1_f"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-};*/
 
 // Delete groups in AIGroups
 br_fnc_deleteGroups = {

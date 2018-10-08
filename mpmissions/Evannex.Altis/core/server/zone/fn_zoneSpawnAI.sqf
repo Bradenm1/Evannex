@@ -15,7 +15,6 @@ _unitChance = [
 	"O_APC_Tracked_02_AA_F",
 	"O_MBT_02_cannon_F",
 	"O_Heli_Attack_02_F",
-	"O_MBT_02_arty_F",
 	"O_G_Offroad_01_armed_F",
 	"O_MRAP_02_gmg_F",
 	"O_Truck_02_medical_F",
@@ -112,14 +111,12 @@ br_fnc_spawnAI = {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			//_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
-			//{ _x setSkill br_ai_skill; _x;  } forEach units _group;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 		};
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
-			//{ _x setSkill br_ai_skill } forEach units _group;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			br_enemy_vehicle_objects append [vehicle (leader _group)];
 			br_special_ai_groups append [_group];
