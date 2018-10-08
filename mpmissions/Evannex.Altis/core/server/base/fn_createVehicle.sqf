@@ -56,8 +56,8 @@ br_fnc_createVehicleUnit = {
 	// Get the group from the commander
 	_vehicleGroup = group _commander;
 	// Apply the zone AI to the vehicle
-	br_FriendlyAIGroups append [_vehicleGroup];
-	br_friendlyvehicles append [_vehicleGroup];
+	br_friendly_ai_groups append [_vehicleGroup];
+	br_friendly_vehicles append [_vehicleGroup];
 };
 
 // run the vehicle
@@ -70,8 +70,8 @@ br_fnc_runVehicleUnit = {
 		// Do some cleanup cause they died
 		deleteGroup _vehicleGroup; 
 		if (!alive _vehicle) then { deleteVehicle _vehicle; } else { br_empty_vehicles_in_garbage_collection append [_vehicle]; };
-		br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _vehicleGroup);
-		br_friendlyvehicles deleteAt (br_friendlyvehicles find _vehicleGroup);
+		br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _vehicleGroup);
+		br_friendly_vehicles deleteAt (br_friendly_vehicles find _vehicleGroup);
 	};
 };
 

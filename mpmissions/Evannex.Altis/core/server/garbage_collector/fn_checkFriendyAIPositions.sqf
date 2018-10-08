@@ -9,8 +9,8 @@ br_fnc_deleteDumbAI = {
 
 While {TRUE} do {
 	if (!br_zone_taken) then {
-		[br_friendlyRadioBombers] call br_fnc_deleteDumbAI;
-		[br_FriendlyAIGroups] call br_fnc_deleteDumbAI;
+		[br_friendly_objective_groups] call br_fnc_deleteDumbAI;
+		[br_friendly_ai_groups] call br_fnc_deleteDumbAI;
 	};
 	sleep 30;
 };

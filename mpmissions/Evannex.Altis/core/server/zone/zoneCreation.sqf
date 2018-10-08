@@ -7,17 +7,17 @@ br_side_types = ["OPF_F","BLU_F"];
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
-br_AIGroups = []; // All spawned groups
+br_ai_groups = []; // All spawned groups
 br_special_ai_groups = []; // Enemy special groups
 br_enemy_vehicle_objects = [];
-br_FriendlyGroundGroups = []; // Friendly ground units
-br_FriendlyAIGroups = []; // All Firendly AI
+br_friendly_ground_groups = []; // Friendly ground units
+br_friendly_ai_groups = []; // All Firendly AI
 br_heliGroups = []; // Helicopters
-br_groupsInTransit = []; // Groups in transit to the zone via helicopters
-br_friendlyGroupsWaiting = []; // Waiting at base for pickup
-br_friendlyGroupsWatingForEvac = []; // Waiting at zone after capture
-br_friendlyvehicles = []; // Friendly armor
-br_friendlyRadioBombers = []; // The bombers groups which attemped to blow up the radio tower
+br_groups_in_transit = []; // Groups in transit to the zone via helicopters
+br_friendly_groups_waiting = []; // Waiting at base for pickup
+br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
+br_friendly_vehicles = []; // Friendly armor
+br_friendly_objective_groups = []; // The bombers groups which attemped to blow up the radio tower
 br_HQ_taken = FALSE; // If the HQ is taken
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_zone_taken = TRUE; // If the zone is taken.. start off at true
@@ -38,6 +38,7 @@ br_ai_skill = 1;
 br_objective_max_angle = 0.25;
 br_heli_land_max_angle = 0.25;
 br_empty_vehicles_in_garbage_collection = [];
+br_spawn_enemy_to_player_dis = 300;
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -169,9 +170,9 @@ br_fnc_deleteGroups = {
 // Delete all enemy AI
 br_fnc_deleteAllAI = {
 	// Delete existing units 
-	{ [_x] call br_fnc_deleteGroups; } forEach br_AIGroups;
+	{ [_x] call br_fnc_deleteGroups; } forEach br_ai_groups;
 	{ [_x] call br_fnc_deleteGroups; } forEach br_special_ai_groups;
-	br_AIGroups = [];
+	br_ai_groups = [];
 	br_special_ai_groups = [];
 	br_enemy_vehicle_objects = [];
 };
@@ -233,21 +234,21 @@ br_fnc_onNewZoneCreation = {
 		while {(count (waypoints _x)) > 0} do {
 			deleteWaypoint ((waypoints _x) select 0);
 		};
-	} forEach br_friendlyvehicles;
+	} forEach br_friendly_vehicles;
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{
-		if (_x in br_FriendlyAIGroups) then {
+		if (_x in br_friendly_ai_groups) then {
 			// Delete from zone roaming list
-			br_FriendlyAIGroups deleteAt (br_FriendlyAIGroups find _x);
+			br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x);
 			// Delete waypoints
 			while {(count (waypoints _x)) > 0} do {
 				deleteWaypoint ((waypoints _x) select 0);
 			};
 			_x setBehaviour "SAFE";	
 			// Add the group to the evac queue
-			br_friendlyGroupsWatingForEvac append [_x];
+			br_friendly_groups_wating_for_evac append [_x];
 		}
-	} forEach br_FriendlyGroundGroups;
+	} forEach br_friendly_ground_groups;
 	{
 		deleteVehicle _x;
 	} forEach br_enemy_vehicle_objects;
@@ -276,7 +277,7 @@ br_fnc_main = {
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
 		{ if (_x select 6) then { waitUntil { missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
-		waitUntil { (count br_AIGroups < br_min_enemy_groups_for_capture) };
+		waitUntil { (count br_ai_groups < br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
 	}
 };

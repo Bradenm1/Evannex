@@ -155,13 +155,13 @@ br_fuc_findGroupsInQueue = {
 		_unitsAlive = [_x] call br_fnc_getUnitsAlive;
 		if (_unitsAlive > 0) then {
 			if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
-				br_friendlyGroupsWaiting deleteAt (br_friendlyGroupsWaiting find _x);
+				br_friendly_groups_waiting deleteAt (br_friendly_groups_waiting find _x);
 				_groups append [_x];
 				_Peps = _Peps + _unitsAlive;
 				sleep 3;
 			};
 		};
-	} forEach br_friendlyGroupsWaiting;
+	} forEach br_friendly_groups_waiting;
 	_groups;
 };
 
@@ -178,7 +178,7 @@ br_fuc_playersInChopper = {
 br_fuc_landGroupAtZone = {
 	_groups = _this select 0;
 	// Add groups to transit
-	{ br_groupsInTransit append [_x]; } forEach _groups;
+	{ br_groups_in_transit append [_x]; } forEach _groups;
 	// Command groups into helicopter
 	{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
 	// Wait for the units to enter the helicopter
@@ -192,9 +192,9 @@ br_fuc_landGroupAtZone = {
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 	// Remove groups from transit
-	{ br_groupsInTransit deleteAt (br_groupsInTransit find _x); } forEach _groups;
+	{ br_groups_in_transit deleteAt (br_groups_in_transit find _x); } forEach _groups;
 	// Move groups into commanding zone group
-	{ br_FriendlyAIGroups append [_x]; } forEach _groups;
+	{ br_friendly_ai_groups append [_x]; } forEach _groups;
 	// Delete un-needed things
 	deleteVehicle _landMarker;
 	deleteMarker format ["LZ - %1", _heliIndex];
@@ -207,7 +207,7 @@ br_fuc_landGroupAtZone = {
 // If the chopper is transport
 br_fnc_runTransportChopper = {
 	// Check if any groups are waiting
-	if (count br_friendlyGroupsWaiting > 0) then {
+	if (count br_friendly_groups_waiting > 0) then {
 		_groups = [];
 		// Get some waiting groups, if any
 		_groups = [_groups] call br_fuc_findGroupsInQueue; 
@@ -226,10 +226,10 @@ br_fnc_runTransportChopper = {
 // If the chopper is evac
 // using an old system... Takes one group at a time...
 br_fnc_runEvacChopper = {
-	if ((count br_friendlyGroupsWatingForEvac > 0)) then {
-		_group = br_friendlyGroupsWatingForEvac select 0;
-		br_friendlyGroupsWatingForEvac deleteAt (br_friendlyGroupsWatingForEvac find _group);
-		br_groupsInTransit append [_group];
+	if ((count br_friendly_groups_wating_for_evac > 0)) then {
+		_group = br_friendly_groups_wating_for_evac select 0;
+		br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _group);
+		br_groups_in_transit append [_group];
 		_group setBehaviour "SAFE";	
 		// Get landing position
 		_pos = [getpos (leader _group), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
@@ -253,9 +253,9 @@ br_fnc_runEvacChopper = {
 		// Wait untill chopper is empty
 		waitUntil { {_x in _helicopterVech} count (units _group) == 0};
 		// Move group to waiting groups
-		br_friendlyGroupsWaiting append [_group];
+		br_friendly_groups_waiting append [_group];
 		// Delete from transit group
-		br_groupsInTransit deleteAt (br_groupsInTransit find _group);
+		br_groups_in_transit deleteAt (br_groups_in_transit find _group);
 		[] call br_fnc_createHeliUnits;	
 	};
 };

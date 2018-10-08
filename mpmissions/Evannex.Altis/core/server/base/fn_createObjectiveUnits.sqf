@@ -16,7 +16,7 @@ br_fnc_createBombUnits = {
 	// Give each unit a sactelCharge
 	{ _oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack; } forEach (units _objectiveGroup);
 	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _objectiveGroup);
-	br_friendlyRadioBombers append [_objectiveGroup];
+	br_friendly_objective_groups append [_objectiveGroup];
 	waitUntil { {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };
 	// Wait a second
 	sleep 1;
@@ -101,7 +101,7 @@ br_fnc_runRadioBombUnit = {
 		{ deleteVehicle _x; } forEach (units _objectiveGroup);
 		deleteVehicle _transportVehicle;
 		deleteGroup _objectiveGroup;
-		br_friendlyRadioBombers deleteAt (br_friendlyRadioBombers find _objectiveGroup);
+		br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
 	};
 };
 

@@ -10,8 +10,8 @@ While {TRUE} do {
 			_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 		};
 		// Check group is empty, remove it from groups and delete it
-		if (({alive _x} count units _y) < 1) then { br_AIGroups deleteAt (br_AIGroups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil;};
-	} foreach br_AIGroups;
+		if (({alive _x} count units _y) < 1) then { br_ai_groups deleteAt (br_ai_groups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil;};
+	} foreach br_ai_groups;
 	{
 		_y = _x;
 		if (({alive _x} count units _y) < 1) then { br_special_ai_groups deleteAt (br_special_ai_groups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil;};

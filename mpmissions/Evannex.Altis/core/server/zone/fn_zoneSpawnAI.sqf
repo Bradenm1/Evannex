@@ -88,26 +88,42 @@ br_fnc_spawnGivenUnitsAt = {
 	_group;
 };
 
+// Gets a position near no players
+br_fnc_getPositionNearNoPlayersAtZone = {
+	_newPos = nil;
+	_aroundnoPlayers = TRUE;
+	_distance = br_spawn_enemy_to_player_dis;
+	while {_aroundNoPlayers} do {
+		_newPos = [] call br_fnc_getGroupEnemySpawn;
+		_nearAPlayer = FALSE;
+		{  if (_newPos distance (getpos _x) < _distance ) then { _nearAPlayer = TRUE; }; } forEach allPlayers; 
+		if (_nearAPlayer) then { _aroundNoPlayers = TRUE; } else { _aroundNoPlayers = FALSE; };
+		_distance = _distance - 15;
+	};
+	_newPos;
+};
+
 // run main
 br_fnc_spawnAI = {
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
-		while {(count br_AIGroups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
+		while {(count br_ai_groups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			sleep _aiSpawnRate;
-			_newPos = [] call br_fnc_getGroupEnemySpawn;
-			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_AIGroups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
+			//_newPos = [] call br_fnc_getGroupEnemySpawn;
+			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			//{ _x setSkill br_ai_skill; _x;  } forEach units _group;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 		};
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
-			_newPos = [] call br_fnc_getGroupEnemySpawn;
+			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			//{ _x setSkill br_ai_skill } forEach units _group;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			br_enemy_vehicle_objects append [vehicle (leader _group)];
 			br_special_ai_groups append [_group];
-			br_AIGroups append [_group];
+			br_ai_groups append [_group];
 		};
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
