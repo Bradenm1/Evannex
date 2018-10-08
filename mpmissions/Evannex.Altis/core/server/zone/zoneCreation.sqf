@@ -19,6 +19,7 @@ br_friendly_ai_groups = []; // All Firendly AI
 br_special_ai_groups = []; // Enemy special groups
 br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
+br_groups_marked = [];
 br_sides = [EAST, WEST];
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
@@ -199,6 +200,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "core\server\base\fn_friendlySpawnAI.sqf";
 		execVM "core\server\zone\fn_commandFriendlyGroups.sqf";
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
+		execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf";
 	};
 	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
 	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";
