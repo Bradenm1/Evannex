@@ -19,7 +19,7 @@ br_friendly_ai_groups = []; // All Firendly AI
 br_special_ai_groups = []; // Enemy special groups
 br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
-br_groups_marked = [];
+br_groups_marked = []; // Enemy groups marked on map
 br_sides = [EAST, WEST];
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
@@ -134,9 +134,9 @@ br_fnc_createZone = {
 		br_current_zone = selectRandom br_zones;
 	};
 	// Creates the radius
-	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
+	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
-	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
+	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Delete groups in AIGroups
@@ -166,6 +166,7 @@ br_fnc_doChecks = {
 		_endStringHeli = Format ["helicopter_transport_%1", _i];
 		_endStringHeliEvac = Format ["helicopter_evac_%1", _i];
 		_endStringBombSquad = Format ["objective_squad_%1", _i];
+		_endStringRecruit = Format ["recruit_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
@@ -177,6 +178,8 @@ br_fnc_doChecks = {
 		then { [_endStringHeliEvac, _i, TRUE] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
 		then { [_endStringBombSquad, _i] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
+		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
+		then { [_endStringRecruit, _i] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 	};
 };
 

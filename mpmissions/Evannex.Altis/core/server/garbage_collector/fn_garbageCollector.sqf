@@ -1,4 +1,4 @@
-br_empty_vehicles_in_garbage_collection = [];
+br_empty_vehicles_in_garbage_collection = []; // empty vehicles
 
 while {TRUE} do {
 	{

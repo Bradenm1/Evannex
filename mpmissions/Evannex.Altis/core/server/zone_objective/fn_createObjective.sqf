@@ -62,16 +62,15 @@ br_fnc_deleteObjMarkers = {
 br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
 	// Creates center for HQ
-	//_hqCenterPos = call (compile preprocessFileLineNumbers "functions\getRandomLocation.sqf");
 	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
 	// Gets position near center
 	_pos = [_newPos, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 	// Place HQ near center
 	_spawnedObj = _objectToUse createVehicle _pos;
 	// Creates the radius
-	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 0.3] call (compile preProcessFile "core\server\functions\fn_createRadiusMarker.sqf");
+	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 0.3] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
-	[_textName, _newPos, _zoneName, "ColorBlue"] call (compile preProcessFile "core\server\functions\fn_createTextMarker.sqf");
+	[_textName, _newPos, _zoneName, "ColorBlue"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
@@ -79,7 +78,7 @@ br_fnc_createObjective = {
 	[] call br_fnc_onTaken;
 };
 
-// Called when the HQ is taken
+// Called when the objective is taken
 br_fnc_onTaken = {
 	[[[_textOnTaken],"core\client\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 
