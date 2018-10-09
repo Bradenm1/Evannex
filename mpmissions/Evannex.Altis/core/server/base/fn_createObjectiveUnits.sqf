@@ -79,15 +79,15 @@ br_fnc_runRadioBombUnit = {
 		while {({(alive _x)} count (units _objectiveGroup) > 0) && {!(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} && {(!br_zone_taken)} && {!(missionNamespace getVariable (_objective select 5))}} do {
 			// Check if any groups are waiting
 			if (count (waypoints _objectiveGroup) < 2) then {
-				_wp = _objectiveGroup addWaypoint [getpos (_objective select 1), 0];
-				_wp setWaypointFormation "WEDGE";
+				_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+				_wp = _objectiveGroup addWaypoint [_getPos, 0];
 				_wp setWaypointType "DESTROY";
-				_wp setWaypointSpeed "FULL";
 				_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
 				// Wait until group is within a given range
 				waitUntil { (((getpos (leader _objectiveGroup)) distance (getpos (_objective select 1)) < _getOutOfVehicleRadius) || {missionNamespace getVariable (_objective select 5)} || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
+				{ _x setBehaviour "AWARE"; } forEach (units _objectiveGroup);
 				// Check if objective is not completed
-				if (!(missionNamespace getVariable (_objective select 5))) then { 
+				if (!(missionNamespace getVariable (_objective select 5)) && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then { 
 					// Tell group to get out of transport vehicle
 					{[_x] allowGetIn false; _x action ["Eject", vehicle _x]} forEach (units _objectiveGroup); 
 					// Wait untill group has reached radio tower
@@ -97,7 +97,6 @@ br_fnc_runRadioBombUnit = {
 				};
 			}
 		}; 
-		br_objectives deleteAt (br_objectives find _objective);
 		{ deleteVehicle _x; } forEach (units _objectiveGroup);
 		deleteVehicle _transportVehicle;
 		deleteGroup _objectiveGroup;

@@ -126,6 +126,61 @@ br_units = [[[ // EAST
 	"BUS_SmallTeam_UAV"
 ]]];
 
+// The list of things that have a chance to spawn
+br_friendly_vehicles = [
+	"B_MRAP_01_gmg_F",
+	"B_MRAP_01_hmg_F",
+	"B_G_Offroad_01_armed_F",
+	"B_MBT_01_cannon_F",
+	"B_APC_Tracked_01_AA_F",
+	"B_UGV_01_rcws_F",
+	"B_APC_Tracked_01_CRV_F",
+	"B_Truck_01_medical_F",
+	"B_Truck_01_fuel_F",
+	"B_Truck_01_ammo_F",
+	"B_Truck_01_Repair_F",
+	"B_APC_Wheeled_01_cannon_F",
+	"B_MBT_01_TUSK_F",
+	"B_APC_Wheeled_03_cannon_F",
+	"B_T_LSV_01_armed_F",
+	"B_T_LSV_01_armed_CTRG_F",
+	"B_LSV_01_armed_F",
+	"B_LSV_01_AT_F",
+	"B_LSV_01_armed_black_F",
+	"B_T_LSV_01_armed_black_F",
+	"B_T_MRAP_01_gmg_F",
+	"B_T_MRAP_01_hmg_F",
+	"B_T_UAV_03_F",
+	"B_G_Quadbike_01_F",
+	"B_Heli_Light_01_armed_F",
+	"I_APC_tracked_03_cannon_F",
+	"I_LT_01_cannon_F",
+	"I_LT_01_AA_F",
+	"I_LT_01_scout_F",
+	"I_LT_01_AT_F",
+	"C_Kart_01_Red_F",
+	"B_AFV_Wheeled_01_cannon_F",
+	"B_T_AFV_Wheeled_01_cannon_F",
+	"B_AFV_Wheeled_01_up_cannon_F",
+	"B_T_AFV_Wheeled_01_up_cannon_F",
+	"B_APC_Tracked_01_AA_F",
+	"B_APC_Tracked_01_rcws_F",
+	"B_Heli_Attack_01_F",
+	"B_UGV_01_F"
+];
+
+br_friendly_jets = [
+	"B_Plane_CAS_01_F",
+	"B_UAV_02_F",
+	"B_UAV_02_CAS_F",
+	"B_T_VTOL_01_armed_F",
+	"B_Plane_Fighter_01_F",
+	"B_UAV_05_F",
+	"B_Plane_Fighter_01_Stealth_F",
+	"B_Plane_CAS_01_Cluster_F",
+	"B_Plane_Fighter_01_Cluster_F"
+];
+
 // Creates the zone
 br_fnc_createZone = {
 	if (br_randomly_find_zone) then {
@@ -167,11 +222,14 @@ br_fnc_doChecks = {
 		_endStringHeliEvac = Format ["helicopter_evac_%1", _i];
 		_endStringBombSquad = Format ["objective_squad_%1", _i];
 		_endStringRecruit = Format ["recruit_%1", _i];
+		_endStringJetSpawn = Format ["jet_spawn_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringVeh] execVM "core\server\base\fn_createVehicle.sqf"; };
+		then { [_endStringVeh, br_friendly_vehicles] execVM "core\server\base\fn_createVehicle.sqf"; };
+		if ((getMarkerColor _endStringJetSpawn != "") && {(br_enable_friendly_ai)}) 
+		then { [_endStringJetSpawn, br_friendly_jets] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringHeli != "") && {(br_enable_friendly_ai)})
 		then { [_endStringHeli, _i, FALSE] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})

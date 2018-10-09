@@ -87,7 +87,7 @@ br_fnc_onTaken = {
 
 	// Set objective as taken
 	missionNamespace setVariable [_zoneVarName, TRUE]; 
-
+	br_objectives deleteAt (br_objectives find _objective);
 	// Wait untill main zone is taken
 	waitUntil { br_zone_taken };
 

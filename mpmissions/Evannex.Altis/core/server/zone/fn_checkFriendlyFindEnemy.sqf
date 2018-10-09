@@ -8,6 +8,7 @@ fnc_checkUnitSeen = {
 
 	{
 		if ((_friendlyGroup knowsAbout _x) > 0) then { _knows = TRUE };
+		if (_friendlyGroup knowsAbout (Vehicle _x) > 0) then { _knows = TRUE };
 	} forEach (units _enemyGroup);
 	_knows;
 };
@@ -27,7 +28,7 @@ fnc_createMarkerType = {
 	_group = _this select 2;
 
 	switch (_type) do {
-		case "Vehicle": { [_marker, _group, "Vehicle Around Here!"] call fnc_createMapMarker; };
+		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", typeOf (Vehicle (leader _group))]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
 		default { [_marker, _group, "Enemy"] call fnc_createMapMarker; };
 	};
@@ -55,8 +56,7 @@ fnc_checkGroupSeen = {
 };
 
 while {TRUE} do {
-	{
-		[_x] call fnc_checkGroupSeen;
-	} foreach br_friendly_ai_groups;
+	{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
+	{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_objective_groups;
 	sleep 0.1;
 };
