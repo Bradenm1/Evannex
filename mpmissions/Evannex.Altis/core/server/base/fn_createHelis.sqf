@@ -83,6 +83,7 @@ br_fnc_createHeliUnits = {
 	//_chopperUnits addVehicle _helicopterVech;
 	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
 	{ _x setSkill br_ai_skill } forEach units _chopperUnits;
+	[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	br_heliGroups append [_chopperUnits];
 	_helicopterVech engineOn false;
 };
@@ -90,7 +91,7 @@ br_fnc_createHeliUnits = {
 // Gets the LZ for the zone
 br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
-	[format ["LZ - %1", groupId _chopperUnits], _pos, format ["LZ - %1", _heliIndex], "ColorGreen"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 	_pos;
 };
@@ -98,7 +99,7 @@ br_fnc_createLandingSpotNearZone = {
 // Gets the LZ for the zone
 br_fnc_createLandingSpotLZ = {
 	_pos = _this select 0;
-	[format ["EVAC - %1", groupId _chopperUnits], _pos, format ["EVAC - %1", _heliIndex], "colorCivilian"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", groupId _chopperUnits], "colorCivilian"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 };
 
@@ -132,6 +133,7 @@ br_fnc_movetoAndLand = {
 	[] call br_fnc_deleteOldChopperUnit;
 	// Create units
 	[] call br_fnc_createHeliUnits;
+	_helicopterVech setDamage 0;
 	_helicopterVech setFuel 1;
 	_chopperUnits setBehaviour "CARELESS";
 	_wp = _chopperUnits addWaypoint [_pos, 0];
@@ -197,7 +199,7 @@ br_fuc_landGroupAtZone = {
 	{ br_friendly_ai_groups append [_x]; } forEach _groups;
 	// Delete un-needed things
 	deleteVehicle _landMarker;
-	deleteMarker format ["LZ - %1", groupId _chopperUnits];
+	deleteMarker format ["LZ - %1", _heliIndex];
 	// Goto helipad and land
 	[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
 	// Create a temp group
@@ -221,6 +223,7 @@ br_fnc_runTransportChopper = {
 			[_playersGroups] call br_fuc_landGroupAtZone;
 		};
 	};
+	if ((getMarkerPos _heliPad) distance _helicopterVech > 10) then { _helicopterVech setdamage 1; };
 };
 
 // If the chopper is evac
@@ -245,7 +248,7 @@ br_fnc_runEvacChopper = {
 		waitUntil { {{_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group)} || {[] call br_fnc_checkHeliDead} || {_helicopterVech emptyPositions "cargo" == 0} };
 		// Delete LZ
 		deleteVehicle _landMarker;
-		deleteMarker format ["EVAC - %1", groupId _chopperUnits];
+		deleteMarker format ["EVAC - %1", _heliIndex];
 		// Move back to base
 		[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
 		// Eject the crew at base
@@ -257,6 +260,7 @@ br_fnc_runEvacChopper = {
 		// Delete from transit group
 		br_groups_in_transit deleteAt (br_groups_in_transit find _group);
 		[] call br_fnc_createHeliUnits;	
+		if ((getMarkerPos _heliPad) distance _helicopterVech > 10) then { _helicopterVech setdamage 1; };
 	};
 };
 

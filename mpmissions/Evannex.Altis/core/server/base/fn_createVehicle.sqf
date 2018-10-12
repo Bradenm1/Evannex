@@ -12,7 +12,11 @@ br_fnc_createVehicleUnit = {
 	// Get the vehicle commander
 	_commander = driver _vehicle;
 	// Get the group from the commander
-	_vehicleGroup = group _commander;
+	_temp = group _commander;
+	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
+	_vehicleGroup = createGroup WEST;
+	(units _temp) joinSilent _vehicleGroup;
+	[_vehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	// Apply the zone AI to the vehicle
 	br_friendly_ai_groups append [_vehicleGroup];
 	br_friendly_vehicles append [_vehicleGroup];

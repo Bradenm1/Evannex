@@ -2,7 +2,7 @@ title = "Evannex";
 author = "Bradenm1";
 onLoadName = "Evannex";
 onLoadMission = "An AI vs AI gamemode";
-loadScreen = "textures\load_screen.paa";
+loadScreen = "textures\mission_thumbnail.paa";
 
 corpseManagerMode = 1;
 corpseLimit = 3;

@@ -2,7 +2,7 @@
 ---
 Arma 3 - AI vs AI Gamemode
 
-![alt text](http://www.bradenmckewen.com/img/projects/arma-3-mods/invannex_logo.png "Logo")
+![alt text](http://www.bradenmckewen.com/img/projects/arma-3-mods/invannex_logo.png "Gamemode Header Image")
 
 ## Features:
 ---

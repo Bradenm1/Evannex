@@ -13,8 +13,11 @@ fn_addRecruitAction = {
 // Run the script
 fn_createRecruitAI = {
   While {TRUE} do {
-    _unit = ((units ([ getmarkerpos _spawnPad, WEST, 1] call BIS_fnc_spawnGroup)) select 0);
-    [_unit] call fn_addRecruitAction;
+    _group = [getmarkerpos _spawnPad, WEST, 1] call BIS_fnc_spawnGroup;
+    [_group, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
+    _unit = (units (_group)) select 0;
+    [[[_unit],"core\client\fn_createAddRecurit.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
+    //[_unit] call fn_addRecruitAction;
     waitUntil { !(alive _unit); };
     sleep 120;
     deleteVehicle _unit;

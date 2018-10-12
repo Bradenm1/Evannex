@@ -127,7 +127,7 @@ br_units = [[[ // EAST
 ]]];
 
 // The list of things that have a chance to spawn
-br_friendly_vehicles = [
+br_friendly_vehicles_list = [
 	"B_MRAP_01_gmg_F",
 	"B_MRAP_01_hmg_F",
 	"B_G_Offroad_01_armed_F",
@@ -169,7 +169,7 @@ br_friendly_vehicles = [
 	"B_UGV_01_F"
 ];
 
-br_friendly_jets = [
+br_friendly_jets_list = [
 	"B_Plane_CAS_01_F",
 	"B_UAV_02_F",
 	"B_UAV_02_CAS_F",
@@ -178,7 +178,11 @@ br_friendly_jets = [
 	"B_UAV_05_F",
 	"B_Plane_Fighter_01_Stealth_F",
 	"B_Plane_CAS_01_Cluster_F",
-	"B_Plane_Fighter_01_Cluster_F"
+	"I_Plane_Fighter_04_F",
+	"O_Plane_CAS_02_F",
+	"O_T_UAV_04_CAS_F",
+	"O_T_VTOL_02_infantry_F",
+	"O_Plane_Fighter_02_F"
 ];
 
 // Creates the zone
@@ -227,9 +231,9 @@ br_fnc_doChecks = {
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringVeh, br_friendly_vehicles] execVM "core\server\base\fn_createVehicle.sqf"; };
+		then { [_endStringVeh, br_friendly_vehicles_list] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringJetSpawn != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringJetSpawn, br_friendly_jets] execVM "core\server\base\fn_createVehicle.sqf"; };
+		then { [_endStringJetSpawn, br_friendly_jets_list] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringHeli != "") && {(br_enable_friendly_ai)})
 		then { [_endStringHeli, _i, FALSE] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})
