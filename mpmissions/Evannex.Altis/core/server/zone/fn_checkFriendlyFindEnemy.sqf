@@ -1,5 +1,6 @@
 br_markers_marked = [];
-_markerLimit = 6;
+_marerRemovalLimit = 180; // Time before marker is removed if enemy is not seen again
+_markerLimit = 6; // Markers limit
 
 // Checks if any units in group are seen
 fnc_checkUnitSeen = {
@@ -46,7 +47,7 @@ fnc_checkGroupSeen = {
 				} else {
 					["Ground Unit", groupId _x, _x] call fnc_createMarkerType;
 				};
-				[groupId _x,time + 180] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
+				[groupId _x,time + _marerRemovalLimit] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
 				if (!(groupId _x in br_markers_marked)) then { br_markers_marked append [groupId _x]; };
 			};
 		//};

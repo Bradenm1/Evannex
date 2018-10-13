@@ -78,12 +78,6 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 1;
     };
-	class RandomTimeWeatherEnable {
-        title = "Random Time/Weather On Start Enable";
-        values[] = {0,1};
-        texts[] = {"Disabled","Enabled"};
-        default = 1;
-    };
 	class FriendlyAIEnabled {
         title = "Friendly AI Enabled";
         values[] = {0,1};
