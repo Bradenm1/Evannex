@@ -91,7 +91,7 @@ br_fnc_createHeliUnits = {
 // Gets the LZ for the zone
 br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
-	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 	_pos;
 };
@@ -99,7 +99,7 @@ br_fnc_createLandingSpotNearZone = {
 // Gets the LZ for the zone
 br_fnc_createLandingSpotLZ = {
 	_pos = _this select 0;
-	[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", groupId _chopperUnits], "colorCivilian"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", groupId _chopperUnits], "colorCivilian", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 };
 

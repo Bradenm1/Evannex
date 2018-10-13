@@ -70,7 +70,7 @@ br_fnc_createObjective = {
 	// Creates the radius
 	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 0.3] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
-	[_textName, _newPos, _zoneName, "ColorBlue"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_textName, _newPos, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;

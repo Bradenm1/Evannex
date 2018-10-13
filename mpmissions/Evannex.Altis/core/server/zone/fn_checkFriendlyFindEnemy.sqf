@@ -1,11 +1,11 @@
-br_groups_marked = [];
+br_markers_marked = [];
+_markerLimit = 6;
 
 // Checks if any units in group are seen
 fnc_checkUnitSeen = {
 	_friendlyGroup = _this select 0;
 	_enemyGroup = _this select 1;
 	_knows = FALSE;
-
 	{
 		if ((_friendlyGroup knowsAbout _x) > 0) then { _knows = TRUE };
 		if (_friendlyGroup knowsAbout (Vehicle _x) > 0) then { _knows = TRUE };
@@ -18,7 +18,7 @@ fnc_createMapMarker = {
 	_marker = _this select 0;
 	_group = _this select 1;
 	_name = _this select 2;
-	[_marker, getpos (leader _group), _name, "ColorBlack"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_marker, getpos (leader _group), _name, "ColorBlack", 0.7] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Create a maker given the type
@@ -26,7 +26,6 @@ fnc_createMarkerType = {
 	_type = _this select 0;
 	_marker = _this select 1;
 	_group = _this select 2;
-
 	switch (_type) do {
 		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", typeOf (Vehicle (leader _group))]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
@@ -42,21 +41,22 @@ fnc_checkGroupSeen = {
 		//if (!(_x in br_groups_marked)) then {
 			// Check if friendlys can see any units in a group
 			if ([_friendlyGroup, _x] call fnc_checkUnitSeen) then {
-				//[format ["a_%1", count br_groups_marked], getpos (leader _x), "Enemy", "ColorBlack"] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 				if (!(isNull objectParent (leader _x))) then {
 					["Vehicle", groupId _x, _x] call fnc_createMarkerType;
 				} else {
 					["Ground Unit", groupId _x, _x] call fnc_createMarkerType;
 				};
 				[groupId _x,time + 180] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
-				//if if (!(_x in br_groups_marked)) then { br_groups_marked append [_x]; };
+				if (!(groupId _x in br_markers_marked)) then { br_markers_marked append [groupId _x]; };
 			};
 		//};
 	} forEach br_ai_groups;
 };
 
 while {TRUE} do {
-	{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
-	{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_objective_groups;
+	if (count br_markers_marked < _markerLimit) then {
+			{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
+		{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_objective_groups;
+	};
 	sleep 0.1;
 };
