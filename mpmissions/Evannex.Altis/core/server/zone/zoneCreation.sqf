@@ -1,5 +1,6 @@
 // Number of AI to spawn each side
-br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
+br_friendly_mark_enemy = if ("FriendlyMarkEnemy" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If friendly units mark enemies on map
+br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If firendly units are enabled
 br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
@@ -265,7 +266,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "core\server\base\fn_friendlySpawnAI.sqf";
 		execVM "core\server\zone\fn_commandFriendlyGroups.sqf";
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
-		execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf";
+		if (br_friendly_mark_enemy) then { execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf"; };
 	};
 	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
 	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";

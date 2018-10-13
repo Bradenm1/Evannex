@@ -123,7 +123,9 @@ br_fnc_getUnitsAlive = {
 br_fnc_waitForUntsToEnterChopper = {
 	_tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
-	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 };
+	_timeBeforeTeleport = time + 45;
+	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time > _timeBeforeTeleport };
+	if (time > _timeBeforeTeleport) then { {_x moveInCargo _helicopterVech} forEach units _tempGroup; };
 };
 
 // Tell helicopter to goto and land, wait until this has happened

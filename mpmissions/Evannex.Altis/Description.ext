@@ -84,6 +84,12 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 1;
     };
+	class FriendlyMarkEnemy {
+        title = "Friendly Units Mark Enemy Positions?";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
 	class ZeusSeesAI {
 		title = "Allow Zeus to see spawned AI";
         values[] = {0,1};
