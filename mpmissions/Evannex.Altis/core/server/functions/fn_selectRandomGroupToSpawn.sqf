@@ -1,12 +1,3 @@
-
-//_eastCount = 0;
-//_westCount = 0;
-// Check number of groups for each side
-//{ if (side _x == EAST) then [{ _eastCount = _eastCount + 1 }, { _westCount = _westCount + 1 }];
-//} foreach br_ai_groups;
-// Check what side should be spawned given the group amounts for each side
-//_side = if (((_eastCount >= (br_min_ai_groups / 2)) or (_eastCount > _westCount)) and ((_westCount <= (br_min_ai_groups / 2) or (_eastCount < _westCount)))) then [{ 1 }, { 0 }];
-
 // The side number
 _sides = _this select 0;
 _side = _this select 1;

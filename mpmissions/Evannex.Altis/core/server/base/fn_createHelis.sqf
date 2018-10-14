@@ -5,24 +5,6 @@ _chopperUnits = nil; // The group in the heli
 _helicopterVech = nil; // The helicopter
 _landMarker = nil; // Used to tell the AI where to land
 
-// Type of transport helicopters that can spawn
-br_heli_units = [
-	"B_Heli_Transport_03_F",
-	"B_Heli_Transport_03_unarmed_F",
-	"B_Heli_Transport_03_black_F",
-	"B_Heli_Transport_03_unarmed_green_F",
-	"B_CTRG_Heli_Transport_01_sand_F",
-	"B_CTRG_Heli_Transport_01_tropic_F",
-	"B_Heli_Light_01_F",
-	"B_Heli_Transport_01_F",
-	"B_Heli_Transport_01_camo_F",
-	"I_Heli_Transport_02_F",
-	"I_Heli_light_03_unarmed_F",
-	"O_Heli_Light_02_v2_F",
-	"O_Heli_Transport_04_bench_F",
-	"O_Heli_Transport_04_covered_F"
-];
-
 // Gets a random location on the plaer
 br_fnc_getGroundUnitLocation = {
 	// Gets a random location within the zone radius
@@ -91,6 +73,9 @@ br_fnc_createHeliUnits = {
 // Gets the LZ for the zone
 br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	while {_pos select 2 == 0} do {
+		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	};
 	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 	_pos;

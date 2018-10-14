@@ -57,8 +57,8 @@ br_units = [[[ // EAST
 	"OIA_InfTeam_AT",
 	"OIA_ReconSquad"
 ],[
-	//"OIA_SPGPlatoon_Scorcher",
-	//"OIA_SPGSection_Scorcher",
+	"OIA_SPGPlatoon_Scorcher",
+	"OIA_SPGSection_Scorcher",
 	"OIA_TankPlatoon",
 	"OIA_TankPlatoon_AA",
 	"OIA_TankSection"
@@ -77,9 +77,9 @@ br_units = [[[ // EAST
 ], [
 	"OI_AttackTeam_UAV",
 	"OI_AttackTeam_UGV",
-	//"OI_diverTeam",
-	//"OI_diverTeam_Boat",
-	//"OI_diverTeam_SDV",
+	"OI_diverTeam",
+	"OI_diverTeam_Boat",
+	"OI_diverTeam_SDV",
 	"OI_ReconTeam_UAV",
 	"OI_ReconTeam_UGV",
 	"OI_SmallTeam_UAV"
@@ -127,6 +127,61 @@ br_units = [[[ // EAST
 	"BUS_SmallTeam_UAV"
 ]]];
 
+// The type of speical units that can spawn
+br_enemy_speical_list = [
+	"O_Heli_Light_02_dynamicLoadout_F",
+	"I_LT_01_AT_F",
+	"O_Plane_CAS_02_dynamicLoadout_F",
+	"O_Truck_02_box_F",
+	"O_APC_Tracked_02_AA_F",
+	"O_MBT_02_cannon_F",
+	"O_Heli_Attack_02_F",
+	"O_G_Offroad_01_armed_F",
+	"O_MRAP_02_gmg_F",
+	"O_Truck_02_medical_F",
+	"O_Truck_02_fuel_F",
+	"O_static_AT_F",
+	"O_static_AA_F",
+	"O_T_LSV_02_armed_F",
+	"I_GMG_01_high_F",
+	"I_HMG_01_A_F",
+	"I_HMG_01_high_F",
+	"I_HMG_01_F",
+	"I_G_Offroad_01_repair_F",
+	"I_MRAP_03_F",
+	"I_Heli_light_03_F",
+	"O_Quadbike_01_F",
+	"O_G_Van_01_transport_F",
+	"O_APC_Wheeled_02_rcws_F",
+	"O_UAV_01_F",
+	"O_UGV_01_rcws_F",
+	"O_Heli_Transport_04_box_F",
+	"O_Mortar_01_F",
+	"O_G_Mortar_01_F",
+	"O_UAV_02_F",
+	"O_UAV_02_CAS_F",
+	"O_UGV_01_F",
+	"O_Truck_03_transport_F",
+	"O_Truck_03_ammo_F",
+	"O_Truck_03_device_F",
+	"O_Static_Designator_02_F",
+	"O_T_UAV_04_CAS_F",
+	"O_Plane_Fighter_02_F",
+	"O_Plane_CAS_02_Cluster_F",
+	"O_Plane_Fighter_02_Cluster_F",
+	"O_MBT_04_cannon_F",
+	"O_T_MBT_04_cannon_F",
+	"O_MBT_04_command_F",
+	"O_T_MBT_04_command_F",
+	"O_Radar_System_02_F",
+	"O_SAM_System_04_F",
+	"O_Plane_Fighter_02_Stealth_F",
+	"I_MRAP_03_gmg_F",
+	"I_MRAP_03_hmg_F",
+	"C_Kart_01_yellow_F",
+	"O_T_VTOL_02_infantry_F"
+];
+
 // The list of things that have a chance to spawn
 br_friendly_vehicles_list = [
 	"B_MRAP_01_gmg_F",
@@ -170,6 +225,7 @@ br_friendly_vehicles_list = [
 	"B_UGV_01_F"
 ];
 
+// Types of jeys that can spawn
 br_friendly_jets_list = [
 	"B_Plane_CAS_01_F",
 	"B_UAV_02_F",
@@ -184,6 +240,24 @@ br_friendly_jets_list = [
 	"O_T_UAV_04_CAS_F",
 	"O_T_VTOL_02_infantry_F",
 	"O_Plane_Fighter_02_F"
+];
+
+// Type of transport helicopters that can spawn
+br_heli_units = [
+	"B_Heli_Transport_03_F",
+	"B_Heli_Transport_03_unarmed_F",
+	"B_Heli_Transport_03_black_F",
+	"B_Heli_Transport_03_unarmed_green_F",
+	"B_CTRG_Heli_Transport_01_sand_F",
+	"B_CTRG_Heli_Transport_01_tropic_F",
+	"B_Heli_Light_01_F",
+	"B_Heli_Transport_01_F",
+	"B_Heli_Transport_01_camo_F",
+	"I_Heli_Transport_02_F",
+	"I_Heli_light_03_unarmed_F",
+	"O_Heli_Light_02_v2_F",
+	"O_Heli_Transport_04_bench_F",
+	"O_Heli_Transport_04_covered_F"
 ];
 
 // Creates the zone
@@ -309,16 +383,16 @@ br_fnc_main = {
 		[] call br_fnc_createZone;
 		execVM "core\server\task\fn_playerZoneTasking.sqf";
 		// Create HQ
-		if (br_hq_enabled) then {["HQ", 15, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_hq_enabled) then {["HQ", 10, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		// Create radio tower
-		if (br_radio_tower_enabled) then {["Radio_Tower", 10, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+		if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 		// Create EMP thingy. This was added as a test
 		["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false
 		br_zone_taken = FALSE;
-		["ZONE_Radio_Tower_RADIUS"] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
+		["ZONE_Radio_Tower_RADIUS", br_enemy_speical_list] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed

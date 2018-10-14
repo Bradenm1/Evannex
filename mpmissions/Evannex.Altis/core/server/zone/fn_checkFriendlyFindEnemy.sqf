@@ -19,7 +19,7 @@ fnc_createMapMarker = {
 	_marker = _this select 0;
 	_group = _this select 1;
 	_name = _this select 2;
-	[_marker, getpos (leader _group), _name, "ColorBlack", 0.6] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_marker, getpos (leader _group), _name, "ColorBlack", 0.4] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Create a maker given the type
