@@ -1,4 +1,5 @@
 while {TRUE} do {
+	sleep 5;
 	{
 		_x addCuratorEditableObjects [allUnits,true];
 		_x addCuratorEditableObjects [vehicles,true];
@@ -11,5 +12,5 @@ while {TRUE} do {
 			};
 		};
 	} forEach allCurators;
-	sleep 10;
+	sleep 5;
 };

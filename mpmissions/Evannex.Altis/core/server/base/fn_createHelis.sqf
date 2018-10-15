@@ -41,12 +41,11 @@ br_fnc_createHeliPad = {
 // Spawn custom units
 br_fnc_createChopperUnit = {
 	_helicopterVech = (selectrandom br_heli_units) createVehicle getMarkerPos _heliPad;
-	//createVehicleCrew _helicopterVech;
 	[] call br_fnc_createHeliUnits;
 	waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
-	//br_helisWaiting append [_chopper];
 };
 
+// Deletes the current chopper units
 br_fnc_deleteOldChopperUnit = {
 	br_heliGroups deleteAt (br_heliGroups find _chopperUnits);
 	{ deleteVehicle _x } forEach units _chopperUnits;
@@ -61,11 +60,9 @@ br_fnc_checkHeliDead = {
 // Creates the helicopter units
 br_fnc_createHeliUnits = {
 	_chopperUnits = [[] call br_fnc_getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	{_x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
-	//_chopperUnits addVehicle _helicopterVech;
-	{_x moveInDriver _helicopterVech} forEach units _chopperUnits;
+	{_x disableAI "MOVE"; _x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
+	(leader _chopperUnits) moveInDriver _helicopterVech;
 	{ _x setSkill br_ai_skill } forEach units _chopperUnits;
-	[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	br_heliGroups append [_chopperUnits];
 	_helicopterVech engineOn false;
 };
@@ -75,6 +72,7 @@ br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 	while {_pos select 2 == 0} do {
 		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+		sleep 0.1;
 	};
 	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
@@ -123,6 +121,7 @@ br_fnc_movetoAndLand = {
 	_helicopterVech setDamage 0;
 	_helicopterVech setFuel 1;
 	_chopperUnits setBehaviour "CARELESS";
+	{_x enableAI "MOVE"; } forEach units _chopperUnits;
 	_wp = _chopperUnits addWaypoint [_pos, 0];
 	_wp setWaypointType "GETOUT";
 	_helicopterVech engineOn true;
@@ -232,6 +231,7 @@ br_fnc_runEvacChopper = {
 		// Switch groups weapons (Sometimes they just stand holding binoculars and won't get in..)
 		{_x selectweapon primaryWeapon _x} foreach (units _group);
 		// Wait untill units are in
+		// error here somewhere
 		waitUntil { {{_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group)} || {[] call br_fnc_checkHeliDead} || {_helicopterVech emptyPositions "cargo" == 0} };
 		// Delete LZ
 		deleteVehicle _landMarker;
@@ -258,6 +258,8 @@ br_fnc_createHelis = {
 	while {True} do {
 		// Create chopper units
 		[] call br_fnc_createChopperUnit;
+		// Set angle vector
+		[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
 		while {({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)};} do {
 			sleep 10;

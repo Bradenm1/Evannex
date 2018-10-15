@@ -358,15 +358,13 @@ br_fnc_onNewZoneCreation = {
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{
 		if (_x in br_friendly_ai_groups) then {
-			// Delete from zone roaming list
-			br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x);
 			// Delete waypoints
 			while {(count (waypoints _x)) > 0} do {
 				deleteWaypoint ((waypoints _x) select 0);
 			};
 			_x setBehaviour "SAFE";	
-			// Add the group to the evac queue
-			br_friendly_groups_wating_for_evac append [_x];
+			// Add the group to the evac queue and delete from roaming if too far away from new zone
+			if ((getpos (leader _x)) distance br_current_zone > 2000) then { br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); br_friendly_groups_wating_for_evac append [_x]; };
 		}
 	} forEach br_friendly_ground_groups;
 	{

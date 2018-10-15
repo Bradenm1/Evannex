@@ -57,6 +57,7 @@ br_fnc_spawnAI = {
 			//_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
+			sleep 0.01;
 		};
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
@@ -66,6 +67,7 @@ br_fnc_spawnAI = {
 			br_enemy_vehicle_objects append [vehicle (leader _group)];
 			br_special_ai_groups append [_group];
 			br_ai_groups append [_group];
+			sleep 0.01;
 		};
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;

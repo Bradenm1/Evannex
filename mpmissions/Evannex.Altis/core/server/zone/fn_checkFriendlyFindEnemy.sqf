@@ -19,7 +19,7 @@ fnc_createMapMarker = {
 	_marker = _this select 0;
 	_group = _this select 1;
 	_name = _this select 2;
-	[_marker, getpos (leader _group), _name, "ColorBlack", 0.4] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_marker, getpos (leader _group), _name, "ColorBlack", 0.5] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Create a maker given the type
@@ -30,7 +30,7 @@ fnc_createMarkerType = {
 	switch (_type) do {
 		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", typeOf (Vehicle (leader _group))]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
-		default { [_marker, _group, "Enemy"] call fnc_createMapMarker; };
+		default { [_marker, _group, "Enemy Around Here!"] call fnc_createMapMarker; };
 	};
 };
 

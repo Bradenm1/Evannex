@@ -58,7 +58,7 @@ class Params {
 	class  MinAIDistanceForDeleteion {
 		title = "Min AI Distance For Deleteion"; // Param name visible in the list
 		values[] = {100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 10000, 99999999}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 3000; // Default value; must be listed in 'values' array, otherwise 0 is used
+		default = 2500; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
 	class ZoneRadius {

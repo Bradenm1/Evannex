@@ -75,8 +75,8 @@ br_fnc_deleteWayPoints = {
 
 // AI script for the group
 br_fnc_runRadioBombUnit = {
+	call br_fnc_createBombUnits;
 	while {TRUE} do {
-		[] call br_fnc_createBombUnits;
 		waitUntil { !br_zone_taken && {count br_objectives > 0}};
 		// Find a objective
 		[] call br_fnc_findObjective;
@@ -91,20 +91,28 @@ br_fnc_runRadioBombUnit = {
 		waitUntil { (((getpos (leader _objectiveGroup)) distance (getpos (_objective select 1)) < _getOutOfVehicleRadius) || {missionNamespace getVariable (_objective select 5)} || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
 		//{ _x setBehaviour "AWARE"; } forEach (units _objectiveGroup);
 		// Tell group to get out of transport vehicle
-		{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle); 
-		waitUntil { missionNamespace getVariable (_objective select 5) || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
-		// Check if objective is not completed
-		if (!(missionNamespace getVariable (_objective select 5)) && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then { 	
-			// Wait untill group has reached radio tower
-			waitUntil { ((missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {missionNamespace getVariable (_objective select 5)} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
-			//[] call br_fnc_deleteWayPoints;
-			// Touch off bomb at radio tower if still alive and radio tower not already blown up
-			if (({(alive _x)} count (units _objectiveGroup) > 0) && {!(missionNamespace getVariable (_objective select 5))} && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then  { [(_objective select 3)] call br_fnc_DoObjective; };	
+		if (!(missionNamespace getVariable (_objective select 5))) then {
+			_transportVehicle setFuel 0;
+			sleep 3;
+			{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle);
+			_transportVehicle setFuel 1; 
+			waitUntil { missionNamespace getVariable (_objective select 5) || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
+			// Check if objective is not completed
+			if (!(missionNamespace getVariable (_objective select 5)) && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then { 	
+				// Wait untill group has reached radio tower
+				waitUntil { ((missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {missionNamespace getVariable (_objective select 5)} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
+				// Touch off bomb at radio tower if still alive and radio tower not already blown up
+				if (({(alive _x)} count (units _objectiveGroup) > 0) && {!(missionNamespace getVariable (_objective select 5))} && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then  { [(_objective select 3)] call br_fnc_DoObjective; };	
+			};
 		};
-		{ deleteVehicle _x; } forEach (units _objectiveGroup);
-		deleteVehicle _transportVehicle;
-		deleteGroup _objectiveGroup;
-		br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
+		if (count br_objectives == 0 || ({(alive _x)} count (units _objectiveGroup) == 0)) then {
+			{ deleteVehicle _x; } forEach (units _objectiveGroup);
+			deleteVehicle _transportVehicle;
+			deleteGroup _objectiveGroup;
+			br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
+			call br_fnc_createBombUnits;
+		};
+		[] call br_fnc_deleteWayPoints;
 	};
 };
 
