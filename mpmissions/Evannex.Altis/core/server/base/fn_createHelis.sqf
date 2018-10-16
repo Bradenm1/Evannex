@@ -232,7 +232,7 @@ br_fnc_runEvacChopper = {
 		{_x selectweapon primaryWeapon _x} foreach (units _group);
 		// Wait untill units are in
 		// error here somewhere
-		waitUntil { {{_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group)} || {[] call br_fnc_checkHeliDead} || {_helicopterVech emptyPositions "cargo" == 0} };
+		waitUntil { {_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group) || {[] call br_fnc_checkHeliDead} };
 		// Delete LZ
 		deleteVehicle _landMarker;
 		deleteMarker format ["EVAC - %1", _heliIndex];

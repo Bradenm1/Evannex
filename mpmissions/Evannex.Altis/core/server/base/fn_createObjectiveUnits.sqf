@@ -12,10 +12,11 @@ br_fnc_createBombUnits = {
 	// Delete if existing group
 	_objectiveGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
 	(leader _objectiveGroup) moveInDriver _transportVehicle;
-	{ if (_x != (leader _objectiveGroup)) then { _x assignAsCargo _transportVehicle; [_x] orderGetIn true; (leader _objectiveGroup); _x moveInCargo _transportVehicle; }; } forEach (units _objectiveGroup);
+	{ if (_x != (leader _objectiveGroup)) then { _x assignAsCargo _transportVehicle; (leader _objectiveGroup); _x moveInCargo _transportVehicle; }; } forEach (units _objectiveGroup);
 	// Give each unit a sactelCharge
 	{ _oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack; } forEach (units _objectiveGroup);
 	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _objectiveGroup);
+	{ _x setBehaviour "SAFE"; } forEach (units _objectiveGroup);
 	br_friendly_objective_groups append [_objectiveGroup];
 	waitUntil { {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };
 	// Wait a second
@@ -76,6 +77,7 @@ br_fnc_deleteWayPoints = {
 // AI script for the group
 br_fnc_runRadioBombUnit = {
 	call br_fnc_createBombUnits;
+	_transportVehicle setUnloadInCombat [FALSE, FALSE];
 	while {TRUE} do {
 		waitUntil { !br_zone_taken && {count br_objectives > 0}};
 		// Find a objective
@@ -83,19 +85,23 @@ br_fnc_runRadioBombUnit = {
 		// Idle group if no radio tower
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
 		// Check if any groups are waiting
-		_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+		_getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
 		_wp = _objectiveGroup addWaypoint [_getPos, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
+		_wp setWaypointType "GETOUT";
+		_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 		// Wait until group is within a given range
-		waitUntil { (((getpos (leader _objectiveGroup)) distance (getpos (_objective select 1)) < _getOutOfVehicleRadius) || {missionNamespace getVariable (_objective select 5)} || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
+		waitUntil { (({_x in _transportVehicle} count (units _objectiveGroup) == 0) || {missionNamespace getVariable (_objective select 5)} || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
+		_transportVehicle setUnloadInCombat [TRUE, TRUE];
+		[] call br_fnc_deleteWayPoints;
 		//{ _x setBehaviour "AWARE"; } forEach (units _objectiveGroup);
 		// Tell group to get out of transport vehicle
 		if (!(missionNamespace getVariable (_objective select 5))) then {
-			_transportVehicle setFuel 0;
-			sleep 3;
 			{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle);
-			_transportVehicle setFuel 1; 
+			waitUntil { missionNamespace getVariable (_objective select 5) || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({_x in _transportVehicle} count (units _objectiveGroup) == 0)} };
+			_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+			_wp = _objectiveGroup addWaypoint [_getPos, 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
 			waitUntil { missionNamespace getVariable (_objective select 5) || {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))} || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
 			// Check if objective is not completed
 			if (!(missionNamespace getVariable (_objective select 5)) && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then { 	
@@ -111,6 +117,7 @@ br_fnc_runRadioBombUnit = {
 			deleteGroup _objectiveGroup;
 			br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
 			call br_fnc_createBombUnits;
+			_transportVehicle setUnloadInCombat [FALSE, FALSE];
 		};
 		[] call br_fnc_deleteWayPoints;
 	};

@@ -64,6 +64,7 @@ br_fnc_spawnAI = {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
+			{ _x setSkill br_ai_skill; } forEach (units _group);
 			br_enemy_vehicle_objects append [vehicle (leader _group)];
 			br_special_ai_groups append [_group];
 			br_ai_groups append [_group];

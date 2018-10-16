@@ -11,6 +11,7 @@ While {TRUE} do {
 	if (!br_zone_taken) then {
 		[br_friendly_objective_groups] call br_fnc_deleteDumbAI;
 		[br_friendly_ai_groups] call br_fnc_deleteDumbAI;
+		[br_ai_groups] call br_fnc_deleteDumbAI;
 	};
 	sleep 30;
 };
