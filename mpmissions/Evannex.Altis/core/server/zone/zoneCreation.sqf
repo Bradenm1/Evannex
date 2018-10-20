@@ -354,6 +354,7 @@ br_fnc_onNewZoneCreation = {
 		while {(count (waypoints _x)) > 0} do {
 			deleteWaypoint ((waypoints _x) select 0);
 		};
+		(vehicle _x) setfuel 1;
 	} forEach br_friendly_vehicles;
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{

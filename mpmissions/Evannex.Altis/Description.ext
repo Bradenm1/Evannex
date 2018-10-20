@@ -24,7 +24,7 @@ respawnButton = 1;
 respawnDelay = 10;
 
 class Header {
-	gameType =  Sandbox;			// Game type
+	gameType =  Sandbox;		// Game type
 	minPlayers =  1;			// minimum number of players the mission supports
 	maxPlayers = 32;			// maximum number of players the mission supports
 };
