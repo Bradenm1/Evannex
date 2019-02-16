@@ -61,8 +61,12 @@ br_fnc_deleteObjMarkers = {
 // Creates the Objective
 br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
-	// Creates center for HQ
+	// Creates center
 	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+	while {count _newPos > 2} do {
+		_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+		sleep 0.1;
+	};
 	// Gets position near center
 	_pos = [_newPos, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 	// Place HQ near center
