@@ -28,7 +28,7 @@ fnc_createMarkerType = {
 	_marker = _this select 1;
 	_group = _this select 2;
 	switch (_type) do {
-		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", typeOf (Vehicle (leader _group))]] call fnc_createMapMarker; };
+		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", getText (configFile >>  "CfgVehicles" >> typeof (Vehicle (leader _group)) >> "displayName")]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
 		default { [_marker, _group, "Enemy Around Here!"] call fnc_createMapMarker; };
 	};

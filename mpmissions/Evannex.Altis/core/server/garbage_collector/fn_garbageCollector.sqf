@@ -2,7 +2,9 @@ br_empty_vehicles_in_garbage_collection = []; // empty vehicles
 
 while {TRUE} do {
 	{
-		deleteVehicle _x;
+		if ((getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName")) != "zeusPlayer") then {
+			deleteVehicle _x ;
+		};
 		sleep 0.01;
 	} forEach allDead;
 	{
@@ -21,5 +23,10 @@ while {TRUE} do {
 		};
 		sleep 0.01;
 	};
+	{ 
+		if ((getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName")) == "Canopy") then {
+			deleteVehicle _x ;
+		};
+	} forEach (allMissionObjects "");
 	sleep 60;
 };
