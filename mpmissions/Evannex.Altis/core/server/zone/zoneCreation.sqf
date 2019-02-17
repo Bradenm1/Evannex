@@ -41,6 +41,7 @@ br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
+br_global_timer = 0;  // Seconds since mission started
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -354,7 +355,8 @@ br_fnc_onNewZoneCreation = {
 		while {(count (waypoints _x)) > 0} do {
 			deleteWaypoint ((waypoints _x) select 0);
 		};
-		(vehicle _x) setfuel 1;
+
+		// (vehicle _x) setfuel 1;
 	} forEach br_friendly_vehicles;
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{
@@ -375,6 +377,8 @@ br_fnc_onNewZoneCreation = {
 
 // Main function
 br_fnc_main = {
+	// Run mission timer
+	execVM "core\server\functions\fn_runTimer.sqf";
 	// Check for markers and do things
 	[] call br_fnc_doChecks;
 	while {TRUE} do {

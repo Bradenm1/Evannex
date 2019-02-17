@@ -34,7 +34,7 @@ br_fnc_runVehicleUnit = {
 		if (!alive _vehicle) then { deleteVehicle _vehicle; } else { br_empty_vehicles_in_garbage_collection append [_vehicle]; };
 		//br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _vehicleGroup);
 		br_friendly_vehicles deleteAt (br_friendly_vehicles find _vehicleGroup);
-		deleteGroup _vehicleGroup; 
+		deleteGroup _vehicleGroup;
 	};
 };
 
