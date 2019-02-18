@@ -24,7 +24,8 @@ while {TRUE} do {
 		sleep 0.01;
 	};
 	{ 
-		if ((getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName")) == "Canopy") then {
+		objectName = getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName");
+		if (objectName == "Canopy") then {
 			deleteVehicle _x ;
 		};
 	} forEach (allMissionObjects "");

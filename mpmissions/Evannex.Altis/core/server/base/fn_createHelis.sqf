@@ -234,14 +234,8 @@ br_fnc_runEvacChopper = {
 			// Moveto LZ
 			[_pos] call br_fnc_movetoAndLand;
 			// Wait for group to get in
-			{ 
-				[_x, false] call br_fnc_commandGroupIntoChopper;
-			} forEach _groups;
-			// Switch groups weapons (Sometimes they just stand holding binoculars and won't get in..)
-			//{_x selectweapon primaryWeapon _x} foreach (units _group);
-			// Wait untill units are in
-			// error here somewhere
-			//waitUntil { {_x in _helicopterVech} count (units _group) == {(alive _x)} count (units _group) || {[] call br_fnc_checkHeliDead} };
+			{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
+			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
 			//[_group] call br_fnc_waitForUntsToEnterChopper;
 			// Delete LZ

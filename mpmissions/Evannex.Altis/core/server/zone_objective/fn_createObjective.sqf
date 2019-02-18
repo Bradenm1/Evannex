@@ -7,6 +7,8 @@ _textOnTaken = _this select 5; // Text when object is completed
 _groupsIfKill = _this select 6; // units to spawn at objective
 _mattersToObjectiveSquad = _this select 7; // If the friendly AI will ignore this objective
 _requiresCompletedToCaptureZone = _this select 8; // If the capture of the main zone requires the capture of this zone
+_brushType = _this select 9;
+_shapeType = _this select 10;
 
 _spawnedObj = nil;
 _groupsToKill = []; // Groups spawned at objective
@@ -72,7 +74,7 @@ br_fnc_createObjective = {
 	// Place HQ near center
 	_spawnedObj = _objectToUse createVehicle _pos;
 	// Creates the radius
-	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 0.3] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
+	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
 	[_textName, _newPos, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
