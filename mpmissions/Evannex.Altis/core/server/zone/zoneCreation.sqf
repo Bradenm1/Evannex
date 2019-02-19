@@ -390,22 +390,29 @@ br_fnc_onNewZoneCreation = {
 	} forEach br_enemy_vehicle_objects;
 };
 
+br_random_objectives = {
+	// Create HQ
+	if (br_hq_enabled) then {["HQ", 10, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	// Create radio tower
+	if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	// Create a random objective
+	switch (round(random 4)) do {
+		case 1: { ["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 2: { ["Attack Helicopter", 6, "O_Heli_Attack_02_F", "Destory", TRUE, "Attack Helicopter Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 3: { ["AA", 4, "O_APC_Tracked_02_AA_F", "Destory", TRUE, "AA Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		default {};
+	};
+};
+
 // Main function
 br_fnc_main = {
-	// Run mission timer
-	execVM "core\server\functions\fn_runTimer.sqf";
 	// Check for markers and do things
 	[] call br_fnc_doChecks;
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		[] call br_fnc_createZone;
 		execVM "core\server\task\fn_playerZoneTasking.sqf";
-		// Create HQ
-		if (br_hq_enabled) then {["HQ", 10, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
-		// Create radio tower
-		if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
-		// Create EMP thingy. This was added as a test
-		["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";
+		[] call br_random_objectives;
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false
