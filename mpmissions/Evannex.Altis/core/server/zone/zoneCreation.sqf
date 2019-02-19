@@ -42,6 +42,7 @@ br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_global_timer = 0;  // Seconds since mission started
+br_next_zone_start_delay = 20;
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -269,7 +270,7 @@ br_fnc_createZone = {
 		br_current_zone = selectRandom br_zones;
 	};
 	// Creates the radius
-	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "ColorRed", "Enemy Zone", 0.4, "Solid", "ELLIPSE"] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
+	["ZONE_RADIUS", br_current_zone, br_zone_radius, br_max_radius_distance, "colorOPFOR", "Enemy Zone", 0.4, "Grid", "ELLIPSE"] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
 	["ZONE_ICON", br_current_zone, "Enemy Zone", "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
@@ -349,6 +350,20 @@ br_fnc_onFirstZoneCreation = {
 	br_first_Zone = FALSE;
 };
 
+// Set fuel for all vehicles in a group to a given amount
+br_fnc_setGroupFuelFull = {
+	_group = _this select 0; // The given group
+	_fuelAmount = _this select 1; // 0 - 1
+
+	{  
+		_vehicle = (vehicle _x);
+		// Check if vehicle is null
+		if (!(isNull _vehicle)) then {
+			_vehicle setfuel _fuelAmount;
+		};
+	} forEach (units _group);
+};
+
 // On new zone creation after AI and everything has been placed do the following...
 br_fnc_onNewZoneCreation = {
 	// Delete all waypoints for vehicles
@@ -356,8 +371,7 @@ br_fnc_onNewZoneCreation = {
 		while {(count (waypoints _x)) > 0} do {
 			deleteWaypoint ((waypoints _x) select 0);
 		};
-
-		// (vehicle _x) setfuel 1;
+		[_x, 1] call br_fnc_setGroupFuelFull;
 	} forEach br_friendly_vehicles;
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{
@@ -401,8 +415,9 @@ br_fnc_main = {
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
 		{ if (_x select 6) then { waitUntil { missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
-		waitUntil { (count br_ai_groups < br_min_enemy_groups_for_capture) };
+		waitUntil { (count br_ai_groups <= br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
+		sleep br_next_zone_start_delay;
 	}
 };
 

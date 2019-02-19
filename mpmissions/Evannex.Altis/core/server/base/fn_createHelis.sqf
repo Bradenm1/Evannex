@@ -211,7 +211,6 @@ br_fnc_runTransportChopper = {
 			[_playersGroups] call br_fuc_landGroupAtZone;
 		};
 	};
-	if ((getMarkerPos _heliPad) distance _helicopterVech > 10) then { _helicopterVech setdamage 1; };
 };
 
 // If the chopper is evac
@@ -237,7 +236,6 @@ br_fnc_runEvacChopper = {
 			{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
-			//[_group] call br_fnc_waitForUntsToEnterChopper;
 			// Delete LZ
 			deleteVehicle _landMarker;
 			deleteMarker format ["EVAC - %1", _heliIndex];
@@ -254,13 +252,7 @@ br_fnc_runEvacChopper = {
 				// Delete from transit group
 				br_groups_in_transit deleteAt (br_groups_in_transit find _y);
 			} forEach _groups;
-			//waitUntil { {_x in _helicopterVech} count (units _group) == 0};
-			// Move group to waiting groups
-			//br_friendly_groups_waiting append [_group];
-			// Delete from transit group
-			//br_groups_in_transit deleteAt (br_groups_in_transit find _group);
 			[] call br_fnc_createHeliUnits;	
-			if ((getMarkerPos _heliPad) distance _helicopterVech > 10) then { _helicopterVech setdamage 1; };
 		};
 	};
 };
@@ -276,10 +268,12 @@ br_fnc_createHelis = {
 		[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
 		while {({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)};} do {
-			sleep 10;
+			sleep 5;
 			if (_evacChopper) then { [] call br_fnc_runEvacChopper; } else { [] call br_fnc_runTransportChopper; };
 			_helicopterVech setFuel 1;
 			_helicopterVech setDamage 0;
+			// Heli should be on the pad, destory if not
+			if ((getMarkerPos _heliPad) distance _helicopterVech > 10) then { _helicopterVech setdamage 1; };
 		};
 		sleep 15;
 		// Do the below because the heli died or some bullcrap happened

@@ -60,6 +60,7 @@ br_fnc_DoObjective = {
 // Find objective
 br_fnc_findObjective = {
 	_foundObjective = FALSE;
+	// Try find an objective
 	while {!_foundObjective} do {
 		_objective = selectRandom br_objectives;
 		if ( (_objective select 4) ) then { _foundObjective = TRUE; }
@@ -115,7 +116,7 @@ br_fnc_runRadioBombUnit = {
 			deleteVehicle _transportVehicle;
 			deleteGroup _objectiveGroup;
 			br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
-			call br_fnc_createBombUnits;
+			[] call br_fnc_createBombUnits;
 			_transportVehicle setUnloadInCombat [FALSE, FALSE];
 		};
 		[] call br_fnc_deleteWayPoints;
