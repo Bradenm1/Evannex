@@ -56,7 +56,7 @@ fnc_checkGroupSeen = {
 
 while {TRUE} do {
 	if (count br_markers_marked < _markerLimit) then {
-			{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
+		{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
 		{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_objective_groups;
 	};
 	sleep 0.1;

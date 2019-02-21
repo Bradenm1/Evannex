@@ -4,6 +4,7 @@ _evacChopper = _this select 2; // If te helicopter is a evac helicopter or not
 _chopperUnits = nil; // The group in the heli
 _helicopterVech = nil; // The helicopter
 _landMarker = nil; // Used to tell the AI where to land
+_groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
 
 // Gets a random location on the plaer
 br_fnc_getGroundUnitLocation = {
@@ -106,7 +107,7 @@ br_fnc_getUnitsAlive = {
 br_fnc_waitForUntsToEnterChopper = {
 	_tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
-	_timeBeforeTeleport = time + 35;
+	_timeBeforeTeleport = time + _groupsStuckTeleportDelay;
 	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) };
 	if (time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) ) then { { _x moveInCargo _helicopterVech; } forEach units _tempGroup; };
 };
@@ -141,6 +142,7 @@ br_fuc_findGroupsInQueue = {
 	// Number of people
 	_Peps = 0;	
 	{
+		// Get the alive units for each group
 		_unitsAlive = [_x] call br_fnc_getUnitsAlive;
 		if (_unitsAlive > 0) then {
 			if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
@@ -177,7 +179,7 @@ br_fuc_landGroupAtZone = {
 	// Tell the groups to getout
 	[] call br_fnc_ejectCrew;
 	// Wait untill all units are out
-	tempTime = time + 40;
+	tempTime = time + _groupsStuckTeleportDelay;
 	{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
@@ -243,6 +245,9 @@ br_fnc_runEvacChopper = {
 			[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
 			// Eject the crew at base
 			[] call br_fnc_ejectCrew;
+			// Wait untill all units are out
+			tempTime = time + _groupsStuckTeleportDelay;
+			{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
 				_y = _x; 

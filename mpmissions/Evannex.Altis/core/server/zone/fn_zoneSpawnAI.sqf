@@ -54,7 +54,6 @@ br_fnc_spawnAI = {
 		while {(count br_ai_groups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			sleep _aiSpawnRate;
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			//_newPos = [] call br_fnc_getGroupEnemySpawn;
 			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			sleep 0.01;
