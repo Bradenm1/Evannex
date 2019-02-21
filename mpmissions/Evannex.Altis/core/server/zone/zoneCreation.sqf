@@ -42,7 +42,8 @@ br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_global_timer = 0;  // Seconds since mission started
-br_next_zone_start_delay = 20;
+br_next_zone_start_delay = 20; // Delay between zones
+br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 
 // Below units are in-order below given the _sides and _unitTypes positions 
 br_units = [[[ // EAST
@@ -382,7 +383,7 @@ br_fnc_onNewZoneCreation = {
 			};
 			_x setBehaviour "SAFE";	
 			// Add the group to the evac queue and delete from roaming if too far away from new zone
-			if ((getpos (leader _x)) distance br_current_zone > 2000) then { br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); br_friendly_groups_wating_for_evac append [_x]; };
+			if ((getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); br_friendly_groups_wating_for_evac append [_x]; };
 		}
 	} forEach br_friendly_ground_groups;
 	{
