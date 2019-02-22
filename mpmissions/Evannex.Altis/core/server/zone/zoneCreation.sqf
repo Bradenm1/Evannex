@@ -9,6 +9,7 @@ br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
 br_max_checks = 1000; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
+br_side_radius = 15;
 br_side_types = ["OPF_F","BLU_F"];
 br_empty_vehicles_in_garbage_collection = [];
 br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
@@ -41,6 +42,8 @@ br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
+br_current_sides = [];
+br_max_current_sides = 1;
 br_global_timer = 0;  // Seconds since mission started
 br_next_zone_start_delay = 20; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
@@ -328,14 +331,23 @@ br_fnc_onZoneTaken = {
 	br_zone_taken = TRUE;
 	[[["Zone Taken!"],"core\client\task\fn_completeObjective.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
 	[[[],"core\client\task\fn_completeZoneTask.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
-	["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";
 	// Delete all markers
 	deleteMarker "ZONE_RADIUS";
 	deleteMarker "ZONE_ICON";
 	// Delete all AI left at zone
 	[] call br_fnc_deleteAllAI;
-	br_objectives = [];
+	[] call br_fnc_deleteNonSideObjectives;
+	//br_objectives = [];
 	sleep 5;
+};
+
+br_fnc_deleteNonSideObjectives = {
+	{
+		_removeOnZoneCompleted = _x select 7;
+		if (_removeOnZoneCompleted) then {
+			br_objectives deleteAt (br_objectives find _x);
+		}
+	} foreach br_objectives;
 };
 
 // On first zone creation after AI and everything has been placed do the following...
@@ -346,6 +358,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
 		if (br_friendly_mark_enemy) then { execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf"; };
 	};
+	execVM "core\server\side_objective\fn_runObjectives.sqf";
 	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
 	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
@@ -393,14 +406,14 @@ br_fnc_onNewZoneCreation = {
 
 br_random_objectives = {
 	// Create HQ
-	if (br_hq_enabled) then {["HQ", 10, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	if (br_hq_enabled) then {["HQ", 10, "Land_Cargo_HQ_V1_F", "Kill", FALSE, "HQ Taken!", ["O_officer_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create radio tower
-	if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
-	switch (round(random 4)) do {
-		case 1: { ["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		case 2: { ["Attack Helicopter", 6, "O_Heli_Attack_02_F", "Destory", TRUE, "Attack Helicopter Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		case 3: { ["AA", 4, "O_APC_Tracked_02_AA_F", "Destory", TRUE, "AA Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE"] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+	switch (round(random 3)) do {
+		case 0: { ["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 1: { ["Attack Helicopter", 6, "O_Heli_Attack_02_F", "Destory", TRUE, "Attack Helicopter Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 2: { ["AA", 4, "O_APC_Tracked_02_AA_F", "Destory", TRUE, "AA Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
 		default {};
 	};
 };

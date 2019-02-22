@@ -9,6 +9,8 @@ _mattersToObjectiveSquad = _this select 7; // If the friendly AI will ignore thi
 _requiresCompletedToCaptureZone = _this select 8; // If the capture of the main zone requires the capture of this zone
 _brushType = _this select 9;
 _shapeType = _this select 10;
+_position = _this select 11;
+_removeOnZoneCompleted = _this select 12;
 
 _spawnedObj = nil;
 _groupsToKill = []; // Groups spawned at objective
@@ -64,9 +66,9 @@ br_fnc_deleteObjMarkers = {
 br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
 	// Creates center
-	_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+	_newPos = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
 	while {count _newPos > 2} do {
-		_newPos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+		_newPos = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
 		sleep 0.1;
 	};
 	// Gets position near center
@@ -77,7 +79,7 @@ br_fnc_createObjective = {
 	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
 	[_textName, _newPos, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
-	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]];
+	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
 	// Take the objective
@@ -93,9 +95,14 @@ br_fnc_onTaken = {
 
 	// Set objective as taken
 	missionNamespace setVariable [_zoneVarName, TRUE]; 
-	br_objectives deleteAt (br_objectives find [_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone]);
-	// Wait untill main zone is taken
-	waitUntil { br_zone_taken };
+	br_objectives deleteAt (br_objectives find [_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]);
+	
+	if (_removeOnZoneCompleted) then  {
+		// Wait untill main zone is taken
+		waitUntil { br_zone_taken };
+	} else {
+		sleep 120;
+	};
 
 	[] call br_fnc_onZoneTakenAfterComplete;
 };
