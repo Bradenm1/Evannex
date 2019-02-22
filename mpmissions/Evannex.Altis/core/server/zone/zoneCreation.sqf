@@ -7,6 +7,7 @@ br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getPar
 br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_enabled_side_objectives = "SideObjectives" call BIS_fnc_getParamValue;
 br_max_checks = 1000; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_side_radius = 15;
@@ -358,7 +359,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
 		if (br_friendly_mark_enemy) then { execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf"; };
 	};
-	execVM "core\server\side_objective\fn_runObjectives.sqf";
+	if (br_enabled_side_objectives) then { execVM "core\server\side_objective\fn_runObjectives.sqf"; };
 	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
 	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
