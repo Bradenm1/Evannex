@@ -411,7 +411,7 @@ br_random_objectives = {
 	// Create radio tower
 	if (br_radio_tower_enabled) then {["Radio_Tower", 8, "Land_TTowerBig_2_F", "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
-	switch (round(random 3)) do {
+	switch (round(random 2)) do {
 		case 0: { ["EMP", 6, "O_Truck_03_device_F", "Destory", TRUE, "EMP Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
 		case 1: { ["Attack Helicopter", 6, "O_Heli_Attack_02_F", "Destory", TRUE, "Attack Helicopter Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
 		case 2: { ["AA", 4, "O_APC_Tracked_02_AA_F", "Destory", TRUE, "AA Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };

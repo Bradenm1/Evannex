@@ -9,7 +9,14 @@ br_create_side_objective = {
 	};
 
 	_sideObjectName = (format ["Side_Objective_%1", count br_current_sides]);
-	[_sideObjectName, 15, "O_Truck_03_device_F", "Destory", TRUE, "Side Objective Completed!", [], TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";
+
+	switch (round(random 2)) do {
+		//case 0: { [_sideObjectName, 10, "O_Truck_03_device_F", "Destory", TRUE, "Side Objective Completed!", [], TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 0: { [_sideObjectName, 20, "Land_Can_Dented_F", "Kill", TRUE, "Side Objective Completed!", ["O_APC_Tracked_02_AA_F", "O_APC_Tracked_02_AA_F", "O_T_LSV_02_armed_F"], TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 1: { [_sideObjectName, 10, "Land_Can_Dented_F", "Kill", TRUE, "Side Objective Completed!", ["O_MBT_02_arty_F", "O_T_MRAP_02_hmg_ghex_F"], TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		case 2: { [_sideObjectName, 13, "Land_Can_Dented_F", "Kill", TRUE, "Side Objective Completed!", ["O_Survivor_F", "O_Survivor_F", "O_Survivor_F"], TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
+		default {};
+	};
 	br_current_sides append [[_objectivePosition, _sideObjectName]];
 };
 

@@ -13,6 +13,8 @@ _position = _this select 11;
 _removeOnZoneCompleted = _this select 12;
 
 _spawnedObj = nil;
+_objectivePosition = nil;
+_objectiveOrigin = nil;
 _groupsToKill = []; // Groups spawned at objective
 _radiusName = format ["ZONE_%1_RADIUS", _zoneName];
 _textName = format ["ZONE_%1_ICON", _zoneName];
@@ -40,7 +42,8 @@ br_fnc_spawnGivenUnitsAt = {
 // Spawn group
 br_fnc_spawnGroups = {
 	{
-		_group = [createGroup EAST, 1, getpos _spawnedObj, [_x]] call br_fnc_spawnGivenUnitsAt;
+		_safeSpot = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
+		_group = [createGroup EAST, 1, _safeSpot, [_x]] call br_fnc_spawnGivenUnitsAt;
 		//{ _x setSkill br_ai_skill } forEach units _group;
 		[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 		_groupsToKill append [_group];
@@ -66,19 +69,19 @@ br_fnc_deleteObjMarkers = {
 br_fnc_createObjective = {
 	missionNamespace setVariable [_zoneVarName, FALSE];
 	// Creates center
-	_newPos = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
-	while {count _newPos > 2} do {
-		_newPos = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+	_objectiveOrigin = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+	while {count _objectiveOrigin > 2} do {
+		_objectiveOrigin = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, 20, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
 		sleep 0.1;
 	};
 	// Gets position near center
-	_pos = [_newPos, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
+	_objectivePosition = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 	// Place HQ near center
-	_spawnedObj = _objectToUse createVehicle _pos;
+	_spawnedObj = _objectToUse createVehicle _objectivePosition;
 	// Creates the radius
-	[_radiusName, _newPos, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
+	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
-	[_textName, _newPos, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_textName, _objectiveOrigin, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
