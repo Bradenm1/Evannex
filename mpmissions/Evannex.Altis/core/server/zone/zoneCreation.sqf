@@ -342,6 +342,7 @@ br_fnc_onZoneTaken = {
 	sleep 5;
 };
 
+// Remove objectives which belong to the zone
 br_fnc_deleteNonSideObjectives = {
 	{
 		_removeOnZoneCompleted = _x select 7;
