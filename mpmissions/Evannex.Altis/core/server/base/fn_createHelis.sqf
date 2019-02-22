@@ -72,7 +72,7 @@ br_fnc_createHeliUnits = {
 br_fnc_createLandingSpotNearZone = {
 	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 	// We also find another position if it's too far from the zone
-	while {count _pos > 2 && _pos distance2D br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
+	while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
 		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 		sleep 0.1;
 	};
