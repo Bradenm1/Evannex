@@ -359,7 +359,7 @@ br_fnc_onFirstZoneCreation = {
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
 		if (br_friendly_mark_enemy) then { execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf"; };
 	};
-	if (br_enabled_side_objectives) then { execVM "core\server\side_objective\fn_runObjectives.sqf"; };
+	if (br_enabled_side_objectives == 1) then { execVM "core\server\side_objective\fn_runObjectives.sqf"; };
 	execVM "core\server\zone\fn_commandEnemyGroups.sqf";
 	execVM "core\server\garbage_collector\fn_garbageCollector.sqf";
 	br_first_Zone = FALSE;
