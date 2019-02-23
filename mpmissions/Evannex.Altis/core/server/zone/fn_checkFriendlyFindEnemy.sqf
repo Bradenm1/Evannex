@@ -38,6 +38,7 @@ fnc_createMarkerType = {
 fnc_checkGroupSeen = {
 	_friendlyGroup = _this select 0;
 	{
+		if (count br_markers_marked >= _markerLimit) exitWith {};
 		// Check if group already has a marker
 		//if (!(_x in br_groups_marked)) then {
 			// Check if friendlys can see any units in a group
@@ -47,8 +48,10 @@ fnc_checkGroupSeen = {
 				} else {
 					["Ground Unit", groupId _x, _x] call fnc_createMarkerType;
 				};
-				[groupId _x,time + _marerRemovalLimit] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
-				if (!(groupId _x in br_markers_marked)) then { br_markers_marked append [groupId _x]; };
+				if (!(groupId _x in br_markers_marked)) then { 
+					br_markers_marked append [groupId _x]; 
+					[groupId _x,time + _marerRemovalLimit] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
+				}
 			};
 		//};
 	} forEach br_ai_groups;

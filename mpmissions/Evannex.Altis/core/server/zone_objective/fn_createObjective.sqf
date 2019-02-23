@@ -62,7 +62,8 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 
 // Delete markers
 br_fnc_deleteObjMarkers = {
-	deleteMarker _radiusName; deleteMarker _textName;
+	deleteMarker _radiusName; 
+	deleteMarker _textName;
 };
 
 // Creates the Objective
@@ -103,8 +104,6 @@ br_fnc_onTaken = {
 	if (_removeOnZoneCompleted) then  {
 		// Wait untill main zone is taken
 		waitUntil { br_zone_taken };
-	} else {
-		sleep 120;
 	};
 
 	[] call br_fnc_onZoneTakenAfterComplete;
@@ -113,7 +112,7 @@ br_fnc_onTaken = {
 // When zone is taken after 
 br_fnc_onZoneTakenAfterComplete = {
 	// Do some cleanup
-	[] call br_fnc_deleteObjMarkers;
+	if (!_deleteMarkerOnCapture) then { [] call br_fnc_deleteObjMarkers; };
 	sleep 120;
 	deleteVehicle _spawnedObj;
 };

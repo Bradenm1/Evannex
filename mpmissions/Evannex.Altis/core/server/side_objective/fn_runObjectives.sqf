@@ -28,6 +28,7 @@ br_fn_run_sides = {
 				br_current_sides deleteAt (br_current_sides find _x)
 			}
 		} foreach (br_current_sides);
+		sleep 1;
 		while {(count br_current_sides) < br_max_current_sides} do {
 			call br_create_side_objective;
 			sleep 1;
