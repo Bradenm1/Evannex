@@ -1,24 +1,25 @@
-_zoneName = _this select 0; // Has to be unique mission will have issues if not
-_zoneRadius = _this select 1; // Radius of the zone
-_objectToUse = _this select 2; // Object to use such as a building or vehicle
-_objective = _this select 3; // The objective type
-_deleteMarkerOnCapture = _this select 4; // If the marker is deleted on capture
-_textOnTaken = _this select 5; // Text when object is completed
-_groupsIfKill = _this select 6; // units to spawn at objective
-_mattersToObjectiveSquad = _this select 7; // If the friendly AI will ignore this objective
-_requiresCompletedToCaptureZone = _this select 8; // If the capture of the main zone requires the capture of this zone
-_brushType = _this select 9;
-_shapeType = _this select 10;
-_position = _this select 11;
-_removeOnZoneCompleted = _this select 12;
+_uniqueName = _this select 0; // Has to be unique mission will have issues if not
+_displayName = _this select 1; // Display Text
+_zoneRadius = _this select 2; // Radius of the zone
+_objectToUse = _this select 3; // Object to use such as a building or vehicle
+_objective = _this select 4; // The objective type
+_deleteMarkerOnCapture = _this select 5; // If the marker is deleted on capture
+_textOnTaken = _this select 6; // Text when object is completed
+_groupsIfKill = _this select 7; // units to spawn at objective
+_mattersToObjectiveSquad = _this select 8; // If the friendly AI will ignore this objective
+_requiresCompletedToCaptureZone = _this select 9; // If the capture of the main zone requires the capture of this zone
+_brushType = _this select 10;
+_shapeType = _this select 11;
+_position = _this select 12;
+_removeOnZoneCompleted = _this select 13;
 
 _spawnedObj = nil;
 _objectivePosition = nil;
 _objectiveOrigin = nil;
 _groupsToKill = []; // Groups spawned at objective
-_radiusName = format ["ZONE_%1_RADIUS", _zoneName];
-_textName = format ["ZONE_%1_ICON", _zoneName];
-_zoneVarName = format ["br_%1", _zoneName]; // Used to check if objective has been completed outside this local script
+_radiusName = format ["ZONE_%1_RADIUS", _uniqueName];
+_textName = format ["ZONE_%1_ICON", _uniqueName];
+_zoneVarName = format ["br_%1", _uniqueName]; // Used to check if objective has been completed outside this local script
 
 // Spawn given units at a certain location
 br_fnc_spawnGivenUnitsAt = {
@@ -56,7 +57,7 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 		case "Destory & Kill": { call br_fnc_spawnGroups; waitUntil {!alive _spawnedObj}; { _y = _x; waitUntil {({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		case "Destory": { waitUntil {!alive _spawnedObj}};
 		case "Kill": { _spawnedObj allowDamage FALSE; call br_fnc_spawnGroups; { _y = _x; waitUntil {({alive _x} count units _y < 1)}; } forEach _groupsToKill};
-		default { hint "Objective Error: " + _zoneName};
+		default { hint "Objective Error: " + _uniqueName};
 	};
 };
 
@@ -82,8 +83,8 @@ br_fnc_createObjective = {
 	// Creates the radius
 	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon
-	[_textName, _objectiveOrigin, _zoneName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
-	br_objectives append [[_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]];
+	[_textName, _objectiveOrigin, _displayName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	br_objectives append [[_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
 	// Take the objective
@@ -99,7 +100,7 @@ br_fnc_onTaken = {
 
 	// Set objective as taken
 	missionNamespace setVariable [_zoneVarName, TRUE]; 
-	br_objectives deleteAt (br_objectives find [_zoneName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]);
+	br_objectives deleteAt (br_objectives find [_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted]);
 	
 	if (_removeOnZoneCompleted) then  {
 		// Wait untill main zone is taken
