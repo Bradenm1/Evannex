@@ -48,6 +48,7 @@ br_fnc_spawnGroups = {
 		//{ _x setSkill br_ai_skill } forEach units _group;
 		[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 		_groupsToKill append [_group];
+		[_group, _safeSpot, _zoneRadius] execVM "core\server\zone_objective\fn_groupRoam.sqf";
 	} forEach _groupsIfKill;
 };
 

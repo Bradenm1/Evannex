@@ -231,6 +231,10 @@ br_fnc_runEvacChopper = {
 			} forEach _groups;
 			// Get landing position
 			_pos = [getpos (leader (_groups select 0)), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
+			while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
+				_pos = [getpos (leader (_groups select 0)), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
+				sleep 0.01;
+			}
 			// Create LZ
 			[_pos] call br_fnc_createLandingSpotLZ;
 			// Moveto LZ
