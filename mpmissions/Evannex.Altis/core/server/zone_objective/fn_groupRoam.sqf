@@ -12,7 +12,14 @@ While {({alive _x} count units _group) > 0} do {
 	sleep br_command_delay;
 };
 
-{ deleteVehicle _x; } forEach units _group; 
+{ 
+	_vehicle = (vehicle _x);
+	if (!(isNull _vehicle)) then {
+		deleteVehicle _vehicle;
+	};
+	deleteVehicle _x; 
+} forEach (units _group); 
+
 deleteGroup _group;  
 _group = grpNull; 
 _group = nil;

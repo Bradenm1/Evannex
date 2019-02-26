@@ -187,7 +187,13 @@ br_fuc_landGroupAtZone = {
 	// Remove groups from transit
 	{ br_groups_in_transit deleteAt (br_groups_in_transit find _x); } forEach _groups;
 	// Move groups into commanding zone group
-	{ br_friendly_ai_groups append [_x]; } forEach _groups;
+	{ 
+		_y = _x;
+		_playerCount = ({isPlayer _x} count (units _y));
+		if (_playerCount == 0) then {
+			br_friendly_ai_groups append [_y]; 
+		};
+	} forEach _groups;
 	// Delete un-needed things
 	deleteVehicle _landMarker;
 	deleteMarker format ["LZ - %1", _heliIndex];
@@ -234,7 +240,7 @@ br_fnc_runEvacChopper = {
 			while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
 				_pos = [getpos (leader (_groups select 0)), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
 				sleep 0.01;
-			}
+			};
 			// Create LZ
 			[_pos] call br_fnc_createLandingSpotLZ;
 			// Moveto LZ
@@ -258,7 +264,10 @@ br_fnc_runEvacChopper = {
 				_y = _x; 
 				waitUntil { {_x in _helicopterVech} count (units _y) == 0}; 
 				// Move group to waiting groups
-				br_friendly_groups_waiting append [_y];
+				_playerCount = ({isPlayer _x} count (units _y));
+				if (_playerCount == 0) then {
+					br_friendly_groups_waiting append [_y];
+				};
 				// Delete from transit group
 				br_groups_in_transit deleteAt (br_groups_in_transit find _y);
 			} forEach _groups;
