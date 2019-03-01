@@ -1,0 +1,4 @@
+class CfgFunctions
+{
+	#include "SBGF\cfgfunctions.hpp"
+};
