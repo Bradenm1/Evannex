@@ -20,6 +20,7 @@ While {TRUE} do {
 		[br_friendly_objective_groups] call br_fnc_checkObjectives;
 		[br_friendly_ai_groups] call br_fnc_checkObjectives;
 		[br_ai_groups] call br_fnc_checkObjectives;
+		[br_groups_in_buildings] call br_fnc_checkObjectives;
 	};
 	sleep 30;
 };

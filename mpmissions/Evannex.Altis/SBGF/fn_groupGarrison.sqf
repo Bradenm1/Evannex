@@ -30,15 +30,17 @@ _buildings = [_center,_radius] call SBGF_fnc_buildingPositions;
 {
 	_rndPos = ((_buildings select 1) select floor(random(count (_buildings select 1))));
 	
-	_x setPosATL (_rndPos);
+	if (!(isNil "_rndPos")) then {
+		_x setPosATL (_rndPos);
 	
-	doStop _x;
+		doStop _x;
 
-	_x setDir (random 359);
+		_x setDir (random 359);
 
-	_x setUnitPos "UP";
-	
-	_buildings set [1,((_buildings select 1) - [_rndPos])];
+		_x setUnitPos "UP";
+		
+		_buildings set [1,((_buildings select 1) - [_rndPos])];
+	};
 	
 } forEach _unitsGroup;
 _completed = true;

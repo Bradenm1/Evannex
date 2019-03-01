@@ -30,9 +30,18 @@ br_fnc_placeBomb = {
 	(_objective select 1) setDamage 1;
 };
 
+br_near_players = {
+	_aroundNoPlayers = FALSE;
+	_nearAPlayer = FALSE;
+	{  if (getpos (_objective select 1) distance (getpos _x) < _getOutOfVehicleRadius ) then { _nearAPlayer = TRUE; }; } forEach allPlayers; 
+	if (_nearAPlayer) then { _aroundNoPlayers = TRUE; } else { _aroundNoPlayers = FALSE; };
+	_aroundNoPlayers;
+};
+
 // Kill all groups at objective
 br_fnc_goKillPeople = {
 	_groups = _objective select 2;
+	timeToComplete = 600 + time;
 	if (count _groups > 0) then {
 		for "_i" from 0 to count _groups do {
 			{
@@ -40,7 +49,7 @@ br_fnc_goKillPeople = {
 				_wp setWaypointFormation "WEDGE";
 				_wp setWaypointType "DESTROY";
 				_wp setWaypointSpeed "FULL";
-				waitUntil { !(alive _x) };
+				waitUntil { ((timeToComplete < time) && !([] call br_near_players)) || !(alive _x) };
 			} forEach (units (_groups select _i));
 		};	
 	};
@@ -102,11 +111,12 @@ br_fnc_runRadioBombUnit = {
 			_wp = _objectiveGroup addWaypoint [_getPos, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
-			waitUntil { missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
+			timeToComplete = 600 + time;
+			waitUntil { ((timeToComplete < time) && !([] call br_near_players)) || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
 			// Check if objective is not completed
 			if (!(missionNamespace getVariable (_objective select 5)) && (missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))) then { 	
 				// Wait untill group has reached radio tower
-				waitUntil { ((missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {missionNamespace getVariable (_objective select 5)} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
+				waitUntil { (((timeToComplete < time) && !([] call br_near_players)) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {missionNamespace getVariable (_objective select 5)} || {({(alive _x)} count (units _objectiveGroup) == 0)}); };
 				// Touch off bomb at radio tower if still alive and radio tower not already blown up
 				if (({(alive _x)} count (units _objectiveGroup) > 0) && {!(missionNamespace getVariable (_objective select 5))} && {(missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))}) then 
 				{ 
