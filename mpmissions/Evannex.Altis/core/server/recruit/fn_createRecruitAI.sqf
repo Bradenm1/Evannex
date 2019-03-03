@@ -1,5 +1,5 @@
-_spawnPad = _this select 0; // Spawn position
-_recruitIndex = _this select 1; // Index
+private _spawnPad = _this select 0; // Spawn position
+private _recruitIndex = _this select 1; // Index
 
 // Run the script
 fn_createRecruitAI = {

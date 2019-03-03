@@ -1,12 +1,12 @@
-_name = _this select 0;
-_loc = _this select 1;
-_radi = _this select 2;
-_maxD = _this select 3;
-_color = _this select 4;
-_txt = _this select 5;
-_alpha = _this select 6;
-_brush = _this select 7;
-_shape = _this select 8;
+private _name = _this select 0;
+private _loc = _this select 1;
+private _radi = _this select 2;
+private _maxD = _this select 3;
+private _color = _this select 4;
+private _txt = _this select 5;
+private _alpha = _this select 6;
+private _brush = _this select 7;
+private _shape = _this select 8;
 
 createMarker [_name, _loc]; 
 _name setMarkerSize [_radi * sqrt _maxD, _radi * sqrt _maxD];

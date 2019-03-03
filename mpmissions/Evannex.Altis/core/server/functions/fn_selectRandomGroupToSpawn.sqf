@@ -1,11 +1,11 @@
 // The side number
-_sides = _this select 0;
-_side = _this select 1;
-_unitTypes = _this select 2;
-_types = _this select 3;
-_units = _this select 4;
-_location = _this select 5;
-_mainGroup = _this select 6;
+private _sides = _this select 0;
+private _side = _this select 1;
+private _unitTypes = _this select 2;
+private _types = _this select 3;
+private _units = _this select 4;
+private _location = _this select 5;
+private _mainGroup = _this select 6;
 
 // Picks random type of units
 _index = floor random count _unitTypes;

@@ -1,4 +1,4 @@
-_aim = 0.3;
+private _aim = 0.3;
 
 br_fnc_Fatigue = {
 	if ("Fatigue" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };

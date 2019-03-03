@@ -1,4 +1,4 @@
-_unit = _this select 0;
+private _unit = _this select 0;
 
 waitUntil { !(alive _unit); };
 sleep 120;

@@ -1,5 +1,4 @@
-_delayForAssignment = 5;
-_checkForNewPlayer = 10;
+private _delayForAssignment = 5;
 
 // Creates a task for the player
 br_fnc_createPlayerTask = {

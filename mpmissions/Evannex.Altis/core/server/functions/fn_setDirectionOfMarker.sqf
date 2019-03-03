@@ -1,5 +1,5 @@
-_group = _this select 0;
-_marker = _this select 1;
+private _group = _this select 0;
+private _marker = _this select 1;
 
 { 
 	_x setDir (markerDir _marker);

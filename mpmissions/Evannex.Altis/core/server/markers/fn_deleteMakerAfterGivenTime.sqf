@@ -1,5 +1,5 @@
-_marker = _this select 0; // The marker
-_time = _this select 1; // Future time
+private _marker = _this select 0; // The marker
+private _time = _this select 1; // Future time
 
 waitUntil { time >= _time || br_zone_taken || getMarkerColor _marker == ""; };
 

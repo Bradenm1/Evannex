@@ -4,9 +4,9 @@ _markerLimit = 6; // Markers limit
 
 // Checks if any units in group are seen
 fnc_checkUnitSeen = {
-	_friendlyGroup = _this select 0;
-	_enemyGroup = _this select 1;
-	_knows = FALSE;
+	private _friendlyGroup = _this select 0;
+	private _enemyGroup = _this select 1;
+	private _knows = FALSE;
 	{
 		if ((_friendlyGroup knowsAbout _x) > 0) then { _knows = TRUE };
 		if (_friendlyGroup knowsAbout (Vehicle _x) > 0) then { _knows = TRUE };
@@ -16,17 +16,17 @@ fnc_checkUnitSeen = {
 
 // Create the marker on the map
 fnc_createMapMarker = {
-	_marker = _this select 0;
-	_group = _this select 1;
-	_name = _this select 2;
+	private _marker = _this select 0;
+	private _group = _this select 1;
+	private _name = _this select 2;
 	[_marker, getpos (leader _group), _name, "ColorBlack", 0.5] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Create a maker given the type
 fnc_createMarkerType = {
-	_type = _this select 0;
-	_marker = _this select 1;
-	_group = _this select 2;
+	private _type = _this select 0;
+	private _marker = _this select 1;
+	private _group = _this select 2;
 	switch (_type) do {
 		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", getText (configFile >>  "CfgVehicles" >> typeof (Vehicle (leader _group)) >> "displayName")]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
@@ -36,7 +36,7 @@ fnc_createMarkerType = {
 
 // Check if any groups are seen
 fnc_checkGroupSeen = {
-	_friendlyGroup = _this select 0;
+	private _friendlyGroup = _this select 0;
 	{
 		if (count br_markers_marked >= _markerLimit) exitWith {};
 		// Check if group already has a marker

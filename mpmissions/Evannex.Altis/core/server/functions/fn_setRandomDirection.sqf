@@ -1,4 +1,4 @@
-_group = _this select 0;
+private _group = _this select 0;
 
 { 
 	_x setVectorDir (call compile preprocessFileLineNumbers "core\server\functions\fn_gerRandomVector.sqf");  

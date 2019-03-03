@@ -2,12 +2,12 @@ While {TRUE} do {
 	if (!br_zone_taken) then {
 		// Delete groups where all units are dead
 		{	// Add waypoint to group (Will do for all groups)
-			_y = _x;
+			private _y = _x;
 			// Check number of waypoints, if less then 3 add more.
 			if (count (waypoints _y) < 3 && !br_zone_taken) then {
 				//_pos = [] call getLocation;
-				_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
-				_wp = _y addWaypoint [_pos, 0];
+				private _pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
+				private _wp = _y addWaypoint [_pos, 0];
 				_wp setWaypointType (selectrandom ["Sentry", "Move", "Destroy"]);
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 			};
@@ -17,7 +17,7 @@ While {TRUE} do {
 			};
 		} foreach br_friendly_ai_groups;
 		{
-			_y = _x;
+			private _y = _x;
 			if (({alive _x} count units _y) < 1) then { br_friendly_ground_groups deleteAt (br_friendly_ground_groups find _y); { deleteVehicle _x } forEach units _y; deleteGroup _y;  _y = grpNull; _y = nil;};
 		} forEach br_friendly_ground_groups;
 	};

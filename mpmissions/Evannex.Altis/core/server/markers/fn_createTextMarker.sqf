@@ -1,8 +1,8 @@
-_name = _this select 0;
-_loc = _this select 1;
-_txt = _this select 2;
-_color = _this select 3;
-_alpha = _this select 4;
+private _name = _this select 0;
+private _loc = _this select 1;
+private _txt = _this select 2;
+private _color = _this select 3;
+private _alpha = _this select 4;
 createMarker [_name, _loc];
 _name setMarkerShape "ICON"; 
 _name setMarkerText _txt;

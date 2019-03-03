@@ -4,7 +4,6 @@ _unitChance = _this select 1; // The list of units that have a chance to spawn
 _aiSpawnRate = 0; // Delay in seconds
 _allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
 _currentGarrisons = 0;
-_tempbr_min_ai_groups = 0;
 
 _unitTypes = ["Infantry"];
 
@@ -51,13 +50,12 @@ br_fnc_getPositionNearNoPlayersAtZone = {
 
 // run main
 br_fnc_spawnAI = {
-	_tempbr_min_ai_groups = br_min_ai_groups;
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
 		while {(count br_ai_groups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
 			//sleep _aiSpawnRate;
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_group = [br_sides, 0, _unitTypes, br_side_types, br_units, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			_group = [br_sides, 0, _unitTypes, br_side_types, (call compile preprocessFileLineNumbers "core\spawnlists\units.sqf"), _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			if (_currentGarrisons < br_max_garrisons) then {
 				_completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
@@ -66,11 +64,9 @@ br_fnc_spawnAI = {
 						_x disableAI "PATH"; 
 						_tempGroup = createGroup EAST;
 						[_x] joinSilent _tempGroup;
-						br_ai_groups append [_tempGroup];
 						br_groups_in_buildings append [_tempGroup];
 					} forEach (units _group);
 					_currentGarrisons = _currentGarrisons + 1;
-					br_min_ai_groups = br_min_ai_groups + 1;
 				};
 			};
 			sleep 0.01;
@@ -96,7 +92,6 @@ br_fnc_spawnAI = {
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
 	};
-	br_min_ai_groups = _tempbr_min_ai_groups;
 };
 
 [] call br_fnc_spawnAI;

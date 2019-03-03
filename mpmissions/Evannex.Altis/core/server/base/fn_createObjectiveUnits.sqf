@@ -1,10 +1,10 @@
-_spawnPad = _this select 0; // The position where the AI will spawn
-_bombIndex = _this select 1; // Index when created
-_allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
-_objectiveGroup = nil; // The unit group
-_transportVehicle = nil; // The vehicle the group is using
-_getOutOfVehicleRadius = 400; // Range from objective to eject vehicle
-_objective = nil; // The objective for the group
+private _spawnPad = _this select 0; // The position where the AI will spawn
+private _bombIndex = _this select 1; // Index when created
+private _allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
+private _objectiveGroup = nil; // The unit group
+private _transportVehicle = nil; // The vehicle the group is using
+private _getOutOfVehicleRadius = 400; // Range from objective to eject vehicle
+private _objective = nil; // The objective for the group
 
 // Creat the units
 br_fnc_createBombUnits = {
@@ -25,14 +25,14 @@ br_fnc_createBombUnits = {
 
 // Tell the unit to touchoff the bomb
 br_fnc_placeBomb = {
-	_bomb = "satchelcharge_remote_ammo" createVehicle (getpos (_objective select 1));
+	private _bomb = "satchelcharge_remote_ammo" createVehicle (getpos (_objective select 1));
 	_bomb setDamage 1;
 	(_objective select 1) setDamage 1;
 };
 
 br_near_players = {
-	_aroundNoPlayers = FALSE;
-	_nearAPlayer = FALSE;
+	private _aroundNoPlayers = FALSE;
+	private _nearAPlayer = FALSE;
 	{  if (getpos (_objective select 1) distance (getpos _x) < _getOutOfVehicleRadius ) then { _nearAPlayer = TRUE; }; } forEach allPlayers; 
 	if (_nearAPlayer) then { _aroundNoPlayers = TRUE; } else { _aroundNoPlayers = FALSE; };
 	_aroundNoPlayers;
@@ -40,8 +40,8 @@ br_near_players = {
 
 // Kill all groups at objective
 br_fnc_goKillPeople = {
-	_groups = _objective select 2;
-	timeToComplete = 600 + time;
+	private _groups = _objective select 2;
+	timeToComplete = time + 600;
 	if (count _groups > 0) then {
 		for "_i" from 0 to count _groups do {
 			{
@@ -57,7 +57,7 @@ br_fnc_goKillPeople = {
 
 // Do the objectives
 br_fnc_DoObjective = {
-	_obj = _this select 0;
+	private _obj = _this select 0;
 	switch (_obj) do {
 		case "Destory & Kill": { call br_fnc_goKillPeople; call br_fnc_placeBomb; };
 		case "Destory": { call br_fnc_placeBomb; };
@@ -68,7 +68,7 @@ br_fnc_DoObjective = {
 
 // Find objective
 br_fnc_findObjective = {
-	_foundObjective = FALSE;
+	private _foundObjective = FALSE;
 	// Try find an objective
 	while {!_foundObjective} do {
 		_objective = selectRandom br_objectives;
@@ -95,8 +95,8 @@ br_fnc_runRadioBombUnit = {
 		// Idle group if no radio tower
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
 		// Check if any groups are waiting
-		_getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
-		_wp = _objectiveGroup addWaypoint [_getPos, 0];
+		private _getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+		private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 		_wp setWaypointType "GETOUT";
 		_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 		// Wait until group is within a given range
@@ -107,11 +107,11 @@ br_fnc_runRadioBombUnit = {
 		if (!(missionNamespace getVariable (_objective select 5))) then {
 			//{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle);
 			waitUntil { missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || ({_x in _transportVehicle} count (units _objectiveGroup) == 0) };
-			_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
-			_wp = _objectiveGroup addWaypoint [_getPos, 0];
+			private _getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+			private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
-			timeToComplete = 600 + time;
+			timeToComplete = time + 600;
 			waitUntil { ((timeToComplete < time) && !([] call br_near_players)) || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
 			// Check if objective is not completed
 			if (!(missionNamespace getVariable (_objective select 5)) && (missionNamespace getVariable (format ["br_objective_%1", _objective select 0]))) then { 	

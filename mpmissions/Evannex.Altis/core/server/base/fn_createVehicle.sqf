@@ -1,7 +1,7 @@
-_vehicleGroup = nil; // The group in the vehicle
-_vehicle = nil; // The vehicle
-_spawnPad = _this select 0; // The spawnpad for it
-_unitChance = _this select 1;
+private _vehicleGroup = nil; // The group in the vehicle
+private _vehicle = nil; // The vehicle
+private _spawnPad = _this select 0; // The spawnpad for it
+private _unitChance = _this select 1;
 
 // Spawn custom units
 br_fnc_createVehicleUnit = {
@@ -10,9 +10,9 @@ br_fnc_createVehicleUnit = {
 	// Create its crew
 	createVehicleCrew _vehicle;
 	// Get the vehicle commander
-	_commander = driver _vehicle;
+	private _commander = driver _vehicle;
 	// Get the group from the commander
-	_temp = group _commander;
+	private _temp = group _commander;
 	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
 	_vehicleGroup = createGroup WEST;
 	(units _temp) joinSilent _vehicleGroup;
