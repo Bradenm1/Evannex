@@ -198,13 +198,25 @@ br_random_objectives = {
 	// Create radio tower
 	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\compositions\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
-	switch (round(random 3)) do {
-		case 0: { ["EMP", "EMP", 6, [], "Kill", TRUE, "EMP Destroyed!", ["O_Truck_03_device_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		case 1: { ["Helicopter", "Helicopter", 6, [], "Kill", TRUE, "Attack Helicopter Destroyed!", ["O_Heli_Attack_02_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		case 2: { ["AA", "AA", 4, [], "Kill", TRUE, "AA Destroyed!", ["O_APC_Tracked_02_AA_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		case 3: { ["Enemy_Camp", "Enemy Camp", 2, selectrandom (call compile preprocessFileLineNumbers "core\compositions\small_bases.sqf"), "Kill", TRUE, "AA Destroyed!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_Soldier_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf"; };
-		default {};
-	};
+	private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\compositions\zone_objectives.sqf");
+	[
+		_zoneSideObjective select 0, 
+		_zoneSideObjective select 1,
+		_zoneSideObjective select 2,
+		_zoneSideObjective select 3,
+		_zoneSideObjective select 4,
+		_zoneSideObjective select 5,
+		_zoneSideObjective select 6,
+		_zoneSideObjective select 7,
+		_zoneSideObjective select 8,
+		_zoneSideObjective select 9,
+		_zoneSideObjective select 10,
+		_zoneSideObjective select 11,
+		_zoneSideObjective select 12,
+		_zoneSideObjective select 13,
+		_zoneSideObjective select 14,
+		_zoneSideObjective select 15
+	] execVM "core\server\zone_objective\fn_createObjective.sqf";
 };
 
 // Main function

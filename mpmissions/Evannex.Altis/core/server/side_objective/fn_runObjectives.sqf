@@ -3,14 +3,14 @@ br_create_side_objective = {
 	private _objectivePosition = [0,0];
 
 	// Side objective cannot be within n of meters
-	while {_distance < 1000} do {
+	while {_distance < 1500} do {
 		_objectivePosition = [[], 0, -1, 0, 0, 25, 0] call BIS_fnc_findSafePos;
 		_distance = br_current_zone distance2D _objectivePosition;
 	};
 
 	_sideObjectName = (format ["Side_Objective_%1", count br_current_sides]);
 
-	_selected = selectrandom (call compile preprocessFileLineNumbers "core\compositions\side_mission_bases.sqf");
+	_selected = selectrandom (call compile preprocessFileLineNumbers "core\compositions\side_missions.sqf");
 	[_sideObjectName, _selected select 0, _selected select 4, _selected select 2, "Kill", TRUE, _selected select 1, _selected select 3, TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE, [], _selected select 5] execVM "core\server\zone_objective\fn_createObjective.sqf";
 	br_current_sides append [[_objectivePosition, _sideObjectName]];
 };
