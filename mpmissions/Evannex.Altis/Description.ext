@@ -126,6 +126,12 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 1;
     };
+	class RandomMines {
+        title = "Enabled Random Mines";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
 };
 
 class CfgFunctions 

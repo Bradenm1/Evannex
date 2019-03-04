@@ -6,6 +6,9 @@ While {TRUE} do {
 		if (count (waypoints _y) < 3) then {
 			private _pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
 			_wp = _y addWaypoint [_pos, 0];
+			_wp setWaypointFormation (selectrandom ["NO CHANGE", "COLUMN", "STAG COLUMN", "WEDGE", "ECH LEFT", "ECH RIGHT", "VEE", "LINE", "FILE", "DIAMOND"]);
+			_wp setWaypointSpeed (selectrandom ["UNCHANGED", "LIMITED", "NORMAL", "FULL"]);
+			_wp setWaypointBehaviour (selectrandom ["UNCHANGED", "CARELESS", "SAFE", "AWARE", "STEALTH"]);
 			_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 		};
 		// Check group is empty, remove it from groups and delete it

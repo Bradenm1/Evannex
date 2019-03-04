@@ -10,6 +10,7 @@ br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of 
 br_enabled_side_objectives = "SideObjectives" call BIS_fnc_getParamValue;
 br_max_checks = 500; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
+br_mines_enabled = if ("RandomMines" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_side_radius = 15;
 br_side_types = ["OPF_F","BLU_F"];
 br_empty_vehicles_in_garbage_collection = [];
@@ -133,6 +134,8 @@ br_fnc_deleteNonSideObjectives = {
 	{
 		private _removeOnZoneCompleted = _x select 7;
 		if (_removeOnZoneCompleted) then {
+			// Set objective as completed
+			missionNamespace setVariable [_x select 5, TRUE]; 
 			br_objectives deleteAt (br_objectives find _x);
 		}
 	} foreach br_objectives;
@@ -194,11 +197,11 @@ br_fnc_onNewZoneCreation = {
 
 br_random_objectives = {
 	// Create HQ
-	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\compositions\bases.sqf"), "Kill", FALSE, "HQ Taken!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\bases.sqf"), "Kill", FALSE, "HQ Taken!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create radio tower
-	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\compositions\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
-	private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\compositions\zone_objectives.sqf");
+	private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\savedassets\zone_objectives.sqf");
 	[
 		_zoneSideObjective select 0, 
 		_zoneSideObjective select 1,
@@ -233,6 +236,7 @@ br_fnc_main = {
 		// Set taken as false
 		br_zone_taken = FALSE;
 		["ZONE_Radio_Tower_RADIUS", (call compile preprocessFileLineNumbers "core\spawnlists\enemy_speicals.sqf")] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
+		if (br_mines_enabled) then { execVM "core\server\zone\fn_placeMines.sqf"; };
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed

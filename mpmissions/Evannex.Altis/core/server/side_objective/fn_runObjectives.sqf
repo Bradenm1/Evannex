@@ -10,7 +10,7 @@ br_create_side_objective = {
 
 	_sideObjectName = (format ["Side_Objective_%1", count br_current_sides]);
 
-	_selected = selectrandom (call compile preprocessFileLineNumbers "core\compositions\side_missions.sqf");
+	_selected = selectrandom (call compile preprocessFileLineNumbers "core\savedassets\side_missions.sqf");
 	[_sideObjectName, _selected select 0, _selected select 4, _selected select 2, "Kill", TRUE, _selected select 1, _selected select 3, TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE, [], _selected select 5] execVM "core\server\zone_objective\fn_createObjective.sqf";
 	br_current_sides append [[_objectivePosition, _sideObjectName]];
 };

@@ -94,4 +94,5 @@ br_fnc_spawnAI = {
 	};
 };
 
+sleep 1;
 [] call br_fnc_spawnAI;
