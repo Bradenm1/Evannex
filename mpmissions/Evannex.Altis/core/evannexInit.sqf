@@ -9,4 +9,5 @@ if (isServer) then {
 if (hasInterface) then {
 	// Disable annoying crap
 	execVM "core\client\fn_setPlayerSettings.sqf";
+	execVM "core\client\fn_displayStartingScreen.sqf";
 };

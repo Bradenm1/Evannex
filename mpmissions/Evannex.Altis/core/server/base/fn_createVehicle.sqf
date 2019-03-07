@@ -35,6 +35,7 @@ br_fnc_runVehicleUnit = {
 		//br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _vehicleGroup);
 		br_friendly_vehicles deleteAt (br_friendly_vehicles find _vehicleGroup);
 		deleteGroup _vehicleGroup;
+		deleteVehicle _vehicle;
 	};
 };
 

@@ -11,7 +11,10 @@ br_enabled_side_objectives = "SideObjectives" call BIS_fnc_getParamValue;
 br_max_checks = 500; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_mines_enabled = if ("RandomMines" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
-br_side_radius = 15;
+br_randomly_find_zone = if ("PlaceZoneRandomly" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // Finds a random position on the map intead of using markers
+br_zone_side_enabled = if ("ZoneSideEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
+br_max_current_sides = "NSides" call BIS_fnc_getParamValue;
+br_max_garrisons = "NGarrisons" call BIS_fnc_getParamValue;
 br_side_types = ["OPF_F","BLU_F"];
 br_empty_vehicles_in_garbage_collection = [];
 br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
@@ -38,18 +41,14 @@ br_command_delay = 5; // Command delay for both enemy and friendly zone AI
 br_ai_skill = 1;
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
-br_randomly_find_zone = FALSE; // Finds a random position on the map intead of using markers
 br_radio_tower_enabled = TRUE;
 br_zone_taken = TRUE; // If the zone is taken.. start off at true
 br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_current_sides = [];
-br_max_current_sides = 1;
-br_global_timer = 0;  // Seconds since mission started
 br_next_zone_start_delay = 20; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
-br_max_garrisons = 3;
 br_groups_in_buildings = [];
 
 // Creates the zone
@@ -201,25 +200,27 @@ br_random_objectives = {
 	// Create radio tower
 	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
-	private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\savedassets\zone_objectives.sqf");
-	[
-		_zoneSideObjective select 0, 
-		_zoneSideObjective select 1,
-		_zoneSideObjective select 2,
-		_zoneSideObjective select 3,
-		_zoneSideObjective select 4,
-		_zoneSideObjective select 5,
-		_zoneSideObjective select 6,
-		_zoneSideObjective select 7,
-		_zoneSideObjective select 8,
-		_zoneSideObjective select 9,
-		_zoneSideObjective select 10,
-		_zoneSideObjective select 11,
-		_zoneSideObjective select 12,
-		_zoneSideObjective select 13,
-		_zoneSideObjective select 14,
-		_zoneSideObjective select 15
-	] execVM "core\server\zone_objective\fn_createObjective.sqf";
+	if (br_zone_side_enabled) then {
+		private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\savedassets\zone_objectives.sqf");
+		[
+			_zoneSideObjective select 0, 
+			_zoneSideObjective select 1,
+			_zoneSideObjective select 2,
+			_zoneSideObjective select 3,
+			_zoneSideObjective select 4,
+			_zoneSideObjective select 5,
+			_zoneSideObjective select 6,
+			_zoneSideObjective select 7,
+			_zoneSideObjective select 8,
+			_zoneSideObjective select 9,
+			_zoneSideObjective select 10,
+			_zoneSideObjective select 11,
+			_zoneSideObjective select 12,
+			_zoneSideObjective select 13,
+			_zoneSideObjective select 14,
+			_zoneSideObjective select 15
+		] execVM "core\server\zone_objective\fn_createObjective.sqf";
+	}
 };
 
 // Main function

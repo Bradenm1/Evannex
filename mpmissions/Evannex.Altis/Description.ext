@@ -31,6 +31,15 @@ class Header {
 
 // Server params
 class Params {
+	class Daytime
+	{
+		title = "Time";
+		texts[] = {"Morning","Day","Evening","Night"};
+		values[] = {6,12,18,0};
+		default = 12;
+		function = "BIS_fnc_paramDaytime"; // (Optional) [[Functions_Library_(Arma_3)|Function]] [[call]]ed when player joins, selected value is passed as an argument
+		isGlobal = 1; // (Optional) 1 to execute script / function locally for every player who joins, 0 to do it only on server
+	};
 	class NumberFriendlyGroups {
 		title = "Min Friendly Ground Groups Amount"; // Param name visible in the list
 		values[] = {0, 1, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
@@ -45,7 +54,7 @@ class Params {
 	};
 	class  NumberEnemySpecialGroups {
 		title = "Number Of Special Enemy Groups"; // Param name visible in the list
-		values[] = {0, 1, 5, 6, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 7; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
@@ -128,6 +137,30 @@ class Params {
     };
 	class RandomMines {
         title = "Enabled Random Mines";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
+	class NSides {
+        title = "Number of Side Missions";
+        values[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        texts[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        default = 1;
+    };
+	class NGarrisons {
+        title = "Number of Garrisons";
+        values[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        texts[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        default = 3;
+    };
+	class PlaceZoneRandomly {
+        title = "Place Zone Randomly";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 0;
+    };
+	class ZoneSideEnabled {
+        title = "Zone Sides Enabled";
         values[] = {0,1};
         texts[] = {"Disabled","Enabled"};
         default = 1;
