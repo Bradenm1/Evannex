@@ -1,4 +1,4 @@
-private _aiSpawnRate = 3; // Delay in seconds
+private _aiSpawnRate = 1; // Delay in seconds
 private _allSpawnedDelay = 10; // Seconds to wait untill checking if any groups died
 
 private _spawnFriendlyGroundUnitsLocation = getMarkerPos "marker_ai_spawn_friendly_ground_units"; // Where to spawn friendly units

@@ -22,7 +22,7 @@ br_fnc_deleteOldVehicleUnits = {
 // Creates the helicopter units
 br_fnc_createVehicleUnits = {
 	_vehicleGroup = [[] call br_fnc_getGroundUnitLocation, WEST, ["B_crew_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
-	//{_x disableAI "MOVE"; _x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _vehicleGroup;
+	{_x disableAI "MOVE"; _x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _vehicleGroup;
 	(leader _vehicleGroup) moveInDriver _vehicle;
 	{ _x setSkill br_ai_skill } forEach units _vehicleGroup;
 	br_heliGroups append [_vehicleGroup];
@@ -82,7 +82,7 @@ br_fnc_move = {
 	_vehicle setDamage 0;
 	_vehicle setFuel 1;
 	_vehicleGroup setBehaviour "CARELESS";
-	//{_x enableAI "MOVE"; } forEach units _vehicleGroup;
+	{_x enableAI "MOVE"; } forEach units _vehicleGroup;
 	private _wp = _vehicleGroup addWaypoint [_pos, count (waypoints _vehicleGroup)];
 	_wp setWaypointType "MOVE";
 	_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
@@ -128,6 +128,7 @@ br_fuc_MoveGroupTotZone = {
 
 // If the Vehicle is transport
 br_fnc_runTransportVehicle = {
+	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 	// Check if any groups are waiting
 	if (count br_friendly_groups_waiting > 0) then {
 		private _groups = [];
