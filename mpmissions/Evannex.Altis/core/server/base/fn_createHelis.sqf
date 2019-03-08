@@ -226,7 +226,7 @@ br_fnc_createHelis = {
 		[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
 		while {({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)};} do {
-			sleep 5;
+			sleep 15;
 			if (_evacChopper) then { [] call br_fnc_runEvacChopper; } else { [] call br_fnc_runTransportChopper; };
 			_helicopterVech setFuel 1;
 			_helicopterVech setDamage 0;
