@@ -4,7 +4,6 @@ private _evacChopper = _this select 2; // If te helicopter is a evac helicopter 
 private _chopperUnits = nil; // The group in the heli
 private _helicopterVech = nil; // The helicopter
 private _landMarker = nil; // Used to tell the AI where to land
-private _groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
 
 // Gets a random location on the player
 br_fnc_getGroundUnitLocation = {
@@ -78,7 +77,7 @@ br_fnc_getUnitsAlive = {
 br_fnc_waitForUntsToEnterChopper = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
-	_timeBeforeTeleport = time + _groupsStuckTeleportDelay;
+	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
 	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) };
 	if (time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) ) then { { _x moveInCargo _helicopterVech; } forEach units _tempGroup; };
 };
@@ -119,7 +118,7 @@ br_fuc_landGroupAtZone = {
 	// Tell the groups to getout
 	[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
-	tempTime = time + _groupsStuckTeleportDelay;
+	tempTime = time + br_groupsStuckTeleportDelay;
 	{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	

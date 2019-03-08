@@ -4,7 +4,6 @@ private _unitChance = _this select 2;
 private _vehicleGroup = nil; // The group in the vehicle
 private _vehicle = nil; // The vehicle
 private _landMarker = nil; // Used to tell the AI where to land
-private _groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
 
 // Gets a random location on the player
 br_fnc_getGroundUnitLocation = {
@@ -64,7 +63,7 @@ br_fnc_createVehicleUnit = {
 br_fnc_waitForUntsToEnterVehicle = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
-	_timeBeforeTeleport = time + _groupsStuckTeleportDelay;
+	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
 	waitUntil { {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || _vehicle emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
 	if (time >= _timeBeforeTeleport ) then { { _x moveInCargo _vehicle; } forEach units _tempGroup; };
 };
@@ -105,7 +104,7 @@ br_fuc_MoveGroupTotZone = {
 	// Tell the groups to getout
 	[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
-	tempTime = time + _groupsStuckTeleportDelay;
+	tempTime = time + br_groupsStuckTeleportDelay;
 	{ waitUntil { [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	

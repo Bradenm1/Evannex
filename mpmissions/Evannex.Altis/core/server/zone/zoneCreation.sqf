@@ -27,6 +27,7 @@ br_special_ai_groups = []; // Enemy special groups
 br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
 br_groups_marked = []; // Enemy groups marked on map
+br_base_defences = [];
 br_sides = [EAST, WEST];
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
@@ -50,6 +51,7 @@ br_current_sides = [];
 br_next_zone_start_delay = 20; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
+br_groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
 
 // Creates the zone
 br_fnc_createZone = {
@@ -96,6 +98,7 @@ br_fnc_doChecks = {
 		private _endStringRecruit = Format ["recruit_%1", _i];
 		private _endStringJetSpawn = Format ["jet_spawn_%1", _i];
 		private _endStringVehicleTransport = Format ["vehicle_transport_spawn_%1", _i];
+		private _endStringBaseDefence = Format ["defence_spawn_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
@@ -113,6 +116,8 @@ br_fnc_doChecks = {
 		then { [_endStringRecruit, _i] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})
 		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf")] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
+		if ((getMarkerColor _endStringBaseDefence != "") && {(br_enable_friendly_ai)})
+		then { [_endStringBaseDefence, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_base_defence.sqf")] execVM "core\server\base\fn_createBaseDefence.sqf"; };
 	};
 };
 
@@ -245,6 +250,7 @@ br_fnc_main = {
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
 		{ if (_x select 6) then { waitUntil { missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
+		// Wait untill enemy units drop below a threshold
 		waitUntil { ((count br_ai_groups - (count br_groups_in_buildings / 2)) <= br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
 		sleep br_next_zone_start_delay;
