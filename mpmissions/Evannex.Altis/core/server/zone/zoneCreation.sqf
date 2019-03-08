@@ -95,6 +95,7 @@ br_fnc_doChecks = {
 		private _endStringBombSquad = Format ["objective_squad_%1", _i];
 		private _endStringRecruit = Format ["recruit_%1", _i];
 		private _endStringJetSpawn = Format ["jet_spawn_%1", _i];
+		private _endStringVehicleTransport = Format ["vehicle_transport_spawn_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
@@ -110,6 +111,8 @@ br_fnc_doChecks = {
 		then { [_endStringBombSquad, _i] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
 		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
 		then { [_endStringRecruit, _i] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
+		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})
+		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf")] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 	};
 };
 

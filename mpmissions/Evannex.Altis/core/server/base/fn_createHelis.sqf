@@ -6,32 +6,10 @@ private _helicopterVech = nil; // The helicopter
 private _landMarker = nil; // Used to tell the AI where to land
 private _groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
 
-// Gets a random location on the plaer
+// Gets a random location on the player
 br_fnc_getGroundUnitLocation = {
 	// Gets a random location within the zone radius
 	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 180, random 360];
-};
-
-// Commands groups in or out of the chopper
-br_fnc_commandGroupIntoChopper = {
-	private _group = _this select 0;
-	private _getOut = _this select 1;
-	if (_getOut) then {
-		_group leaveVehicle _helicopterVech;
-	} else {
-		_group addVehicle _helicopterVech;
-	};
-	{
-		//_x assignAsCargo _helicopterVech;
-		if (_getOut) then { _x action ["Eject", _helicopterVech]; } else { [_x] orderGetIn true; };
-	} foreach (units _group);
-};
-
-// Eject all crew
-br_fnc_ejectCrew = {
-	{
-		_x action ["Eject", _helicopterVech]; _x leaveVehicle _helicopterVech;
-	} foreach (crew _helicopterVech);
 };
 
 // Create a landing pad
@@ -88,14 +66,6 @@ br_fnc_createLandingSpotLZ = {
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 };
 
-// Get how many units from a group are in the chopper
-br_fnc_getUnitsInHeli = {
-	private _tempGroup = _this select 0;
-	private _count = 0;
-	{ if (_x in _helicopterVech) then { _count = _count + 1}; } forEach (units _tempGroup);
-	_count;
-};
-
 // Get units alive in a group
 br_fnc_getUnitsAlive = {
 	private _tempGroup = _this select 0;
@@ -135,53 +105,22 @@ br_fnc_movetoAndLand = {
 	_helicopterVech engineOn false;
 };
 
-// Find groups waiting for transport
-br_fuc_findGroupsInQueue = {
-	// Group to append to
-	private _groups = _this select 0;
-	private _groupWait = _this select 1;
-	// Number of people
-	private _Peps = 0;	
-	{
-		// Get the alive units for each group
-		private _unitsAlive = [_x] call br_fnc_getUnitsAlive;
-		if (_unitsAlive > 0) then {
-			if ((_Peps + _unitsAlive) <= _helicopterVech emptyPositions "cargo") then {
-				_groupWait deleteAt (_groupWait find _x);
-				_groups append [_x];
-				_Peps = _Peps + _unitsAlive;
-				sleep 3;
-			};
-		};
-	} forEach _groupWait;
-	_groups;
-};
-
-// Check if any players are waiting at chopper and return them
-br_fuc_playersInChopper = {
-	private _group = [];
-	{
-		if (_x in _helicopterVech) then { _group append [group _x] };
-	} forEach allPlayers;	
-	_group;
-};
-
 // Go and land at zone
 br_fuc_landGroupAtZone = {
 	private _groups = _this select 0;
 	// Add groups to transit
 	{ br_groups_in_transit append [_x]; } forEach _groups;
 	// Command groups into helicopter
-	{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
+	{ [_x, false, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
 	// Generate landing zone and move to it and land
 	[[] call br_fnc_createLandingSpotNearZone] call br_fnc_movetoAndLand;
 	// Tell the groups to getout
-	[] call br_fnc_ejectCrew;
+	[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
 	tempTime = time + _groupsStuckTeleportDelay;
-	{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0 || time > tempTime}; } forEach _groups;
+	{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 	// Remove groups from transit
@@ -209,13 +148,13 @@ br_fnc_runTransportChopper = {
 	if (count br_friendly_groups_waiting > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_waiting] call br_fuc_findGroupsInQueue; 
+		_groups = [_groups, br_friendly_groups_waiting, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";
 		if (count _groups > 0) then {
 			[_groups] call br_fuc_landGroupAtZone;
 		};		
 	} else { 
 		// Check if any players are waiting in helicopter
-		_playersGroups = [] call br_fuc_playersInChopper;
+		_playersGroups = [_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getPlayersInVehicle.sqf";
 		if (count _playersGroups > 0) then {
 			[_playersGroups] call br_fuc_landGroupAtZone;
 		};
@@ -246,7 +185,7 @@ br_fnc_runEvacChopper = {
 			// Moveto LZ
 			[_pos] call br_fnc_movetoAndLand;
 			// Wait for group to get in
-			{ [_x, false] call br_fnc_commandGroupIntoChopper; } forEach _groups;
+			{ [_x, false, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
 			// Delete LZ
@@ -255,10 +194,10 @@ br_fnc_runEvacChopper = {
 			// Move back to base
 			[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
 			// Eject the crew at base
-			[] call br_fnc_ejectCrew;
+			[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 			// Wait untill all units are out
 			tempTime = time + _groupsStuckTeleportDelay;
-			{ waitUntil { [_x] call br_fnc_getUnitsInHeli == 0 || time > tempTime}; } forEach _groups;
+			{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
 				private _y = _x; 
