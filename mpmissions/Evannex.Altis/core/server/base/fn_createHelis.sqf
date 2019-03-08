@@ -167,7 +167,7 @@ br_fnc_runEvacChopper = {
 	if (count br_friendly_groups_wating_for_evac > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_wating_for_evac] call br_fuc_findGroupsInQueue; 
+		_groups = [_groups, br_friendly_groups_waiting, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";
 		if (count _groups > 0) then {
 			{ 
 				br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _x);
