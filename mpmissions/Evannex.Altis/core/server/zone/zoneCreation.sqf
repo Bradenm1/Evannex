@@ -98,6 +98,7 @@ br_fnc_doChecks = {
 		private _endStringRecruit = Format ["recruit_%1", _i];
 		private _endStringJetSpawn = Format ["jet_spawn_%1", _i];
 		private _endStringVehicleTransport = Format ["vehicle_transport_spawn_%1", _i];
+		private _endStringVehicleEvac = Format ["vehicle_evac_spawn_%1", _i];
 		private _endStringBaseDefence = Format ["defence_spawn_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
@@ -115,10 +116,22 @@ br_fnc_doChecks = {
 		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
 		then { [_endStringRecruit, _i] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})
-		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf")] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
+		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf"), FALSE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
+		if ((getMarkerColor _endStringVehicleEvac != "") && {(br_enable_friendly_ai)})
+		then { [_endStringVehicleEvac, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf"), TRUE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 		if ((getMarkerColor _endStringBaseDefence != "") && {(br_enable_friendly_ai)})
 		then { [_endStringBaseDefence, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_base_defence.sqf")] execVM "core\server\base\fn_createBaseDefence.sqf"; };
+		[_i] call br_fnc_doChecksDebug;
 	};
+};
+
+br_fnc_doChecksDebug = {
+	private _index = _this select 0;
+
+	private _endStringUnitNeedingEvac = Format ["debug_unit_to_evac_%1", _i];
+
+	if ((getMarkerColor _endStringUnitNeedingEvac != "") && {(br_enable_friendly_ai)})
+	then { [_endStringUnitNeedingEvac, _i] execVM "core\server\debug\fnc_unitToEvac.sqf"; };
 };
 
 // Called when zone is taken

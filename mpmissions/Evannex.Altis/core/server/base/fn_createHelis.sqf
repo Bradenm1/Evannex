@@ -166,7 +166,7 @@ br_fnc_runEvacChopper = {
 	if (count br_friendly_groups_wating_for_evac > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_waiting, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";
+		_groups = [_groups, br_friendly_groups_wating_for_evac, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";
 		if (count _groups > 0) then {
 			{ 
 				br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _x);
@@ -195,7 +195,7 @@ br_fnc_runEvacChopper = {
 			// Eject the crew at base
 			[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 			// Wait untill all units are out
-			tempTime = time + _groupsStuckTeleportDelay;
+			tempTime = time + br_groupsStuckTeleportDelay;
 			{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
