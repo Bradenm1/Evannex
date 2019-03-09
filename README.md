@@ -33,8 +33,13 @@ Note: This is my first ArmA 3 mod. This gamemode is also based off Invade & Anne
 - DLC support
 - Co-op support
 
+## Server Params:
+---
+Currently not listed...
+
 ## Markers:
 ---
+Note: 'n' refers to some number.
 ##### "zone_spawn_n":
 Location where zones can potentially spawn
 ##### "marker_ai_spawn_friendly_ground_units":
