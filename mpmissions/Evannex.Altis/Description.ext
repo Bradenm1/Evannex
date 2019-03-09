@@ -42,20 +42,20 @@ class Params {
 	};
 	class NumberFriendlyGroups {
 		title = "Min Friendly Ground Groups Amount"; // Param name visible in the list
-		values[] = {0, 1, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class NumberEnemyGroups {
 		title = "Min Enemy Groups Amount"; // Param name visible in the list
-		values[] = {0, 1, 5, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class  NumberEnemySpecialGroups {
 		title = "Number Of Special Enemy Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 7; // Default value; must be listed in 'values' array, otherwise 0 is used
+		default = 6; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
 	class  MinEnemyGroupsForCapture {
@@ -151,7 +151,7 @@ class Params {
         title = "Number of Garrisons";
         values[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
         texts[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
-        default = 3;
+        default = 2;
     };
 	class PlaceZoneRandomly {
         title = "Place Zone Randomly";
@@ -164,6 +164,12 @@ class Params {
         values[] = {0,1};
         texts[] = {"Disabled","Enabled"};
         default = 1;
+    };
+    class VirutalSupport {
+        title = "Virutal Support";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 0;
     };
 };
 

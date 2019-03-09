@@ -31,11 +31,15 @@ br_fnc_createVehicleUnits = {
 
 // Gets the LZ for the zone
 br_fnc_createSpotNearZone = {
-	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	private _pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 	// We also find another position if it's too far from the zone
 	while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
 		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 		sleep 0.1;
+	};
+	private _nearestRoad = [_pos, 500] call BIS_fnc_nearestRoad;
+	if (!isNull _nearestRoad) then {
+		_pos = getPos _nearestRoad;
 	};
 	[format ["Drop - %1", _vehIndex], _pos, format ["Drop - %1", groupId _vehicleGroup], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
@@ -55,7 +59,7 @@ br_fnc_createVehicleUnit = {
 	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
 	(units _temp) joinSilent _vehicleGroup;
 	[_vehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
-	{ _x setBehaviour "SAFE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _vehicleGroup);
+	{ _x setBehaviour "SAFE"; _x setSkill br_ai_skill; } forEach (units _vehicleGroup);
 	// Apply the zone AI to the vehicle
 	br_heliGroups append [_vehicleGroup];
 };
@@ -65,7 +69,7 @@ br_fnc_waitForUntsToEnterVehicle = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
 	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
-	waitUntil { {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || _vehicle emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
+	waitUntil { sleep 1; {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || _vehicle emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
 	if (time >= _timeBeforeTeleport ) then { { _x moveInCargo _vehicle; } forEach units _tempGroup; };
 };
 
@@ -93,7 +97,7 @@ br_fnc_move = {
 	_wp setWaypointType "MOVE";
 	_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 	_vehicle engineOn true;
-	waitUntil {(count (waypoints _vehicleGroup) < 2) || {[] call br_fnc_checkVehicleDead} || {br_zone_taken}};
+	waitUntil { sleep 2; (count (waypoints _vehicleGroup) < 2) || {[] call br_fnc_checkVehicleDead} || {br_zone_taken}};
 	_vehicle engineOn false;
 };
 
@@ -106,14 +110,14 @@ br_fuc_MoveGroupTotZone = {
 	{ [_x, false, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
-	{_x enableAI "PATH"; } forEach units _vehicleGroup;
+	{_x enableAI "MOVE"; } forEach units _vehicleGroup;
 	// Generate landing zone and move to it and land
 	[[] call br_fnc_createSpotNearZone] call br_fnc_move;
 	// Tell the groups to getout
 	[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
 	tempTime = time + br_groupsStuckTeleportDelay;
-	{ waitUntil { [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+	{ waitUntil { sleep 1; [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 	// Remove groups from transit
@@ -131,7 +135,7 @@ br_fuc_MoveGroupTotZone = {
 	deleteMarker format ["LZ - %1", _vehIndex];
 	// Goto helipad and land
 	[getMarkerPos _spawnPad] call br_fnc_move;
-	{_x enableAI "PATH"; } forEach units _vehicleGroup;
+	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 };
 
 
@@ -154,7 +158,7 @@ br_fnc_runEvacVehicle = {
 			};
 			// Create LZ
 			[_pos] call br_fnc_createEvacPoint;
-			{_x enableAI "PATH"; } forEach units _vehicleGroup;
+			{_x enableAI "MOVE"; } forEach units _vehicleGroup;
 			// Moveto LZ
 			[_pos] call br_fnc_move;
 			// Wait for group to get in
@@ -170,11 +174,11 @@ br_fnc_runEvacVehicle = {
 			[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 			// Wait untill all units are out
 			tempTime = time + br_groupsStuckTeleportDelay;
-			{ waitUntil { [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+			{ waitUntil { sleep 1; [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
 				private _y = _x; 
-				waitUntil { {_x in _vehicle} count (units _y) == 0}; 
+				waitUntil { sleep 1; {_x in _vehicle} count (units _y) == 0}; 
 				// Move group to waiting groups
 				private _playerCount = ({isPlayer _x} count (units _y));
 				if (_playerCount == 0) then {
@@ -183,7 +187,7 @@ br_fnc_runEvacVehicle = {
 				// Delete from transit group
 				br_groups_in_transit deleteAt (br_groups_in_transit find _y);
 			} forEach _groups;
-			{_x disableAI "PATH"; } forEach units _vehicleGroup;
+			{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 		};
 	};
 };

@@ -29,7 +29,7 @@ br_fnc_runVehicleUnit = {
 		// Spawn vehicle
 		[] call br_fnc_createVehicleUnit;
 		// Wait untill they die
-		waituntil{({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
+		waituntil{ sleep 5; ({(alive _x)} count (units _vehicleGroup) < 1) || (!alive _vehicle)};
 		// Do some cleanup cause they died
 		if (!alive _vehicle) then { deleteVehicle _vehicle; } else { br_empty_vehicles_in_garbage_collection append [_vehicle]; };
 		//br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _vehicleGroup);

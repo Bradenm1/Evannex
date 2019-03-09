@@ -21,7 +21,7 @@ while {TRUE} do {
 		} else {
 			_playerindex = _playerindex + 1;
 		};
-		sleep 0.01;
+		sleep 0.5;
 	};
 	{ 
 		objectName = getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName");

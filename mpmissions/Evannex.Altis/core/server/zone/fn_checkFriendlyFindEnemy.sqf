@@ -62,5 +62,5 @@ while {TRUE} do {
 		{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_ai_groups;
 		{ [_x] call fnc_checkGroupSeen; } foreach br_friendly_objective_groups;
 	};
-	sleep 0.1;
+	sleep 10;
 };

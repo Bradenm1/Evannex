@@ -82,9 +82,9 @@ br_fnc_spawnGroups = {
 // Do this and wait untill done
 br_fnc_DoObjectiveAndWaitTillComplete = {	
 	switch (_objective) do {
-		case "Destory & Kill": { call br_fnc_spawnGroups; { waitUntil {!alive _x} } foreach _objects; { _y = _x; waitUntil {({alive _x} count units _y < 1)}; } forEach _groupsToKill};
-		case "Destory": { { waitUntil {!alive _x} } foreach _objects; };
-		case "Kill": { { _x allowDamage FALSE; } foreach _objects; call br_fnc_spawnGroups; { _y = _x; waitUntil {({alive _x} count units _y < 1)}; } forEach _groupsToKill};
+		case "Destory & Kill": { call br_fnc_spawnGroups; { waitUntil { sleep 1; !alive _x} } foreach _objects; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
+		case "Destory": { { sleep 5; waitUntil { sleep 1; !alive _x} } foreach _objects; };
+		case "Kill": { { _x allowDamage FALSE; } foreach _objects; call br_fnc_spawnGroups; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		default { hint "Objective Error: " + _uniqueName};
 	};
 };
@@ -127,8 +127,8 @@ br_fnc_createObjective = {
 	_objectivePosition = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 10, 0] call BIS_fnc_findSafePos;
 	// Place near center
 	_spawnedObj = "Land_LampAirport_F" createVehicle _objectivePosition;
-	_spawnedObj hideObject true;
-	_spawnedObj enableSimulation false;
+	_spawnedObj hideObjectGlobal true;
+	_spawnedObj enableSimulationGlobal false;
 	if (count _objectToUse != 0) then { [_spawnedObj, _objectToUse] call br_set_composition; };
 	// Creates the radius
 	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
@@ -155,7 +155,7 @@ br_fnc_onTaken = {
 	
 	if (_removeOnZoneCompleted) then  {
 		// Wait untill main zone is taken
-		waitUntil { br_zone_taken };
+		waitUntil { sleep 2; br_zone_taken };
 	};
 
 	[] call br_fnc_onZoneTakenAfterComplete;

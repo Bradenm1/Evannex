@@ -28,7 +28,7 @@ br_fnc_runDefence = {
 		// Apply a refill ammo script as to not allow the machines to run out of ammo
 		[_vehicle] execVM "core\server\functions\fn_refillDefenceAmmo.sqf";
 		// Wait untill it dies
-		waituntil{(!alive _vehicle)};
+		waituntil{ sleep 25; (!alive _vehicle)};
 		br_base_defences deleteAt (br_base_defences find _vehicle);
 		// Do some cleanup cause it died
 		deleteVehicle _vehicle;

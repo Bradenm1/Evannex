@@ -8,8 +8,7 @@ fn_createRecruitAI = {
     [_group, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
     _unit = (units (_group)) select 0;
     [[[_unit],"core\client\fn_createAddRecurit.sqf"],"BIS_fnc_execVM",true,true] call BIS_fnc_MP;
-    waitUntil { count units _group == 0 };
-    //waitUntil { !(alive _unit); };
+    waitUntil { sleep 10; count units _group == 0 };
     //sleep 120;
     //deleteVehicle _unit;
     [_unit] execVM "core\server\recruit\fn_deleteDeadRecruit.sqf";

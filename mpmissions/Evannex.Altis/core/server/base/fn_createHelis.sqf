@@ -20,7 +20,7 @@ br_fnc_createHeliPad = {
 br_fnc_createChopperUnit = {
 	_helicopterVech = (selectrandom (call compile preprocessFileLineNumbers "core\spawnlists\friendly_transport.sqf")) createVehicle getMarkerPos _heliPad;
 	[] call br_fnc_createHeliUnits;
-	waitUntil { {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
+	waitUntil { sleep 3; {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
 };
 
 // Deletes the current chopper units
@@ -78,7 +78,7 @@ br_fnc_waitForUntsToEnterChopper = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
 	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
-	waitUntil { {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) };
+	waitUntil { sleep 3; {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) };
 	if (time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) ) then { { _x moveInCargo _helicopterVech; } forEach units _tempGroup; };
 };
 
@@ -97,9 +97,9 @@ br_fnc_movetoAndLand = {
 	_wp setWaypointType "GETOUT";
 	_helicopterVech engineOn true;
 	// Wait untill landed
-	waitUntil {(getPos _helicopterVech select 2 > 10) || {[] call br_fnc_checkHeliDead} || {!(isEngineOn _helicopterVech)} || {br_zone_taken}};
+	waitUntil { sleep 3; (getPos _helicopterVech select 2 > 10) || {[] call br_fnc_checkHeliDead} || {!(isEngineOn _helicopterVech)} || {br_zone_taken}};
 	// Has landed
-	waitUntil {(getPos _helicopterVech select 2 < 1) || {[] call br_fnc_checkHeliDead} || {br_zone_taken}};
+	waitUntil { sleep 3; (getPos _helicopterVech select 2 < 1) || {[] call br_fnc_checkHeliDead} || {br_zone_taken}};
 	[] call br_fnc_deleteOldChopperUnit;
 	_helicopterVech engineOn false;
 };
@@ -119,7 +119,7 @@ br_fuc_landGroupAtZone = {
 	[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
 	tempTime = time + br_groupsStuckTeleportDelay;
-	{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+	{ waitUntil { sleep 2; [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 	// Remove groups from transit
@@ -196,11 +196,11 @@ br_fnc_runEvacChopper = {
 			[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 			// Wait untill all units are out
 			tempTime = time + br_groupsStuckTeleportDelay;
-			{ waitUntil { [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+			{ waitUntil { sleep 2; [_x, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
 				private _y = _x; 
-				waitUntil { {_x in _helicopterVech} count (units _y) == 0}; 
+				waitUntil { sleep 1; {_x in _helicopterVech} count (units _y) == 0}; 
 				// Move group to waiting groups
 				private _playerCount = ({isPlayer _x} count (units _y));
 				if (_playerCount == 0) then {

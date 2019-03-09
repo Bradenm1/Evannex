@@ -21,4 +21,3 @@ player enableFatigue ([] call br_fnc_Fatigue);
 player enableStamina ([] call br_fnc_Stamina);
 player forceWalk ([] call br_fnc_ForceWalk);
 if ([] call br_fnc_CustomAim) then {player setCustomAimCoef _aim};
-player addEventHandler ["Respawn", {player enableFatigue ([] call br_fnc_Fatigue); player forceWalk ([] call br_fnc_ForceWalk); player enableStamina ([] call br_fnc_Stamina); if ([] call br_fnc_CustomAim) then {player setCustomAimCoef _aim};}];

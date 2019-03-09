@@ -38,7 +38,7 @@ br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
 br_objective_max_angle = 0.30;
 br_heli_land_max_angle = 0.25;
-br_command_delay = 5; // Command delay for both enemy and friendly zone AI
+br_command_delay = 10; // Command delay for both enemy and friendly zone AI
 br_ai_skill = 1;
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
@@ -51,7 +51,7 @@ br_current_sides = [];
 br_next_zone_start_delay = 20; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
-br_groupsStuckTeleportDelay = 35; // Time before units are teleported into the cargo
+br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
 
 // Creates the zone
 br_fnc_createZone = {
@@ -217,7 +217,7 @@ br_fnc_onNewZoneCreation = {
 
 br_random_objectives = {
 	// Create HQ
-	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\bases.sqf"), "Kill", FALSE, "HQ Taken!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\bases.sqf"), "Kill", TRUE, "HQ Taken!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create radio tower
 	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
@@ -262,9 +262,9 @@ br_fnc_main = {
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
-		{ if (_x select 6) then { waitUntil { missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
+		{ if (_x select 6) then { waitUntil { sleep 5; missionNamespace getVariable (_x select 5) }; }; } forEach br_objectives;
 		// Wait untill enemy units drop below a threshold
-		waitUntil { ((count br_ai_groups - (count br_groups_in_buildings / 2)) <= br_min_enemy_groups_for_capture) };
+		waitUntil { sleep 5; ((count br_ai_groups - (count br_groups_in_buildings / 2)) <= br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
 		sleep br_next_zone_start_delay;
 	}
