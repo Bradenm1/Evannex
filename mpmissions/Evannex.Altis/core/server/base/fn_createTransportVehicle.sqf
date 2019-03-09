@@ -55,7 +55,7 @@ br_fnc_createVehicleUnit = {
 	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
 	(units _temp) joinSilent _vehicleGroup;
 	[_vehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
-	{ _x setBehaviour "SAFE"; _x setSkill br_ai_skill; } forEach (units _vehicleGroup);
+	{ _x setBehaviour "SAFE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _vehicleGroup);
 	// Apply the zone AI to the vehicle
 	br_heliGroups append [_vehicleGroup];
 };
@@ -106,6 +106,7 @@ br_fuc_MoveGroupTotZone = {
 	{ [_x, false, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
+	{_x enableAI "PATH"; } forEach units _vehicleGroup;
 	// Generate landing zone and move to it and land
 	[[] call br_fnc_createSpotNearZone] call br_fnc_move;
 	// Tell the groups to getout
@@ -130,6 +131,7 @@ br_fuc_MoveGroupTotZone = {
 	deleteMarker format ["LZ - %1", _vehIndex];
 	// Goto helipad and land
 	[getMarkerPos _spawnPad] call br_fnc_move;
+	{_x enableAI "PATH"; } forEach units _vehicleGroup;
 };
 
 
@@ -152,6 +154,7 @@ br_fnc_runEvacVehicle = {
 			};
 			// Create LZ
 			[_pos] call br_fnc_createEvacPoint;
+			{_x enableAI "PATH"; } forEach units _vehicleGroup;
 			// Moveto LZ
 			[_pos] call br_fnc_move;
 			// Wait for group to get in
@@ -180,13 +183,13 @@ br_fnc_runEvacVehicle = {
 				// Delete from transit group
 				br_groups_in_transit deleteAt (br_groups_in_transit find _y);
 			} forEach _groups;
+			{_x disableAI "PATH"; } forEach units _vehicleGroup;
 		};
 	};
 };
 
 // If the Vehicle is transport
 br_fnc_runTransportVehicle = {
-	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 	// Check if any groups are waiting
 	if (count br_friendly_groups_waiting > 0) then {
 		private _groups = [];
