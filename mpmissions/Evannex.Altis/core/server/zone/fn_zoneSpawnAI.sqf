@@ -52,7 +52,7 @@ br_fnc_getPositionNearNoPlayersAtZone = {
 br_fnc_spawnAI = {
 	while {!br_zone_taken} do {
 		// Spawn AI untill reached limit
-		while {(count br_ai_groups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
+		while {(count br_ai_groups <= br_min_ai_groups) && {(getMarkerColor _spawningMarker == "ColorRed" || br_radio_tower_enabled == FALSE)}} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [br_sides, 0, _unitTypes, br_side_types, (call compile preprocessFileLineNumbers "core\spawnlists\units.sqf"), _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
@@ -71,7 +71,7 @@ br_fnc_spawnAI = {
 			sleep 0.5;
 		};
 		// Spawn spawn special units untill 
-		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed")}} do {
+		while {(count br_special_ai_groups <= br_min_special_groups) && {(getMarkerColor _spawningMarker == "ColorRed" || br_radio_tower_enabled == FALSE)}} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";

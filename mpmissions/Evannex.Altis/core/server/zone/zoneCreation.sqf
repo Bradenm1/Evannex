@@ -15,6 +15,7 @@ br_randomly_find_zone = if ("PlaceZoneRandomly" call BIS_fnc_getParamValue == 1)
 br_zone_side_enabled = if ("ZoneSideEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_max_current_sides = "NSides" call BIS_fnc_getParamValue;
 br_max_garrisons = "NGarrisons" call BIS_fnc_getParamValue;
+br_ai_skill = [0.1, 0.5, 1] select (parseNumber "AISkill" call BIS_fnc_getParamValue);
 br_side_types = ["OPF_F","BLU_F"];
 br_empty_vehicles_in_garbage_collection = [];
 br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
@@ -39,7 +40,6 @@ br_max_radius_distance = 360; // Outter limit
 br_objective_max_angle = 0.30;
 br_heli_land_max_angle = 0.25;
 br_command_delay = 10; // Command delay for both enemy and friendly zone AI
-br_ai_skill = 1;
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
 br_radio_tower_enabled = TRUE;

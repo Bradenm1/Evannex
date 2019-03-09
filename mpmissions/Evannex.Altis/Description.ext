@@ -31,41 +31,48 @@ class Header {
 
 // Server params
 class Params {
-	class Daytime
-	{
-		title = "Time";
-		texts[] = {"Morning","Day","Evening","Night"};
-		values[] = {6,12,18,0};
-		default = 12;
-		function = "BIS_fnc_paramDaytime"; // (Optional) [[Functions_Library_(Arma_3)|Function]] [[call]]ed when player joins, selected value is passed as an argument
-		isGlobal = 1; // (Optional) 1 to execute script / function locally for every player who joins, 0 to do it only on server
+	#define DAYTIMEHOUR_DEFAULT 12
+	#include "\a3\functions_f\Params\paramDaytimeHour.hpp"
+    #define WEATHER_DEFAULT	40
+	#include "\a3\functions_f\Params\paramWeather.hpp"
+    class ViewDistance {
+		title = "View distance (in metres)";
+		values[] = {500,1000,1500,2000,5000};
+		default = 1500;
+	};
+    class AISkill {
+		title = "AI Skill"; // Param name visible in the list
+		values[] = {0,1,2}; // Values; must be integers; has to have the same number of elements as 'texts'
+		texts[] = {"Recruit","Regular","Veteran"}; // Description of each selectable item
+		default = 2; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class NumberFriendlyGroups {
-		title = "Min Friendly Ground Groups Amount"; // Param name visible in the list
+		title = "Max Friendly Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class NumberEnemyGroups {
-		title = "Min Enemy Groups Amount"; // Param name visible in the list
+		title = "Max Enemy Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class  NumberEnemySpecialGroups {
-		title = "Number Of Special Enemy Groups"; // Param name visible in the list
+		title = "Max Special Enemy Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 6; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
 	class  MinEnemyGroupsForCapture {
-		title = "Min Enemy Groups For Capture"; // Param name visible in the list
+		title = "Minimum Enemy Groups For Zone Capture"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 3; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
 	class  MinAIDistanceForDeleteion {
-		title = "Min AI Distance For Deleteion"; // Param name visible in the list
+		title = "Minimum AI Distance For Deleteion"; // Param name visible in the list
 		values[] = {100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 10000, 99999999}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 1500; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
@@ -171,6 +178,10 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 0;
     };
+    #define DEBUGCONSOLE_DEFAULT 0
+	#include "\a3\functions_f\Params\paramDebugConsole.hpp"
+    #define TIMEACCELERATION_DEFAULT 1
+	#include "\a3\Functions_F_MP_Mark\Params\paramTimeAcceleration.hpp"
 };
 
 class CfgFunctions 

@@ -1,6 +1,7 @@
 if (isServer) then {
 	// Run the gamemode
 	execVM "core\server\zone\zoneCreation.sqf";
+	setViewDistance (parseNumber "ViewDistance" call BIS_fnc_getParamValue);
 };
 
 // If it's a client
