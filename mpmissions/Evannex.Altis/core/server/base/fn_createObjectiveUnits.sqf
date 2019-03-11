@@ -51,6 +51,7 @@ br_fnc_goKillPeople = {
 				_wp setWaypointType "DESTROY";
 				_wp setWaypointSpeed "FULL";
 				waitUntil { sleep 5; ((timeToComplete < time) && !([] call br_near_players)) || !(alive _x) };
+				_x setDamage 1;
 			} forEach (units (_groups select _i));
 		};	
 	};
