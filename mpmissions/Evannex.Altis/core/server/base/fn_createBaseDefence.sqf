@@ -16,7 +16,7 @@ br_fnc_createDefence = {
 	_group = createGroup WEST;
 	(units _temp) joinSilent _group;
 	_vehicle setDir (markerDir _spawnPad);
-	{ _x setBehaviour "SAFE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _group);
+	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _group);
 	// Apply the zone AI to the vehicle
 	br_base_defences append [_vehicle];
 };

@@ -62,8 +62,6 @@ br_fnc_createVehicleUnit = {
 	call br_fnc_createVehicleUnits;
 	[_vehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; } forEach (units _vehicleGroup);
-	// Apply the zone AI to the vehicle
-	br_heliGroups append [_vehicleGroup];
 };
 
 // Wait for a group to enter the Vehicle
@@ -104,7 +102,6 @@ br_fnc_move = {
 	{
 		deleteWaypoint ((waypoints _vehicleGroup) select 0);
 	};
-	hint "done";
 	_vehicle engineOn false;
 };
 
@@ -220,7 +217,7 @@ br_fnc_runTransportVehicle = {
 		_groups = [_groups, br_friendly_groups_waiting, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf"; 
 		if (count _groups > 0) then {
 			[_groups] call br_fuc_MoveGroupTotZone;
-		};		
+		};	
 	} else { 
 		// Check if any players are waiting in helicopter
 		_playersGroups = [_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getPlayersInVehicle.sqf";
@@ -240,7 +237,7 @@ br_fnc_runVehicleUnit = {
 			if (_evacVehicle) then { [] call br_fnc_runEvacVehicle; } else { call br_fnc_runTransportVehicle; };
 			_vehicle setFuel 1;
 			_vehicle setDamage 0;
-			// Heli should be on the pad, destory if not
+			// Veh should be on the pad, destory if not
 			if ((getMarkerPos _spawnPad) distance _vehicle > 10) then { _vehicle setdamage 1; };
 		};
 		sleep 15;

@@ -40,7 +40,7 @@ with uiNamespace do {
     _new_veh setDir _vehDir;
     _count = 0;
     {
-      _new_veh setObjectTexture [ _count, _x ];
+      _new_veh setObjectTextureGlobal [ _count, _x ];
       _count = _count + 1;
     } forEach _textures;
   } forEach _veh_list;
