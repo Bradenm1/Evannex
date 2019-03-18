@@ -181,7 +181,7 @@ br_fnc_runEvacVehicle = {
 			{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
 			// Delete LZ
 			deleteVehicle _landMarker;
-			deleteMarker format ["EVAC - %1", _vehIndex];
+			deleteMarker format ["Drop - %1", _vehIndex];
 			// Move back to base
 			[getMarkerPos _spawnPad] call br_fnc_move;
 			// Eject the crew at base
