@@ -104,7 +104,8 @@ br_set_composition = {
 		private _type = _x select 0;
 		private _offset = _x select 1;
 		private _newDir = _x select 2;
-		private _obj = createVehicle [_type, [0,0,1], [], 0, "CAN_COLLIDE"];
+		private _obj = nil;
+		_obj = createVehicle [_type, [0,0,1], [], 0, "CAN_COLLIDE"];
 		_objects append [_obj];
 		[_source, _obj, _offset, _newDir] call BIS_fnc_relPosObject;
 		_obj setPosASL [getPos _obj select 0, getPos _obj select 1, getTerrainHeightASL getPos _obj];

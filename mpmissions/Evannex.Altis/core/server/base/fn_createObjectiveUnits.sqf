@@ -32,28 +32,31 @@ br_fnc_placeBomb = {
 };
 
 br_near_players = {
-	private _aroundNoPlayers = FALSE;
 	private _nearAPlayer = FALSE;
 	{  if (getpos (_objective select 1) distance (getpos _x) < _getOutOfVehicleRadius ) then { _nearAPlayer = TRUE; }; } forEach allPlayers; 
-	if (_nearAPlayer) then { _aroundNoPlayers = TRUE; } else { _aroundNoPlayers = FALSE; };
-	_aroundNoPlayers;
+	_nearAPlayer;
+};
+
+br_fn_killGivenGroup = {
+	private _group = _this select 0;
+	timeToComplete = time + 600;
+	{
+		_wp = _objectiveGroup addWaypoint [getpos _x, 0];
+		_wp setWaypointType "DESTROY";
+		_wp setWaypointSpeed "FULL";
+		waitUntil { sleep 5; ((timeToComplete < time) && !([] call br_near_players)) || !(alive _x) || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
+		if (timeToComplete < time) then { _x setDamage 1; }
+		call br_fnc_deleteWayPoints;
+	} forEach (units _group);
 };
 
 // Kill all groups at objective
 br_fnc_goKillPeople = {
-	private _groups = _objective select 2;
-	timeToComplete = time + 600;
+	private _groups = _this select 0;
 	if (count _groups > 0) then {
-		for "_i" from 0 to count _groups do {
-			{
-				_wp = _objectiveGroup addWaypoint [group _x, 0];
-				_wp setWaypointFormation "WEDGE";
-				_wp setWaypointType "DESTROY";
-				_wp setWaypointSpeed "FULL";
-				waitUntil { sleep 5; ((timeToComplete < time) && !([] call br_near_players)) || !(alive _x) };
-				_x setDamage 1;
-			} forEach (units (_groups select _i));
-		};	
+		{
+			[_x] call br_fn_killGivenGroup;
+		} forEach (_groups);	
 	};
 };
 
@@ -61,9 +64,9 @@ br_fnc_goKillPeople = {
 br_fnc_DoObjective = {
 	private _obj = _this select 0;
 	switch (_obj) do {
-		case "Destory & Kill": { call br_fnc_goKillPeople; call br_fnc_placeBomb; };
+		case "Destory & Kill": { [_objective select 2] call br_fnc_goKillPeople; call br_fnc_placeBomb; };
 		case "Destory": { call br_fnc_placeBomb; };
-		case "Kill": { call br_fnc_goKillPeople; };
+		case "Kill": { [_objective select 2] call br_fnc_goKillPeople; };
 		default { hint "Objective Error in command group"};
 	};
 };
@@ -77,6 +80,7 @@ br_fnc_findObjective = {
 		if ( (_objective select 4) ) then { _foundObjective = TRUE; }
 		else { sleep 10; };
 	};
+	_foundObjective
 };
 
 // Delete waypoints
@@ -93,7 +97,7 @@ br_fnc_runRadioBombUnit = {
 	while {TRUE} do {
 		waitUntil { sleep 5; !br_zone_taken && {count br_objectives > 0}};
 		// Find a objective
-		[] call br_fnc_findObjective;
+		call br_fnc_findObjective;
 		// Idle group if no radio tower
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
 		// Check if any groups are waiting
@@ -104,15 +108,16 @@ br_fnc_runRadioBombUnit = {
 		// Wait until group is within a given range
 		waitUntil { sleep 5; (count (waypoints _objectiveGroup)) == 0 || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {(!alive (driver _transportVehicle))}};
 		_transportVehicle setUnloadInCombat [TRUE, TRUE];
-		[] call br_fnc_deleteWayPoints;
+		call br_fnc_deleteWayPoints;
 		// Tell group to get out of transport vehicle
 		if (!(missionNamespace getVariable (_objective select 5))) then {
 			//{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle);
 			waitUntil { sleep 2; missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || ({_x in _transportVehicle} count (units _objectiveGroup) == 0) };
+			// Move the units to the objective
 			private _getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
 			private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 			_wp setWaypointType "MOVE";
-			_wp setWaypointStatements ["true", (format ["br_objective_%1 = TRUE;", _objective select 0])];
+			_wp setWaypointStatements ["true",(format ["deleteWaypoint [group this, currentWaypoint (group this)]; br_objective_%1 = TRUE;", _objective select 0])];
 			timeToComplete = time + 600;
 			waitUntil { sleep 2; ((timeToComplete < time) && !([] call br_near_players)) || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {({(alive _x)} count (units _objectiveGroup) == 0)}; };
 			// Check if objective is not completed
@@ -131,10 +136,10 @@ br_fnc_runRadioBombUnit = {
 			deleteVehicle _transportVehicle;
 			deleteGroup _objectiveGroup;
 			br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
-			[] call br_fnc_createBombUnits;
+			call br_fnc_createBombUnits;
 			_transportVehicle setUnloadInCombat [FALSE, FALSE];
 		};
-		[] call br_fnc_deleteWayPoints;
+		call br_fnc_deleteWayPoints;
 	};
 };
 

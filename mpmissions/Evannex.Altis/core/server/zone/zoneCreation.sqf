@@ -48,7 +48,7 @@ br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_current_sides = [];
-br_next_zone_start_delay = 20; // Delay between zones
+br_next_zone_start_delay = 35; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
 br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
@@ -146,7 +146,6 @@ br_fnc_onZoneTaken = {
 	[] call br_fnc_deleteAllAI;
 	[] call br_fnc_deleteNonSideObjectives;
 	//br_objectives = [];
-	sleep 5;
 };
 
 // Remove objectives which belong to the zone
