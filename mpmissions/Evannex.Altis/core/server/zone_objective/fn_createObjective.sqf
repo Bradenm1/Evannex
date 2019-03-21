@@ -76,6 +76,7 @@ br_fnc_spawnGroups = {
 		if (_garrison) then { _garrison = [leader _group, _objectiveLocation, 100] call SBGF_fnc_groupGarrison; };
 		if (!_garrison) then { [_group, _safeSpot, _zoneRadius] execVM "core\server\zone_objective\fn_groupRoam.sqf"; };
 		[_group] call br_set_states;
+		{ if (!isNull objectParent _x) then { _objects append [vehicle _x] }; } forEach units _group;
 	} forEach _groupsIfKill;
 };
 
