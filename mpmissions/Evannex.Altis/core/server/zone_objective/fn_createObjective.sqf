@@ -152,8 +152,8 @@ br_fnc_onTaken = {
 	else { _radiusName setMarkerColor "ColorBlue"; };
 
 	// Set objective as taken
-	missionNamespace setVariable [_zoneVarName, TRUE]; 
-	br_objectives deleteAt (br_objectives find [_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted, _objectiveOrigin, _zoneRadius, _radiusName]);
+	missionNamespace setVariable [_zoneVarName, TRUE];
+	br_objectives deleteAt (br_objectives find [[_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted, _objectiveOrigin, _zoneRadius, _radiusName]]);
 	
 	if (_removeOnZoneCompleted) then  {
 		// Wait untill main zone is taken

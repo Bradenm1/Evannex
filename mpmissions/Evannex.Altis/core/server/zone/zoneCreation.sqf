@@ -243,6 +243,12 @@ br_random_objectives = {
 	}
 };
 
+// Waits for objectives within the zone to be completed
+br_fnc_waitForCompletedObjects = {
+	private _objective = _this select 0;
+	 if (_objective select 6) then { waitUntil { sleep 5; (missionNamespace getVariable (_objective select 5) && getMarkerColor (_objective select 10) != "ColorRed")  }; };
+};
+
 // Main function
 br_fnc_main = {
 	// Check for markers and do things
@@ -261,7 +267,7 @@ br_fnc_main = {
 		// Wait for a time for the zone to populate
 		sleep 60;
 		// Wait untill zone is taken and objectives are completed
-		{ if (_x select 6) then { waitUntil { sleep 5; (missionNamespace getVariable (_x select 5) && getMarkerColor (_x select 10) != "ColorRed")  }; }; } forEach br_objectives;
+		{ [_x] call br_fnc_waitForCompletedObjects; } forEach br_objectives;
 		// Wait untill enemy units drop below a threshold
 		waitUntil { sleep 5; ((count br_ai_groups - (count br_groups_in_buildings / 2)) <= br_min_enemy_groups_for_capture) };
 		[] call br_fnc_onZoneTaken;
