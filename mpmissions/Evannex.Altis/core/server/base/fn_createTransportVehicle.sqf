@@ -6,12 +6,6 @@ private _vehicleGroup = nil; // The group in the vehicle
 private _vehicle = nil; // The vehicle
 private _landMarker = nil; // Used to tell the AI where to land
 
-// Gets a random location on the player
-br_fnc_getGroundUnitLocation = {
-	// Gets a random location within the zone radius
-	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 180, random 360];
-};
-
 // Deletes the current Vehicle units
 br_fnc_deleteOldVehicleUnits = {
 	br_heliGroups deleteAt (br_heliGroups find _vehicleGroup);
@@ -21,7 +15,6 @@ br_fnc_deleteOldVehicleUnits = {
 
 // Creates the helicopter units
 br_fnc_createVehicleUnits = {
-	//_vehicleGroup = [[] call br_fnc_getGroundUnitLocation, WEST, ["B_crew_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 	createVehicleCrew _vehicle;
 	// Get the vehicle commander
 	private _commander = driver _vehicle;

@@ -5,12 +5,6 @@ private _chopperUnits = nil; // The group in the heli
 private _helicopterVech = nil; // The helicopter
 private _landMarker = nil; // Used to tell the AI where to land
 
-// Gets a random location on the player
-br_fnc_getGroundUnitLocation = {
-	// Gets a random location within the zone radius
-	(getMarkerPos "marker_ai_spawn_friendly_ground_units") getPos [5 * sqrt random 180, random 360];
-};
-
 // Create a landing pad
 br_fnc_createHeliPad = {
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", getMarkerPos _heliPad, [], 0, "CAN_COLLIDE" ];
@@ -37,7 +31,7 @@ br_fnc_checkHeliDead = {
 
 // Creates the helicopter units
 br_fnc_createHeliUnits = {
-	_chopperUnits = [[] call br_fnc_getGroundUnitLocation, WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	_chopperUnits = [call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", WEST, ["B_Pilot_F"],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
 	{_x disableAI "MOVE"; _x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
 	(leader _chopperUnits) moveInDriver _helicopterVech;
 	{ _x setSkill br_ai_skill } forEach units _chopperUnits;
