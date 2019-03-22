@@ -107,7 +107,7 @@ br_fnc_move = {
 
 fn_disable_group_fms = {
 	private _group = _this select 0;
-	private _enabled = _this select 1;
+	private _enabled = _this select 1;	
 	{ if (_enabled) then { _x enableAI "ALL"; } else { _x disableAI "ALL"; }; } forEach units _group;
 };
 
@@ -129,6 +129,9 @@ br_fuc_MoveGroupTotZone = {
 	{ [_x, TRUE] call fn_disable_group_fms; } forEach _groups;
 	{ deleteVehicle _x } forEach units _vehicleGroup;
 	call br_fnc_createVehicleUnits;
+	// Delete un-needed things
+	deleteVehicle _landMarker;
+	deleteMarker format ["Drop - %1", _vehIndex];
 	// Wait untill all units are out
 	tempTime = time + br_groupsStuckTeleportDelay;
 	{ waitUntil { sleep 1; [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
@@ -144,9 +147,6 @@ br_fuc_MoveGroupTotZone = {
 			br_friendly_ai_groups append [_y]; 
 		};
 	} forEach _groups;
-	// Delete un-needed things
-	deleteVehicle _landMarker;
-	deleteMarker format ["LZ - %1", _vehIndex];
 	// Goto helipad and land
 	[getMarkerPos _spawnPad] call br_fnc_move;
 	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
@@ -180,8 +180,8 @@ br_fnc_runEvacVehicle = {
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
 			// Delete LZ
-			deleteVehicle _landMarker;
-			deleteMarker format ["Drop - %1", _vehIndex];
+			deleteVehicle format ["EVAC - %1", _vehIndex];
+			deleteMarker _dropOffMarker;
 			// Move back to base
 			[getMarkerPos _spawnPad] call br_fnc_move;
 			// Eject the crew at base
@@ -234,7 +234,7 @@ br_fnc_runVehicleUnit = {
 		[] call br_fnc_createVehicleUnit;
 		while {({(alive _x)} count (units _vehicleGroup) > 0) && {(alive _vehicle)} && {(((leader _vehicleGroup) distance _vehicle) < 30)};} do {
 			sleep 15;
-			if (_evacVehicle) then { [] call br_fnc_runEvacVehicle; } else { call br_fnc_runTransportVehicle; };
+			if (_evacVehicle) then { call br_fnc_runEvacVehicle; } else { call br_fnc_runTransportVehicle; };
 			_vehicle setFuel 1;
 			_vehicle setDamage 0;
 			// Veh should be on the pad, destory if not
