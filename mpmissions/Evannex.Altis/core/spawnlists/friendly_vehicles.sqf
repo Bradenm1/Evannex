@@ -24,7 +24,7 @@
 	"B_T_UAV_03_F",
 	"B_G_Quadbike_01_F",
 	"B_Heli_Light_01_armed_F",
-	"I_APC_tracked_03_cannon_F",
+	//"I_APC_tracked_03_cannon_F",
 	"I_LT_01_cannon_F",
 	"I_LT_01_AA_F",
 	"I_LT_01_scout_F",

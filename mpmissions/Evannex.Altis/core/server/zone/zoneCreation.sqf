@@ -114,7 +114,7 @@ br_fnc_doChecks = {
 		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
 		then { [_endStringBombSquad, _i] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
 		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
-		then { [_endStringRecruit, _i] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
+		then { [_endStringRecruit, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_recruit.sqf")] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})
 		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf"), FALSE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 		if ((getMarkerColor _endStringVehicleEvac != "") && {(br_enable_friendly_ai)})
