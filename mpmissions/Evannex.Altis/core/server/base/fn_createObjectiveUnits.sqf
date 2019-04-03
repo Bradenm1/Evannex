@@ -1,16 +1,22 @@
 private _spawnPad = _this select 0; // The position where the AI will spawn
 private _bombIndex = _this select 1; // Index when created
+private _vehicleChance = _this select 2;
 private _allSpawnedDelay = 1; // Seconds to wait untill checking if any groups died
-private _objectiveGroup = nil; // The unit group
+private _objectiveGroup = createGroup WEST; // The unit group
 private _transportVehicle = nil; // The vehicle the group is using
 private _getOutOfVehicleRadius = 400; // Range from objective to eject vehicle
 private _objective = nil; // The objective for the group
+private _types = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_friendly_faction]));
+private _unitChance = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_compositions.sqf", br_friendly_faction]));
 
 // Creat the units
 br_fnc_createBombUnits = {
-	_transportVehicle = "B_G_Van_01_transport_F" createVehicle getMarkerPos _spawnPad;
+	_transportVehicle = (selectrandom _vehicleChance) createVehicle getMarkerPos _spawnPad;
 	// Delete if existing group
-	_objectiveGroup = [WEST, "BLU_F", "Infantry", "BUS_InfAssault", getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
+	//_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, selectrandom _unitChance, getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
+	while {{(alive _x)} count (units _objectiveGroup) == 0} do {
+		_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, _unitChance, getMarkerPos _spawnPad, []] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+	};
 	(leader _objectiveGroup) moveInDriver _transportVehicle;
 	{ if (_x != (leader _objectiveGroup)) then { _x assignAsCargo _transportVehicle; (leader _objectiveGroup); _x moveInCargo _transportVehicle; }; } forEach (units _objectiveGroup);
 	// Give each unit a sactelCharge

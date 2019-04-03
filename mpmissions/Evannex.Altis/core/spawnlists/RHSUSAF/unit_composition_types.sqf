@@ -1,0 +1,20 @@
+[
+	[
+		"West",
+		"West",
+		"West",
+		"West"
+	],
+	[
+		//"rhs_faction_usarmy_d",
+		"rhs_faction_usarmy_wd",
+		//"rhs_faction_usmc_d",
+		"rhs_faction_usmc_wd"
+	],
+	[
+		//"rhs_group_nato_usarmy_d_infantry", // This aligns with the unit compositions. Since this is index 0 it will use index 0 from the other file.
+		"rhs_group_nato_usarmy_wd_infantry",
+		//"rhs_group_nato_usmc_d_infantry",
+		"rhs_group_nato_usmc_wd_infantry"
+	]
+]

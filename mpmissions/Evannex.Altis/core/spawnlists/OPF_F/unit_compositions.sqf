@@ -1,0 +1,16 @@
+[
+	[
+		"OI_reconPatrol",
+		"OI_reconSentry",
+		"OI_reconTeam",
+		"OI_SniperTeam",
+		"OIA_InfAssault",
+		"OIA_InfSentry",
+		"OIA_InfSquad",
+		"OIA_InfSquad_Weapons",
+		"OIA_InfTeam",
+		"OIA_InfTeam_AA",
+		"OIA_InfTeam_AT",
+		"OIA_ReconSquad"
+	]
+];

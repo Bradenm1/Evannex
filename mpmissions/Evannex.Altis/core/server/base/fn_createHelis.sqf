@@ -4,6 +4,7 @@ private _evacChopper = _this select 2; // If te helicopter is a evac helicopter 
 private _chopperUnits = nil; // The group in the heli
 private _helicopterVech = nil; // The helicopter
 private _landMarker = nil; // Used to tell the AI where to land
+private _unitChance = _this select 3;
 
 // Create a landing pad
 br_fnc_createHeliPad = {
@@ -12,7 +13,7 @@ br_fnc_createHeliPad = {
 
 // Spawn custom units
 br_fnc_createChopperUnit = {
-	_helicopterVech = (selectrandom (call compile preprocessFileLineNumbers "core\spawnlists\friendly_transport.sqf")) createVehicle getMarkerPos _heliPad;
+	_helicopterVech = (selectrandom _unitChance) createVehicle getMarkerPos _heliPad;
 	[] call br_fnc_createHeliUnits;
 	waitUntil { sleep 3; {_x in _helicopterVech} count (units _chopperUnits) == {(alive _x)} count (units _chopperUnits) };
 };

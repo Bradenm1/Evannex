@@ -1,0 +1,28 @@
+[
+	[
+		"East",
+		"East",
+		"East",
+		"East",
+		"East",
+		"East",
+		"East"
+	],
+	[
+		"rhs_faction_msv",
+		"rhs_faction_vdv",
+		"rhs_faction_vdv",
+		"rhs_faction_vdv",
+		"rhs_faction_vdv",
+		"rhs_faction_vdv",
+		"rhs_faction_vmf"
+	],
+	[
+		"rhs_group_rus_msv_infantry_emr", // This aligns with the unit compositions. Since this is index 0 it will use index 0 from the other file.
+		//"rhs_group_rus_vdv_des_infantry",
+		"rhs_group_rus_vdv_infantry",
+		"rhs_group_rus_vdv_infantry_flora",
+		"rhs_group_rus_vdv_infantry_mflora",
+		"rhs_group_rus_vdv_infantry_recon"
+	]
+]

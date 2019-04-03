@@ -1,0 +1,9 @@
+[
+"RHS_Mi8AMT_vdv",
+"RHS_Mi8MTV3_vdv",
+"RHS_Mi8MTV3_heavy_vdv",
+"RHS_Mi8mt_vv",
+"rhs_ka60_c",
+"RHS_Mi24P_vvsc",
+"RHS_Mi8MTV3_vvsc"
+];

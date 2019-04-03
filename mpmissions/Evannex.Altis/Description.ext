@@ -31,6 +31,18 @@ class Header {
 
 // Server params
 class Params {
+    class FriendlyFaction {
+        title = "Friendly Faction";
+        values[] = {0,1,2,3};
+        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF"};
+        default = 0;
+    };
+    class EnemyFaction {
+        title = "Enemy Faction";
+        values[] = {0,1,2,3};
+        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF"};
+        default = 1;
+    };
 	#define DAYTIMEHOUR_DEFAULT 12
 	#include "\a3\functions_f\Params\paramDaytimeHour.hpp"
     #define WEATHER_DEFAULT	40

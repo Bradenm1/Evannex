@@ -37,5 +37,6 @@
 	"B_APC_Tracked_01_AA_F",
 	"B_APC_Tracked_01_rcws_F",
 	"B_Heli_Attack_01_F",
-	"B_UGV_01_F"
+	"B_UGV_01_F",
+	"rhsgref_cdf_b_t80b_tc"
 ];

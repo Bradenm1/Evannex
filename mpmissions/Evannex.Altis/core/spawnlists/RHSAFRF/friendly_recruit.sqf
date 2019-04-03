@@ -1,0 +1,9 @@
+[
+	"rhs_vdv_medic",
+	"rhs_vdv_marksman",
+	"rhs_vdv_engineer",
+	"rhs_vdv_at",
+	"rhs_vdv_aa",
+	"rhs_vdv_rifleman",
+	"rhs_vdv_machinegunner"
+]

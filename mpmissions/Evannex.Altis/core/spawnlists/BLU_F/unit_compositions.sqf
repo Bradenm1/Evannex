@@ -1,0 +1,16 @@
+[
+	[
+		"BUS_InfSentry",
+		"BUS_InfSquad",
+		"BUS_InfAssault",
+		"BUS_InfSquad_Weapons",
+		"BUS_InfTeam",
+		"BUS_InfTeam_AA",
+		"BUS_InfTeam_AT",
+		"BUS_ReconPatrol",
+		"BUS_ReconSentry",
+		"BUS_ReconTeam",
+		"BUS_ReconSquad",
+		"BUS_SniperTeam"
+	]
+];

@@ -16,7 +16,6 @@ br_zone_side_enabled = if ("ZoneSideEnabled" call BIS_fnc_getParamValue == 1) th
 br_max_current_sides = "NSides" call BIS_fnc_getParamValue;
 br_max_garrisons = "NGarrisons" call BIS_fnc_getParamValue;
 br_ai_skill = [0.1, 0.5, 1] select (parseNumber "AISkill" call BIS_fnc_getParamValue);
-br_side_types = ["OPF_F","BLU_F"];
 br_empty_vehicles_in_garbage_collection = [];
 br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
 br_friendly_objective_groups = []; // The objective groups which complete objectives
@@ -29,7 +28,6 @@ br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
 br_groups_marked = []; // Enemy groups marked on map
 br_base_defences = [];
-br_sides = [EAST, WEST];
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
 br_ai_groups = []; // All spawned groups
@@ -104,23 +102,23 @@ br_fnc_doChecks = {
 		if (getMarkerColor _endString != "") 
 		then { br_zones append [getMarkerPos _endString]; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringVeh, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicles.sqf")] execVM "core\server\base\fn_createVehicle.sqf"; };
+		then { [_endStringVeh, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicles.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringJetSpawn != "") && {(br_enable_friendly_ai)}) 
-		then { [_endStringJetSpawn, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_jets.sqf")] execVM "core\server\base\fn_createVehicle.sqf"; };
+		then { [_endStringJetSpawn, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_jets.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringHeli != "") && {(br_enable_friendly_ai)})
-		then { [_endStringHeli, _i, FALSE] execVM "core\server\base\fn_createHelis.sqf"; };
+		then { [_endStringHeli, _i, FALSE, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_transport.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})
-		then { [_endStringHeliEvac, _i, TRUE] execVM "core\server\base\fn_createHelis.sqf"; };
+		then { [_endStringHeliEvac, _i, TRUE, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_transport.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
-		then { [_endStringBombSquad, _i] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
+		then { [_endStringBombSquad, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_objective_squad_vehicles.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
 		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
-		then { [_endStringRecruit, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_recruit.sqf")] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
+		then { [_endStringRecruit, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_recruit.sqf", br_friendly_faction]))] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})
-		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf"), FALSE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
+		then { [_endStringVehicleTransport, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicle_transport.sqf", br_friendly_faction])), FALSE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 		if ((getMarkerColor _endStringVehicleEvac != "") && {(br_enable_friendly_ai)})
-		then { [_endStringVehicleEvac, _i, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_vehicle_transport.sqf"), TRUE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
+		then { [_endStringVehicleEvac, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicle_transport.sqf", br_friendly_faction])), TRUE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 		if ((getMarkerColor _endStringBaseDefence != "") && {(br_enable_friendly_ai)})
-		then { [_endStringBaseDefence, (call compile preprocessFileLineNumbers "core\spawnlists\friendly_base_defence.sqf")] execVM "core\server\base\fn_createBaseDefence.sqf"; };
+		then { [_endStringBaseDefence, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_base_defence.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createBaseDefence.sqf"; };
 		[_i] call br_fnc_doChecksDebug;
 	};
 };
@@ -163,7 +161,7 @@ br_fnc_deleteNonSideObjectives = {
 // On first zone creation after AI and everything has been placed do the following...
 br_fnc_onFirstZoneCreation = {
 	if (br_enable_friendly_ai) then {
-		execVM "core\server\base\fn_friendlySpawnAI.sqf";
+		[(call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_compositions.sqf", br_friendly_faction]))] execVM "core\server\base\fn_friendlySpawnAI.sqf";
 		execVM "core\server\zone\fn_commandFriendlyGroups.sqf";
 		execVM "core\server\garbage_collector\fn_checkFriendyAIPositions.sqf";
 		if (br_friendly_mark_enemy) then { execVM "core\server\zone\fn_checkFriendlyFindEnemy.sqf"; };
@@ -214,14 +212,28 @@ br_fnc_onNewZoneCreation = {
 	} forEach br_enemy_vehicle_objects;
 };
 
+br_get_groups = {
+	private _sideName = _this select 0;
+	private _defaultGroups = _this select 1;
+	{
+		if (_x select 0 == _sideName) then {
+			_defaultGroups = _x select 1;
+			exit;
+		};
+	} forEach call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\enemy_side_units.sqf", br_enemy_faction]);
+	_defaultGroups;
+};
+
 br_random_objectives = {
 	// Create HQ
-	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\bases.sqf"), "Kill", TRUE, "HQ Taken!", ["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
+	private _groupSpawn = ["HQ",["O_officer_F", "O_Soldier_F", "O_Soldier_AT_F", "O_Soldier_AA_F", "O_medic_F", "O_Soldier_GL_F"]] call br_get_groups;
+	if (br_hq_enabled) then {["HQ", "HQ", 10, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\bases.sqf"), "Kill", TRUE, "HQ Taken!", _groupSpawn, TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [["PATH", FALSE]], TRUE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create radio tower
 	if (br_radio_tower_enabled) then {["Radio_Tower", "Radio Tower", 8, selectrandom (call compile preprocessFileLineNumbers "core\savedassets\radio_towers.sqf"), "Destory", TRUE, "Radio Tower Destroyed!", [], TRUE, TRUE, "Border", "ELLIPSE", getMarkerPos "ZONE_RADIUS", TRUE, [], FALSE] execVM "core\server\zone_objective\fn_createObjective.sqf";};
 	// Create a random objective
 	if (br_zone_side_enabled) then {
 		private _zoneSideObjective = selectrandom (call compile preprocessFileLineNumbers "core\savedassets\zone_objectives.sqf");
+		_groupSpawn = [_zoneSideObjective select 0,_zoneSideObjective select 7] call br_get_groups;
 		[
 			_zoneSideObjective select 0, 
 			_zoneSideObjective select 1,
@@ -230,7 +242,7 @@ br_random_objectives = {
 			_zoneSideObjective select 4,
 			_zoneSideObjective select 5,
 			_zoneSideObjective select 6,
-			_zoneSideObjective select 7,
+			_groupSpawn,
 			_zoneSideObjective select 8,
 			_zoneSideObjective select 9,
 			_zoneSideObjective select 10,
@@ -249,20 +261,39 @@ br_fnc_waitForCompletedObjects = {
 	 if (_objective select 6) then { waitUntil { sleep 5; (missionNamespace getVariable (_objective select 5) && getMarkerColor (_objective select 10) != "ColorRed")  }; };
 };
 
+br_fnc_get_faction = {
+	private _index = _this select 0;
+	private _faction = "";
+	switch (_index) do {
+		case 0: { _faction = "BLU_F" };
+		case 1: { _faction = "OPF_F" };
+		case 2: { _faction = "RHSUSAF" };
+		case 3: { _faction = "RHSAFRF" };
+		default { _faction = "vanilla" };
+	};
+	_faction;
+};
+
+br_fnc_get_factions = {
+	br_enemy_faction = ["EnemyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
+	br_friendly_faction = ["FriendlyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
+};
+
 // Main function
 br_fnc_main = {
 	// Check for markers and do things
-	[] call br_fnc_doChecks;
+	call br_fnc_get_factions;
+	call br_fnc_doChecks;
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
-		[] call br_fnc_createZone;
+		call br_fnc_createZone;
 		execVM "core\server\task\fn_playerZoneTasking.sqf";
-		[] call br_random_objectives;
+		call br_random_objectives;
 		// Check if it's the first zone
 		if (br_first_Zone) then { call br_fnc_onFirstZoneCreation } else { [] call br_fnc_onNewZoneCreation; };
 		// Set taken as false
 		br_zone_taken = FALSE;
-		["ZONE_Radio_Tower_RADIUS", (call compile preprocessFileLineNumbers "core\spawnlists\enemy_speicals.sqf")] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
+		["ZONE_Radio_Tower_RADIUS", (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\enemy_speicals.sqf", br_enemy_faction])), (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_compositions.sqf", br_enemy_faction]))] execVM "core\server\zone\fn_zoneSpawnAI.sqf";
 		if (br_mines_enabled) then { execVM "core\server\zone\fn_placeMines.sqf"; };
 		// Wait for a time for the zone to populate
 		sleep 60;
@@ -270,9 +301,9 @@ br_fnc_main = {
 		{ [_x] call br_fnc_waitForCompletedObjects; } forEach br_objectives;
 		// Wait untill enemy units drop below a threshold
 		waitUntil { sleep 5; ((count br_ai_groups - (count br_groups_in_buildings / 2)) <= br_min_enemy_groups_for_capture) };
-		[] call br_fnc_onZoneTaken;
+		call br_fnc_onZoneTaken;
 		sleep br_next_zone_start_delay;
 	}
 };
 
-[] call br_fnc_main;
+call br_fnc_main;

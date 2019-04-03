@@ -1,0 +1,9 @@
+[
+	"O_Plane_Fighter_02_F",
+	"O_T_UAV_04_CAS_F",
+	"O_Plane_CAS_02_F",
+	"O_T_VTOL_02_infantry_F",
+	"O_Plane_Fighter_02_F",
+	"O_UAV_02_F",
+	"O_UAV_02_CAS_F"
+];

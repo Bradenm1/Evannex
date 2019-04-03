@@ -1,11 +1,11 @@
-_spawningMarker = _this select 0; // The marker which spawns the AI if active
-_unitChance = _this select 1; // The list of units that have a chance to spawn
+private _spawningMarker = _this select 0; // The marker which spawns the AI if active
+private _unitChance = _this select 1; // The list of units that have a chance to spawn
+private _unitChanceN = _this select 2;
+private _types = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_enemy_faction]));
 
-_aiSpawnRate = 0; // Delay in seconds
-_allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
-_currentGarrisons = 0;
-
-_unitTypes = ["Infantry"];
+private _aiSpawnRate = 0; // Delay in seconds
+private _allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
+private _currentGarrisons = 0;
 
 // Gets a safe zone within the zone
 br_fnc_getGroupEnemySpawn = {
@@ -54,7 +54,7 @@ br_fnc_spawnAI = {
 		// Spawn AI untill reached limit
 		while {(count br_ai_groups <= br_min_ai_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_group = [br_sides, 0, _unitTypes, br_side_types, (call compile preprocessFileLineNumbers "core\spawnlists\units.sqf"), _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			_group = [EAST, _types select 0, _types select 2, _types select 1, _unitChanceN, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			if (_currentGarrisons < br_max_garrisons) then {
 				_completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
