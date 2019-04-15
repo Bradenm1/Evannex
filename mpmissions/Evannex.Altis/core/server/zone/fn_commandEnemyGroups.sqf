@@ -5,6 +5,10 @@ While {TRUE} do {
 		// Check number of waypoints, if less then 3 add more.
 		if (count (waypoints _y) < 3) then {
 			private _pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
+			while {count _pos > 2} do {
+				_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
+				sleep 0.1;
+			};
 			_wp = _y addWaypoint [_pos, 0];
 			_wp setWaypointFormation (selectrandom ["NO CHANGE", "COLUMN", "STAG COLUMN", "WEDGE", "ECH LEFT", "ECH RIGHT", "VEE", "LINE", "FILE", "DIAMOND"]);
 			_wp setWaypointSpeed (selectrandom ["UNCHANGED", "LIMITED", "NORMAL", "FULL"]);

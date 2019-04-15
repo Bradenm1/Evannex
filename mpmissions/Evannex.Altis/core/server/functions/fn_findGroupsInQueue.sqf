@@ -11,7 +11,7 @@ private _Peps = 0;
 	if (_unitsAlive > 0) then {
 		if ((_Peps + _unitsAlive) <= _vehicle emptyPositions "cargo") then {
 			_groupWait deleteAt (_groupWait find _x);
-			_groups append [_x];
+			_groups pushBack _x;
 			_Peps = _Peps + _unitsAlive;
 			sleep 3;
 		};

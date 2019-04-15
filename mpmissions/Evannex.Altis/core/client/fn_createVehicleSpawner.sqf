@@ -1,4 +1,5 @@
 // https://forums.bohemia.net/forums/topic/180297-virtual-garage-possible-to-use-as-spawner-like-vvs/
+_this select 1 removeAction (_this select 2);
 disableSerialization;
 uiNamespace setVariable [ "current_garage", ( _this select 0 ) ];
 _fullVersion = missionNamespace getVariable [ "BIS_fnc_arsenal_fullGarage", false ];
@@ -24,24 +25,13 @@ with uiNamespace do {
     
     _crew = crew _x;
     {
-      _x spawn { 
-        _this action [ "Eject", vehicle _this ];
-        sleep ( random 2 );
-        _this setDamage 1;
-        sleep ( random 5 );
-        deleteVehicle _this;
-      };
+      deleteVehicle _x;
     } forEach _crew;
     deleteVehicle _x;
     sleep 0.5;
-    _new_veh = createVehicle [ _vehType, getMarkerPos _marker, [], 0, "CAN_COLLIDE" ];
-    _new_veh setPosATL [ ( position _new_veh select 0 ), ( position _new_veh select 1 ), 0.25 ];
-    _vehDir = markerDir _marker;
-    _new_veh setDir _vehDir;
-    _count = 0;
-    {
-      _new_veh setObjectTextureGlobal [ _count, _x ];
-      _count = _count + 1;
-    } forEach _textures;
+    [_vehType, _marker, _textures] remoteExec ["MP_request_vehicle", 2];
   } forEach _veh_list;
 };
+
+sleep 5;
+_this select 1 addaction ["Virtual Garage", { [("garage_spawner"), _this select 0, _this select 2] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];

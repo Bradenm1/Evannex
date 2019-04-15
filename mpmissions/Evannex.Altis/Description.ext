@@ -44,9 +44,11 @@ class Params {
         default = 1;
     };
 	#define DAYTIMEHOUR_DEFAULT 12
+    #define WEATHER_DEFAULT	25
+
 	#include "\a3\functions_f\Params\paramDaytimeHour.hpp"
-    #define WEATHER_DEFAULT	40
 	#include "\a3\functions_f\Params\paramWeather.hpp"
+
     class ViewDistance {
 		title = "View distance (in metres)";
 		values[] = {300,500,1000,1500,2000,2500,3000,3500,4000,4500,5000,12000};
@@ -73,7 +75,7 @@ class Params {
 	};
 	class  NumberEnemySpecialGroups {
 		title = "Max Special Enemy Groups"; // Param name visible in the list
-		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,  10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
 		default = 6; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
@@ -190,9 +192,16 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 0;
     };
+    class  MaxUserVehicles {
+		title = "Max User Vehicles"; // Param name visible in the list
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
+		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
+		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
+	}
     #define DEBUGCONSOLE_DEFAULT 0
-	#include "\a3\functions_f\Params\paramDebugConsole.hpp"
     #define TIMEACCELERATION_DEFAULT 1
+
+	#include "\a3\functions_f\Params\paramDebugConsole.hpp"
 	#include "\a3\Functions_F_MP_Mark\Params\paramTimeAcceleration.hpp"
 };
 

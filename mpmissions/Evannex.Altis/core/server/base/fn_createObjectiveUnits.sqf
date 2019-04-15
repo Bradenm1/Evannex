@@ -24,7 +24,7 @@ br_fnc_createBombUnits = {
 	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _objectiveGroup);
 	{ _x setBehaviour "SAFE"; } forEach (units _objectiveGroup);
 	[_transportVehicle, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
-	br_friendly_objective_groups append [_objectiveGroup];
+	br_friendly_objective_groups pushBack _objectiveGroup;
 	waitUntil { sleep 1; {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };
 	// Wait a second
 	sleep 1;
@@ -108,6 +108,10 @@ br_fnc_runRadioBombUnit = {
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
 		// Check if any groups are waiting
 		private _getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+		while {count _getPos > 2} do {
+			_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+			sleep 0.1;
+		};
 		private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 		_wp setWaypointType "GETOUT";
 		_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
@@ -121,6 +125,10 @@ br_fnc_runRadioBombUnit = {
 			waitUntil { sleep 2; missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || ({_x in _transportVehicle} count (units _objectiveGroup) == 0) };
 			// Move the units to the objective
 			private _getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+			while {count _getPos > 2} do {
+				_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+				sleep 0.1;
+			};
 			private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointStatements ["true",(format ["deleteWaypoint [group this, currentWaypoint (group this)]; br_objective_%1 = TRUE;", _objective select 0])];

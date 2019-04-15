@@ -36,16 +36,18 @@ br_fnc_createHeliUnits = {
 	{_x disableAI "MOVE"; _x disableAI "TARGET"; _x disableAI "AUTOTARGET" ; _x disableAI "FSM" ; _x disableAI "AUTOCOMBAT"; _x disableAI "AIMINGERROR"; _x disableAI "SUPPRESSION"; _x disableAI "MINEDETECTION" ; _x disableAI "WEAPONAIM"; _x disableAI "CHECKVISIBLE"; } forEach units _chopperUnits;
 	(leader _chopperUnits) moveInDriver _helicopterVech;
 	{ _x setSkill br_ai_skill } forEach units _chopperUnits;
-	br_heliGroups append [_chopperUnits];
+	br_heliGroups pushBack _chopperUnits;
 	_helicopterVech engineOn false;
 };
 
 // Gets the LZ for the zone
 br_fnc_createLandingSpotNearZone = {
-	_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	private _spaceMult = 1;
+	private _pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600 * _spaceMult, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
 	// We also find another position if it's too far from the zone
-	while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
-		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	while {count _pos > 2 || _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
+		_pos = [getMarkerPos "ZONE_RADIUS", (br_zone_radius * 2) * sqrt br_max_radius_distance, 600 * _spaceMult, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+		_spaceMult = _spaceMult + 0.1;
 		sleep 0.1;
 	};
 	[format ["LZ - %1", _heliIndex], _pos, format ["LZ - %1", groupId _chopperUnits], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
@@ -55,9 +57,17 @@ br_fnc_createLandingSpotNearZone = {
 
 // Gets the LZ for the zone
 br_fnc_createLandingSpotLZ = {
-	private _pos = _this select 0;
-	[format ["EVAC - %1", _heliIndex], _pos, format ["EVAC - %1", groupId _chopperUnits], "colorCivilian", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	private _spaceMult = 1;
+	// Get landing position
+	private _pos = [getpos (leader (_groups select 0)), 0, 300 * _spaceMult, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+	while {count _pos > 2} do {
+		_pos = [getpos (leader (_groups select 0)), 0, 300 * _spaceMult, 24, 0, br_heli_land_max_angle, 0] call BIS_fnc_findSafePos;
+		_spaceMult = _spaceMult + 0.1;
+		sleep 0.01;
+	};
+	[format ["EVACc - %1", _heliIndex], _pos, format ["EVAC - %1", groupId _chopperUnits], "colorCivilian", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
+	_pos;
 };
 
 // Get units alive in a group
@@ -73,7 +83,7 @@ br_fnc_waitForUntsToEnterChopper = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
 	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
-	waitUntil { sleep 3; {_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkHeliDead || _helicopterVech emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) };
+	waitUntil { sleep 3; ({_x in _helicopterVech} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || {[] call br_fnc_checkHeliDead} || {_helicopterVech emptyPositions "cargo" == 0} || {time >= _timeBeforeTeleport} || {(getPos _helicopterVech select 2 > 10)}) };
 	if (time >= _timeBeforeTeleport || (getPos _helicopterVech select 2 > 10) ) then { { _x moveInCargo _helicopterVech; } forEach units _tempGroup; };
 };
 
@@ -102,14 +112,18 @@ br_fnc_movetoAndLand = {
 // Go and land at zone
 br_fuc_landGroupAtZone = {
 	private _groups = _this select 0;
+	[_helicopterVech, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
 	// Add groups to transit
-	{ br_groups_in_transit append [_x]; } forEach _groups;
+	{ br_groups_in_transit pushBack _x; } forEach _groups;
 	// Command groups into helicopter
 	{ [_x, false, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
+	[_helicopterVech, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
+	sleep 15;
 	// Generate landing zone and move to it and land
 	[[] call br_fnc_createLandingSpotNearZone] call br_fnc_movetoAndLand;
+	[_helicopterVech, "Ejecting units!"] remoteExec ["vehicleChat"];
 	// Tell the groups to getout
 	[_helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 	// Wait untill all units are out
@@ -124,7 +138,7 @@ br_fuc_landGroupAtZone = {
 		private _y = _x;
 		private _playerCount = ({isPlayer _x} count (units _y));
 		if (_playerCount == 0) then {
-			br_friendly_ai_groups append [_y]; 
+			br_friendly_ai_groups pushBack _y; 
 		};
 	} forEach _groups;
 	// Delete un-needed things
@@ -165,26 +179,19 @@ br_fnc_runEvacChopper = {
 		if (count _groups > 0) then {
 			{ 
 				br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _x);
-				br_groups_in_transit append [_x]; 
+				br_groups_in_transit pushBack _x; 
 				_x setBehaviour "SAFE";	 
 			} forEach _groups;
-			// Get landing position
-			_pos = [getpos (leader (_groups select 0)), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
-			while {count _pos > 2 && _pos distance br_current_zone > (br_max_ai_distance_before_delete - 50)} do {
-				_pos = [getpos (leader (_groups select 0)), 0, 300, 24, 0, 0.25, 0] call BIS_fnc_findSafePos;
-				sleep 0.01;
-			};
-			// Create LZ
-			[_pos] call br_fnc_createLandingSpotLZ;
 			// Moveto LZ
-			[_pos] call br_fnc_movetoAndLand;
+			[call br_fnc_createLandingSpotLZ] call br_fnc_movetoAndLand;
 			// Wait for group to get in
 			{ [_x, false, _helicopterVech] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
+			call br_fnc_createHeliUnits;
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterChopper; } forEach _groups;
 			// Delete LZ
 			deleteVehicle _landMarker;
-			deleteMarker format ["EVAC - %1", _heliIndex];
+			deleteMarker format ["EVACc - %1", _heliIndex];
 			// Move back to base
 			[getMarkerPos _heliPad] call br_fnc_movetoAndLand;
 			// Eject the crew at base
@@ -199,7 +206,7 @@ br_fnc_runEvacChopper = {
 				// Move group to waiting groups
 				private _playerCount = ({isPlayer _x} count (units _y));
 				if (_playerCount == 0) then {
-					br_friendly_groups_waiting append [_y];
+					br_friendly_groups_waiting pushBack _y;
 				};
 				// Delete from transit group
 				br_groups_in_transit deleteAt (br_groups_in_transit find _y);
@@ -219,7 +226,7 @@ br_fnc_createHelis = {
 		// Set angle vector
 		[_chopperUnits, _heliPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
-		while {({(alive _x)} count (units _chopperUnits) > 0) && {(alive _helicopterVech)} && {(((leader _chopperUnits) distance _helicopterVech) < 30)};} do {
+		while {({(alive _x)} count (units _chopperUnits) > 0) && (alive _helicopterVech) && (((leader _chopperUnits) distance _helicopterVech) < 30) && (fuel _helicopterVech > 0.2)} do {
 			sleep 15;
 			if (_evacChopper) then { [] call br_fnc_runEvacChopper; } else { [] call br_fnc_runTransportChopper; };
 			_helicopterVech setFuel 1;

@@ -8,6 +8,7 @@ br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
 br_enabled_side_objectives = "SideObjectives" call BIS_fnc_getParamValue;
+br_max_user_vehicles = "MaxUserVehicles" call BIS_fnc_getParamValue;
 br_max_checks = 500; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
 br_zone_radius = "ZoneRadius" call BIS_fnc_getParamValue;
 br_mines_enabled = if ("RandomMines" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
@@ -27,11 +28,14 @@ br_special_ai_groups = []; // Enemy special groups
 br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
 br_groups_marked = []; // Enemy groups marked on map
+br_placed_mines = []; // Mines at the current zone
 br_base_defences = [];
+br_spawned_vehicles = []; // Users spawned vehicles
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
 br_ai_groups = []; // All spawned groups
 br_zones = []; // Zone Locations
+br_recruits = []; // recruited ai
 br_spawn_enemy_to_player_dis = 300; // Won't let AI in the zone spawn within this distance to a player
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
@@ -100,7 +104,7 @@ br_fnc_doChecks = {
 		private _endStringBaseDefence = Format ["defence_spawn_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
-		then { br_zones append [getMarkerPos _endString]; };
+		then { br_zones pushBack getMarkerPos _endString; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
 		then { [_endStringVeh, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicles.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringJetSpawn != "") && {(br_enable_friendly_ai)}) 
@@ -143,7 +147,6 @@ br_fnc_onZoneTaken = {
 	// Delete all AI left at zone
 	[] call br_fnc_deleteAllAI;
 	[] call br_fnc_deleteNonSideObjectives;
-	//br_objectives = [];
 };
 
 // Remove objectives which belong to the zone
@@ -174,9 +177,7 @@ br_fnc_onFirstZoneCreation = {
 
 // Set fuel for all vehicles in a group to a given amount
 br_fnc_setGroupFuelFull = {
-	private _group = _this select 0; // The given group
-	private _fuelAmount = _this select 1; // 0 - 1
-
+	params ["_group", "_fuelAmount"];
 	{  
 		_vehicle = (vehicle _x);
 		// Check if vehicle is null
@@ -197,24 +198,29 @@ br_fnc_onNewZoneCreation = {
 	} forEach br_friendly_vehicles;
 	// Place all the friendly ground units at the zone into a waiting evac queue
 	{
-		if (_x in br_friendly_ai_groups) then {
-			// Delete waypoints
-			while {(count (waypoints _x)) > 0} do {
-				deleteWaypoint ((waypoints _x) select 0);
+		// Delete waypoints
+		while {(count (waypoints _x)) > 0} do {
+			deleteWaypoint ((waypoints _x) select 0);
+		};
+		_x setBehaviour "SAFE";	
+		// Add the group to the evac queue and delete from roaming if too far away from new zone
+		if ((getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { 
+			if (_x in br_friendly_ai_groups) then { 
+				br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); 
 			};
-			_x setBehaviour "SAFE";	
-			// Add the group to the evac queue and delete from roaming if too far away from new zone
-			if ((getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); br_friendly_groups_wating_for_evac append [_x]; };
-		}
+			br_friendly_groups_wating_for_evac append [_x]; 
+		};
 	} forEach br_friendly_ground_groups;
 	{
 		deleteVehicle _x;
 	} forEach br_enemy_vehicle_objects;
+	{
+		deleteVehicle _x;
+	} forEach br_placed_mines;
 };
 
 br_get_groups = {
-	private _sideName = _this select 0;
-	private _defaultGroups = _this select 1;
+	params ["_sideName", "_defaultGroups"];
 	{
 		if (_x select 0 == _sideName) then {
 			_defaultGroups = _x select 1;
@@ -269,7 +275,7 @@ br_fnc_get_faction = {
 		case 1: { _faction = "OPF_F" };
 		case 2: { _faction = "RHSUSAF" };
 		case 3: { _faction = "RHSAFRF" };
-		default { _faction = "vanilla" };
+		default { _faction = "Error: Missing faction" };
 	};
 	_faction;
 };
@@ -284,6 +290,7 @@ br_fnc_main = {
 	// Check for markers and do things
 	call br_fnc_get_factions;
 	call br_fnc_doChecks;
+	execVM "core\server\recruit\fn_reassignRecruitAI.sqf";
 	while {TRUE} do {
 		// Everything relies on the zone so we create it first, and not using execVM since it has a queue.
 		call br_fnc_createZone;

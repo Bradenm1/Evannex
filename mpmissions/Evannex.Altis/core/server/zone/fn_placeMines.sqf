@@ -3,7 +3,8 @@ fn_place_mines = {
 	private _minesPlaced = 0;
 	while {_minesPlaced < _nMines} do {
 		private _pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
-		createMine [selectrandom ["ATMine", "APERSMine", "APERSBoundingMine", "SLAMDirectionalMine", "APERSTripMine", "Claymore_F", "IEDLandBig_F", "IEDLandSmall_F"], _pos, [], 0];
+		private _mine = createMine [selectrandom ["ATMine", "APERSMine", "APERSBoundingMine", "SLAMDirectionalMine", "APERSTripMine", "Claymore_F", "IEDLandBig_F", "IEDLandSmall_F"], _pos, [], 0];
+		br_placed_mines pushBack _mine;
 		_minesPlaced = _minesPlaced + 1;
 	};
 };

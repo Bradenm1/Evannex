@@ -16,5 +16,5 @@ private _typeSide = _sideTypes select _index;
 private _groups = _units select _index;
 private _group = [_side, _typeSide, _type, _unitTypes select _index, selectrandom _groups, _location] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
 _group setBehaviour "SAFE";
-_mainGroup append [_group];
+_mainGroup pushBack _group;
 _group;

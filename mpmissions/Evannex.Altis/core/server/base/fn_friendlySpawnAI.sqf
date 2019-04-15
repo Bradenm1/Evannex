@@ -8,7 +8,7 @@ br_fnc_spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {((count br_friendly_ground_groups)  < br_min_friendly_ai_groups)} do {
 			private _group = [WEST, _types select 0, _types select 2, _types select 1, _unitChance, call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", br_friendly_groups_waiting] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
-			br_friendly_ground_groups append [_group];
+			br_friendly_ground_groups pushBack _group;
 			sleep _aiSpawnRate;		
 		};
 		// Save memory instead of constant checking

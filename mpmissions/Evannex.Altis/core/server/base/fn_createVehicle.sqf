@@ -19,8 +19,8 @@ br_fnc_createAttackVehicle = {
 	[_attackVehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; } forEach (units _attackVehicleGroup);
 	// Apply the zone AI to the vehicle
-	br_friendly_ai_groups append [_attackVehicleGroup];
-	br_friendly_vehicles append [_attackVehicleGroup];
+	br_friendly_ai_groups pushBack _attackVehicleGroup;
+	br_friendly_vehicles pushBack _attackVehicleGroup;
 };
 
 // run the vehicle
@@ -29,13 +29,13 @@ br_fnc_runVehicleUnit = {
 		// Spawn vehicle
 		[] call br_fnc_createAttackVehicle;
 		// Wait untill they die
-		waituntil{ sleep 5; ({(alive _x)} count (units _attackVehicleGroup) < 1) || (!alive _attackVehicle)};
+		waituntil{ sleep 5; ({(alive _x)} count (units _attackVehicleGroup) < 1) || (!alive _attackVehicle) || (fuel _attackVehicle == 0)};
 		// Do some cleanup cause they died
-		if (!alive _attackVehicle) then { deleteVehicle _attackVehicle; } else { br_empty_vehicles_in_garbage_collection append [_attackVehicle]; };
-		//br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _vehicleGroup);
+		if (!alive _attackVehicle && fuel _attackVehicle == 0) then { deleteVehicle _attackVehicle; } else { br_empty_vehicles_in_garbage_collection pushBack _attackVehicle; };
+		br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _attackVehicleGroup);
 		br_friendly_vehicles deleteAt (br_friendly_vehicles find _attackVehicleGroup);
 		deleteGroup _attackVehicleGroup;
-		deleteVehicle _attackVehicle;
+		//deleteVehicle _attackVehicle;
 	};
 };
 

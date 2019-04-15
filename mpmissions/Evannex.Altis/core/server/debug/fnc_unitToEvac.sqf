@@ -3,4 +3,4 @@ private _index = _this select 1; // The index of the helictoper given other heli
 
 private _group = createGroup WEST;
 "C_man_p_beggar_F" createUnit [getMarkerPos _pad, _group];
-br_friendly_groups_wating_for_evac append [_group];
+br_friendly_groups_wating_for_evac pushBack _group;

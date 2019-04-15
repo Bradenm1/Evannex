@@ -7,6 +7,10 @@ While {TRUE} do {
 			if (count (waypoints _y) < 3 && !br_zone_taken) then {
 				//_pos = [] call getLocation;
 				private _pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
+				while {count _pos > 2} do {
+					_pos = [getMarkerPos "ZONE_RADIUS", 0, br_zone_radius * sqrt br_max_radius_distance, 2, 0, 60, 0] call BIS_fnc_findSafePos;
+					sleep 0.1;
+				};
 				private _wp = _y addWaypoint [_pos, 0];
 				_wp setWaypointType (selectrandom ["Sentry", "Move", "Destroy"]);
 				_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];

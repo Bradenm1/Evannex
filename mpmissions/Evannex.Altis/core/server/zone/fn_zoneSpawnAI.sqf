@@ -15,11 +15,7 @@ br_fnc_getGroupEnemySpawn = {
 // Spawn given units at a certain location
 br_fnc_spawnGivenUnitsAt = {
 	// Getting the params
-	_group = _this select 0;
-	_spawnAmount = _this select 1;
-	_position = _this select 2;
-	_groupunits = _this select 3;
-	_vectorAdd = _this select 4; // Adds to the spawn position each spawn, allows vehicles to not spawn inside one another...
+	params ["_group", "_spawnAmount","_position", "_groupunits"];
 	// Number AI to spawn
 	for "_i" from 1 to _spawnAmount do  {
 		{
@@ -73,7 +69,7 @@ br_fnc_spawnAI = {
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1, [0,0,0]] call br_fnc_spawnGivenUnitsAt;
+			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1] call br_fnc_spawnGivenUnitsAt;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			{ _x setSkill br_ai_skill; } forEach (units _group);
 			// Add all vehicles in the group to a list
@@ -81,11 +77,11 @@ br_fnc_spawnAI = {
 				_vehicle = (vehicle _x);
 				// Check if vehicle is null
 				if (!(isNull _vehicle)) then {
-					br_enemy_vehicle_objects append [_vehicle];
+					br_enemy_vehicle_objects pushBack _vehicle;
 				};
 			} forEach (units _group);
-			br_special_ai_groups append [_group];
-			br_ai_groups append [_group];
+			br_special_ai_groups pushBack _group;
+			br_ai_groups pushBack _group;
 			sleep 0.01;
 		};
 		// Save memory instead of constant checking

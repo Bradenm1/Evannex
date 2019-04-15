@@ -15,11 +15,11 @@ br_create_side_objective = {
 	_selected = selectrandom _missions;
 	private _groupSpawn = [_selected select 0, _selected select 3] call br_get_groups;
 	[_sideObjectName, _selected select 0, _selected select 4, _selected select 2, "Kill", TRUE, _selected select 1, _groupSpawn, TRUE, FALSE, "Border", "ELLIPSE", _objectivePosition, FALSE, [], _selected select 5] execVM "core\server\zone_objective\fn_createObjective.sqf";
-	br_current_sides append [[_objectivePosition, _sideObjectName]];
+	br_current_sides pushBack [_objectivePosition, _sideObjectName];
 };
 
 br_fn_run_sides = {
-	while {true} do {
+	while {TRUE} do {
 		// Check if any side mission have been completed and delete them
 		{
 			if (missionNamespace getVariable (format ["br_%1", _x select 1])) then {

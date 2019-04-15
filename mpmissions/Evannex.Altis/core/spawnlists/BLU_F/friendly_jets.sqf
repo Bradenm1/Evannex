@@ -2,7 +2,7 @@
 	"B_Plane_CAS_01_F",
 	"B_UAV_02_F",
 	"B_UAV_02_CAS_F",
-	"B_T_VTOL_01_armed_F",
+	//"B_T_VTOL_01_armed_F",
 	"B_Plane_Fighter_01_F",
 	"B_UAV_05_F",
 	"B_Plane_Fighter_01_Stealth_F",

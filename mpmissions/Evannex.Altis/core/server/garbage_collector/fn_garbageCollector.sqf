@@ -9,7 +9,7 @@ while {TRUE} do {
 	} forEach allDead;
 	{
 		if ((count (crew _x)) == 0) then {
-			br_empty_vehicles_in_garbage_collection append [_x];
+			br_empty_vehicles_in_garbage_collection pushBack _x;
 		};
 	} forEach br_enemy_vehicle_objects;
 	_playerindex = 0;

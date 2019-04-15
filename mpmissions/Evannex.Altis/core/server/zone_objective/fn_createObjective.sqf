@@ -27,11 +27,7 @@ private _objects = [];
 
 // Spawn given units at a certain location
 br_fnc_spawnGivenUnitsAt = {
-	// Getting the params
-	private _group = _this select 0;
-	private _spawnAmount = _this select 1;
-	private _position = _this select 2;
-	private _groupunits = _this select 3;
+	params ["_group", "_spawnAmount","_position", "_groupunits"];
 	// Number AI to spawn
 	for "_i" from 1 to _spawnAmount do  {
 		{
@@ -45,10 +41,7 @@ br_fnc_spawnGivenUnitsAt = {
 };
 
 br_ai_state = {
-	private _group = _this select 0;
-	private _state = _this select 1;
-	private _desure = _this select 2;
-
+	params ["_group", "_state","_desure"];
 	{
 		if (_desure) then {
 			_x enableAI _state; 
@@ -59,7 +52,7 @@ br_ai_state = {
 };
 
 br_set_states = {
-	private _group = _this select 0;
+	params ["_group"];
 	{ 
 		[_group, _x select 0, _x select 1] call br_ai_state;
 	} forEach _aiStates;
@@ -72,12 +65,14 @@ br_fnc_spawnGroups = {
 		_group = [createGroup EAST, 1, _safeSpot, [_x]] call br_fnc_spawnGivenUnitsAt;
 		//{ _x setSkill br_ai_skill } forEach units _group;
 		[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
-		_groupsToKill append [_group];
+		_groupsToKill pushBack _group;
 		if (_garrison) then { _garrison = [leader _group, _objectiveLocation, 100] call SBGF_fnc_groupGarrison; };
 		if (!_garrison) then { [_group, _safeSpot, _zoneRadius] execVM "core\server\zone_objective\fn_groupRoam.sqf"; };
 		[_group] call br_set_states;
-		{ if (!isNull objectParent _x) then { _objects append [vehicle _x] }; } forEach units _group;
+		{ if (!isNull objectParent _x) then { _objects pushBack vehicle _x }; } forEach units _group;
 	} forEach _groupsIfKill;
+	// Delete group if too far away from objective
+	[_groupsToKill, _objectiveOrigin, _zoneRadius] execVM "core\server\zone_objective\fn_groupChecker.sqf"; 
 };
 
 // Do this and wait untill done
@@ -85,7 +80,7 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 	switch (_objective) do {
 		case "Destory & Kill": { call br_fnc_spawnGroups; { waitUntil { sleep 1; !alive _x} } foreach _objects; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		case "Destory": { { sleep 5; waitUntil { sleep 1; !alive _x} } foreach _objects; };
-		case "Kill": { { _x allowDamage FALSE; } foreach _objects; call br_fnc_spawnGroups; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
+		case "Kill": { {  } foreach _objects; call br_fnc_spawnGroups; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		default { hint "Objective Error: " + _uniqueName};
 	};
 };
@@ -98,19 +93,18 @@ br_fnc_deleteObjMarkers = {
 };
 
 br_set_composition = {
-	private _source = _this select 0;
-	private _composition = _this select 1;
+	params ["_source", "_composition"];
 
 	{
-		private _type = _x select 0;
-		private _offset = _x select 1;
-		private _newDir = _x select 2;
-		private _obj = nil;
-		_obj = createVehicle [_type, [0,0,1], [], 0, "CAN_COLLIDE"];
-		_objects append [_obj];
+		_x params ["_type", "_offset", "_newDir"];
+
+		private _obj = createVehicle [_type, [0,0,0], [], 0, "CAN_COLLIDE" ];
 		[_source, _obj, _offset, _newDir] call BIS_fnc_relPosObject;
-		_obj setPosASL [getPos _obj select 0, getPos _obj select 1, getTerrainHeightASL getPos _obj];
-		_obj setVectorUp (surfaceNormal (getPosATL _obj));
+		private _newPos = getPosASL _obj;
+		_newPos set [2, 0];
+		_obj setPosATL _newPos;
+		_obj setVectorUp (surfaceNormal _newPos);
+		_objects pushBack _obj;
 	} forEach _composition;
 };
 
@@ -137,7 +131,7 @@ br_fnc_createObjective = {
 	// Create text icon
 	[_textName, _objectiveOrigin, _displayName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 	[_objectiveLocation, _objectivePosition, "", "ColorBlue", 0] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
-	br_objectives append [[_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted, _objectiveOrigin, _zoneRadius, _radiusName]];
+	br_objectives pushBack [_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted, _objectiveOrigin, _zoneRadius, _radiusName];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;
 	// Take the objective

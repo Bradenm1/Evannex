@@ -4,8 +4,7 @@ _markerLimit = 6; // Markers limit
 
 // Checks if any units in group are seen
 fnc_checkUnitSeen = {
-	private _friendlyGroup = _this select 0;
-	private _enemyGroup = _this select 1;
+	params ["_friendlyGroup", "_enemyGroup"];
 	private _knows = FALSE;
 	{
 		if ((_friendlyGroup knowsAbout _x) > 0) then { _knows = TRUE };
@@ -16,17 +15,13 @@ fnc_checkUnitSeen = {
 
 // Create the marker on the map
 fnc_createMapMarker = {
-	private _marker = _this select 0;
-	private _group = _this select 1;
-	private _name = _this select 2;
+	params ["_name", "_group", "_marker"];
 	[_marker, getpos (leader _group), _name, "ColorBlack", 0.5] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
 };
 
 // Create a maker given the type
 fnc_createMarkerType = {
-	private _type = _this select 0;
-	private _marker = _this select 1;
-	private _group = _this select 2;
+	params ["_type", "_marker", "_group"];
 	switch (_type) do {
 		case "Vehicle": { [_marker, _group, format ["%1 Around Here!", getText (configFile >>  "CfgVehicles" >> typeof (Vehicle (leader _group)) >> "displayName")]] call fnc_createMapMarker; };
 		case "Ground Unit": { [_marker, _group, "Ground Units Around Here!"] call fnc_createMapMarker; };
@@ -36,7 +31,7 @@ fnc_createMarkerType = {
 
 // Check if any groups are seen
 fnc_checkGroupSeen = {
-	private _friendlyGroup = _this select 0;
+	params ["_friendlyGroup"];
 	{
 		if (count br_markers_marked >= _markerLimit) exitWith {};
 		// Check if group already has a marker
@@ -49,7 +44,7 @@ fnc_checkGroupSeen = {
 					["Ground Unit", groupId _x, _x] call fnc_createMarkerType;
 				};
 				if (!(groupId _x in br_markers_marked)) then { 
-					br_markers_marked append [groupId _x]; 
+					br_markers_marked pushBack groupId _x; 
 					[groupId _x,time + _marerRemovalLimit] execVM "core\server\markers\fn_deleteMakerAfterGivenTime.sqf";
 				}
 			};
