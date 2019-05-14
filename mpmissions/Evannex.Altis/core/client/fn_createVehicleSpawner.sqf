@@ -1,5 +1,7 @@
 // https://forums.bohemia.net/forums/topic/180297-virtual-garage-possible-to-use-as-spawner-like-vvs/
-_this select 1 removeAction (_this select 2);
+//_this select 1 removeAction (_this select 2);
+removeAllActions (_this select 1);
+private _aiControlled = _this select 3;
 disableSerialization;
 uiNamespace setVariable [ "current_garage", ( _this select 0 ) ];
 _fullVersion = missionNamespace getVariable [ "BIS_fnc_arsenal_fullGarage", false ];
@@ -29,9 +31,11 @@ with uiNamespace do {
     } forEach _crew;
     deleteVehicle _x;
     sleep 0.5;
-    [_vehType, _marker, _textures] remoteExec ["MP_request_vehicle", 2];
+    [_vehType, _marker, _textures, _aiControlled] remoteExec ["MP_request_vehicle", 2];
   } forEach _veh_list;
 };
 
 sleep 5;
-_this select 1 addaction ["Virtual Garage", { [("garage_spawner"), _this select 0, _this select 2] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];
+_this select 1 addaction ["Virtual Garage", { [("garage_spawner"), _this select 0, _this select 2, FALSE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];  
+_this select 1 addaction ["Virtual Garage AI", { [("garage_spawner"), _this select 0, _this select 2, TRUE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];
+//_this select 1 addaction [if (_aiControlled) then { "AI Virtual Garage" } else { "Virtual Garage" }, { [("garage_spawner"), _this select 0, _this select 2, _aiControlled] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];

@@ -26,6 +26,7 @@ br_fnc_createBombUnits = {
 	[_transportVehicle, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	br_friendly_objective_groups pushBack _objectiveGroup;
 	waitUntil { sleep 1; {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };
+	_transportVehicle setUnloadInCombat [FALSE, FALSE];
 	// Wait a second
 	sleep 1;
 };
@@ -99,7 +100,6 @@ br_fnc_deleteWayPoints = {
 // AI script for the group
 br_fnc_runRadioBombUnit = {
 	call br_fnc_createBombUnits;
-	_transportVehicle setUnloadInCombat [FALSE, FALSE];
 	while {TRUE} do {
 		waitUntil { sleep 5; !br_zone_taken && {count br_objectives > 0}};
 		// Find a objective
@@ -151,7 +151,6 @@ br_fnc_runRadioBombUnit = {
 			deleteGroup _objectiveGroup;
 			br_friendly_objective_groups deleteAt (br_friendly_objective_groups find _objectiveGroup);
 			call br_fnc_createBombUnits;
-			_transportVehicle setUnloadInCombat [FALSE, FALSE];
 		};
 		call br_fnc_deleteWayPoints;
 	};

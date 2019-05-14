@@ -36,6 +36,8 @@ br_objectives = []; // Objectives at the zone
 br_ai_groups = []; // All spawned groups
 br_zones = []; // Zone Locations
 br_recruits = []; // recruited ai
+br_garbage_collection_player_distance = 8; // Max distance from players before things are garbage collected
+br_garbage_collection_interval = 300;
 br_spawn_enemy_to_player_dis = 300; // Won't let AI in the zone spawn within this distance to a player
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
@@ -50,7 +52,7 @@ br_first_Zone = TRUE; // If it's the first zone
 br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_current_sides = [];
-br_next_zone_start_delay = 35; // Delay between zones
+br_next_zone_start_delay = 15; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
 br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
@@ -267,6 +269,8 @@ br_fnc_waitForCompletedObjects = {
 	 if (_objective select 6) then { waitUntil { sleep 5; (missionNamespace getVariable (_objective select 5) && getMarkerColor (_objective select 10) != "ColorRed")  }; };
 };
 
+// Sets the factions for both enemy and friendly AI
+// This is where you would add custom factions
 br_fnc_get_faction = {
 	private _index = _this select 0;
 	private _faction = "";
@@ -280,13 +284,21 @@ br_fnc_get_faction = {
 	_faction;
 };
 
+// Sets both enemy and friendly factions
 br_fnc_get_factions = {
 	br_enemy_faction = ["EnemyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
 	br_friendly_faction = ["FriendlyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
 };
 
+// Set the time given the param
+br_set_time = {
+ 	private _date = date;
+	[[_date select 0, _date select 1, _date select 2, ("Time" call BIS_fnc_getParamValue), _date select 4]] remoteExec ["setDate"]
+};
+
 // Main function
 br_fnc_main = {
+	call br_set_time;
 	// Check for markers and do things
 	call br_fnc_get_factions;
 	call br_fnc_doChecks;

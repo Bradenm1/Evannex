@@ -22,5 +22,5 @@ While {TRUE} do {
 		[br_ai_groups] call br_fnc_checkObjectives;
 		[br_groups_in_buildings] call br_fnc_checkObjectives;
 	};
-	sleep 30;
+	sleep br_garbage_collection_interval;
 };
