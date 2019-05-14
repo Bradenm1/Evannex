@@ -15,7 +15,7 @@ Note: This is my first ArmA 3 mod. This gamemode is also based off Invade & Anne
 - Friendly vehicles & helictopers & jets
 - Friendly units respawn as a different unit
 - Friendly squads which do the objectives (Includes side missions)
-- Enemeies can garrison structures
+- Enemies can garrison structures
 - Recruitable friendly units
 - Randomly generated enemy zones (Includes the objectives)
 - Randomly generated side missions
