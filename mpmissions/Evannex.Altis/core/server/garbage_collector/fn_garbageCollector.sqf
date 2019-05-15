@@ -8,7 +8,7 @@ while {TRUE} do {
 		sleep 0.01;
 	} forEach allDead;
 	{
-		if ((count (crew _x)) == 0) then {
+		if (!([getpos _x, br_garbage_collection_player_distance] call (compile preProcessFile "core\server\functions\fn_checkPlayersAround.sqf")) && (count (crew _x)) == 0) then {
 			br_empty_vehicles_in_garbage_collection pushBack _x;
 		};
 	} forEach br_enemy_vehicle_objects;
@@ -25,11 +25,11 @@ while {TRUE} do {
 		};
 		sleep 0.5;
 	};
-	{ 
+	/*{ 
 		objectName = getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName");
 		if (objectName == "Canopy") then {
 			deleteVehicle _x ;
 		};
-	} forEach (allMissionObjects "");
+	} forEach (allMissionObjects "");*/
 	sleep br_garbage_collection_interval;
 };
