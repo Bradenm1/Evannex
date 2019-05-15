@@ -39,5 +39,5 @@ MP_request_vehicle = {
 		format ["The server has hit the spawnable vehicles limit: %1. Deleting one.", count br_spawned_vehicles, getText (configFile >>  "CfgVehicles" >> (typeof _new_veh) >> "displayName")] remoteExec ["systemChat"]; 
 		br_spawned_vehicles deleteAt (br_spawned_vehicles find _toDelete);
 		deleteVehicle _toDelete;
-	}
+	};
 };

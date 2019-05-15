@@ -80,7 +80,7 @@ br_fnc_DoObjectiveAndWaitTillComplete = {
 	switch (_objective) do {
 		case "Destory & Kill": { call br_fnc_spawnGroups; { waitUntil { sleep 1; !alive _x} } foreach _objects; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		case "Destory": { { sleep 5; waitUntil { sleep 1; !alive _x} } foreach _objects; };
-		case "Kill": { {  } foreach _objects; call br_fnc_spawnGroups; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
+		case "Kill": { call br_fnc_spawnGroups; { _y = _x; waitUntil { sleep 1; ({alive _x} count units _y < 1)}; } forEach _groupsToKill};
 		default { hint "Objective Error: " + _uniqueName};
 	};
 };
@@ -90,22 +90,6 @@ br_fnc_deleteObjMarkers = {
 	deleteMarker _radiusName; 
 	deleteMarker _textName;
 	deleteMarker _objectiveLocation;
-};
-
-br_set_composition = {
-	params ["_source", "_composition"];
-
-	{
-		_x params ["_type", "_offset", "_newDir"];
-
-		private _obj = createVehicle [_type, [0,0,0], [], 0, "CAN_COLLIDE" ];
-		[_source, _obj, _offset, _newDir] call BIS_fnc_relPosObject;
-		private _newPos = getPosASL _obj;
-		_newPos set [2, 0];
-		_obj setPosATL _newPos;
-		_obj setVectorUp (surfaceNormal _newPos);
-		_objects pushBack _obj;
-	} forEach _composition;
 };
 
 // Creates the Objective
@@ -125,7 +109,7 @@ br_fnc_createObjective = {
 	_spawnedObj = "Land_LampAirport_F" createVehicle _objectivePosition;
 	_spawnedObj hideObjectGlobal true;
 	_spawnedObj enableSimulationGlobal false;
-	if (count _objectToUse != 0) then { [_spawnedObj, _objectToUse] call br_set_composition; };
+	if (count _objectToUse != 0) then { _objects append ([_spawnedObj, _objectToUse] call compile preprocessFileLineNumbers "core\server\functions\fn_createComposition.sqf"); };
 	// Creates the radius
 	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
 	// Create text icon

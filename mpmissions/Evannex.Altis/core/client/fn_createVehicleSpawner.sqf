@@ -35,7 +35,7 @@ with uiNamespace do {
   } forEach _veh_list;
 };
 
-sleep 5;
+sleep 3;
 _this select 1 addaction ["Virtual Garage", { [("garage_spawner"), _this select 0, _this select 2, FALSE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];  
 _this select 1 addaction ["Virtual Garage AI", { [("garage_spawner"), _this select 0, _this select 2, TRUE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];
 //_this select 1 addaction [if (_aiControlled) then { "AI Virtual Garage" } else { "Virtual Garage" }, { [("garage_spawner"), _this select 0, _this select 2, _aiControlled] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];

@@ -6,15 +6,7 @@ private _unitChance = _this select 1;
 br_fnc_createDefence = {
 	// Select a random unit from the above list to spawn
 	_vehicle = (selectrandom _unitChance) createVehicle (getMarkerPos _spawnPad);
-	// Create its crew
-	createVehicleCrew _vehicle;
-	// Get the vehicle commander
-	private _commander = driver _vehicle;
-	// Get the group from the commander
-	private _temp = group _commander;
-	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
-	_group = createGroup WEST;
-	(units _temp) joinSilent _group;
+	private _group = [_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
 	_vehicle setDir (markerDir _spawnPad);
 	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _group);
 	// Apply the zone AI to the vehicle
