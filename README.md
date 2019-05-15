@@ -4,7 +4,7 @@ Arma 3 - AI vs AI Gamemode. Zones are randomly generated around the map you need
 
 Note: This is my first ArmA 3 mod. This gamemode is also based off Invade & Annex and is very similar. I did not use their framework or code because I wanted to learn the SQF language and thought it would be fun to make my own version. This is why it does not include the same things.
 
-![alt text](http://www.bradenmckewen.com/img/projects/arma-3-mods/evannex.png "Gamemode Header Image")
+![alt text](http://www.bradenmckewen.com/img/projects/arma-3-mods/evannexstuff.jpg "Gamemode Header Image")
 
 ## Features:
 ---
@@ -62,6 +62,18 @@ Friendly vehicle spawn
 Friendly jet spawn
 ##### "objective_squad_n":
 Friendly Objetive squad spawn
+
+## Adding Custom Faction:
+---
+1. Clone a one of the directories within 'core/spawnlists'.
+2. Name the cloned directory according to the custom faction being added. e.g 'FOOBAR'.
+3. Add the custom faction to the 'Description.ext' file within the one or both classes 'FriendlyFaction' & 'EnemyFaction' as a text and value. E.G:
+⋅⋅⋅values[] = {0,1,2,3,4};⋅⋅
+⋅⋅⋅texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF", "FOOBAR"};⋅⋅
+6. Add the custom faction to the switch statement as a case in the function 'br_fnc_get_faction' within 'core/server/zone/zoneCreation.sqf' file. E.G: 'case 4: { _faction = "FOOBAR" };'.
+7. Lastly change the asset classes held within the 'FOOBAR' directory to spawn the custom faction units. E.G: changing the class names within 'friendly_jets.sqf' would change what type of jets spawn at the "jet_spawn_n" marker.
+
+See other included factions for examples.
 
 ## Credits:
 ---
