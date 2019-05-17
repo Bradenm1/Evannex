@@ -15,6 +15,14 @@ br_fnc_createAttackVehicle = {
 	br_friendly_vehicles pushBack _attackVehicleGroup;
 };
 
+// What to do if the vehicle is dead but some units controlling the vehicle are alive
+br_fnc_noVehicle = {
+	while {(count (waypoints _attackVehicleGroup)) > 0} do {
+		deleteWaypoint ((waypoints _attackVehicleGroup) select 0);
+	};
+	br_friendly_ai_groups pushBack _attackVehicleGroup;
+};
+
 // run the vehicle
 br_fnc_runVehicleUnit = {
 	while {True} do {
@@ -24,10 +32,15 @@ br_fnc_runVehicleUnit = {
 		waituntil{ sleep 5; ({(alive _x)} count (units _attackVehicleGroup) < 1) || (!alive _attackVehicle) || (fuel _attackVehicle == 0)};
 		// Do some cleanup cause they died
 		if (!alive _attackVehicle && fuel _attackVehicle == 0) then { deleteVehicle _attackVehicle; } else { br_empty_vehicles_in_garbage_collection pushBack _attackVehicle; };
-		br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _attackVehicleGroup);
+		if (({(alive _x)} count (units _attackVehicleGroup) < 1)) then 
+		{ 
+			br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _attackVehicleGroup); 
+		} else {
+			// What to do if the units are alive somehow
+			call br_fnc_noVehicle;
+		};
 		br_friendly_vehicles deleteAt (br_friendly_vehicles find _attackVehicleGroup);
 		deleteGroup _attackVehicleGroup;
-		//deleteVehicle _attackVehicle;
 	};
 };
 

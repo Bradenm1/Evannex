@@ -25,11 +25,5 @@ while {TRUE} do {
 		};
 		sleep 0.5;
 	};
-	/*{ 
-		objectName = getText (configFile >>  "CfgVehicles" >> typeof _x >> "displayName");
-		if (objectName == "Canopy") then {
-			deleteVehicle _x ;
-		};
-	} forEach (allMissionObjects "");*/
 	sleep br_garbage_collection_interval;
 };

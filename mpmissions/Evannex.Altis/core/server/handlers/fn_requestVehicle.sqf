@@ -14,6 +14,7 @@ MP_request_vehicle = {
 
 	br_spawned_vehicles pushBack _new_veh;
 
+	// If crew has AI
 	if (_aiControlled) then {
 		// Create its crew
 		createVehicleCrew _new_veh;

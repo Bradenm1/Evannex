@@ -4,8 +4,8 @@ onLoadName = "Evannex";
 onLoadMission = "An AI vs AI gamemode";
 loadScreen = "textures\mission_thumbnail.paa";
 
-corpseManagerMode = 1;
-corpseLimit = 3;
+corpseManagerMode = 3;
+corpseLimit = 10;
 corpseRemovalMinTime = 10;
 corpseRemovalMaxTime = 20; 
 minPlayerDistance = 50;
@@ -64,19 +64,19 @@ class Params {
 	class NumberFriendlyGroups {
 		title = "Max Friendly Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
+		default = 8; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class NumberEnemyGroups {
 		title = "Max Enemy Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 9; // Default value; must be listed in 'values' array, otherwise 0 is used
+		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
 	class  NumberEnemySpecialGroups {
 		title = "Max Special Enemy Groups"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'
-		default = 6; // Default value; must be listed in 'values' array, otherwise 0 is used
+		default = 7; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	}
 	class  MinEnemyGroupsForCapture {

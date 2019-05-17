@@ -37,7 +37,8 @@ br_ai_groups = []; // All spawned groups
 br_zones = []; // Zone Locations
 br_recruits = []; // recruited ai
 br_garbage_collection_player_distance = 16; // Max distance from players before things are garbage collected
-br_garbage_collection_interval = 300;
+br_garbage_collection_interval = 150; // Empty vehicles and dead units
+br_garbage_collection_positions_interval = 300; // Delete certain AI if they have not moved within this time or too far from the zone
 br_spawn_enemy_to_player_dis = 300; // Won't let AI in the zone spawn within this distance to a player
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
@@ -131,9 +132,7 @@ br_fnc_doChecks = {
 
 br_fnc_doChecksDebug = {
 	private _index = _this select 0;
-
 	private _endStringUnitNeedingEvac = Format ["debug_unit_to_evac_%1", _i];
-
 	if ((getMarkerColor _endStringUnitNeedingEvac != "") && {(br_enable_friendly_ai)})
 	then { [_endStringUnitNeedingEvac, _i] execVM "core\server\debug\fnc_unitToEvac.sqf"; };
 };

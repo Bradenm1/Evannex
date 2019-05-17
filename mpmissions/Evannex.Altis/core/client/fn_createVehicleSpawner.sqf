@@ -1,5 +1,4 @@
 // https://forums.bohemia.net/forums/topic/180297-virtual-garage-possible-to-use-as-spawner-like-vvs/
-//_this select 1 removeAction (_this select 2);
 removeAllActions (_this select 1);
 private _aiControlled = _this select 3;
 disableSerialization;
@@ -38,4 +37,3 @@ with uiNamespace do {
 sleep 3;
 _this select 1 addaction ["Virtual Garage", { [("garage_spawner"), _this select 0, _this select 2, FALSE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];  
 _this select 1 addaction ["Virtual Garage AI", { [("garage_spawner"), _this select 0, _this select 2, TRUE] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];
-//_this select 1 addaction [if (_aiControlled) then { "AI Virtual Garage" } else { "Virtual Garage" }, { [("garage_spawner"), _this select 0, _this select 2, _aiControlled] call compile preprocessFileLineNumbers "core\client\fn_createVehicleSpawner.sqf"; }];
