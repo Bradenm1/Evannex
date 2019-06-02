@@ -34,14 +34,14 @@ class Header {
 class Params {
     class FriendlyFaction {
         title = "Friendly Faction";
-        values[] = {0,1,2,3};
-        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF"};
+        values[] = {0,1,2,3,4,5};
+        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF", "UNSC", "Rebels"};
         default = 0;
     };
     class EnemyFaction {
         title = "Enemy Faction";
-        values[] = {0,1,2,3};
-        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF"};
+        values[] = {0,1,2,3,4,5};
+        texts[] = {"BLU_F", "OPF_F", "RHSUSAF", "RHSAFRF", "UNSC", "Rebels"};
         default = 1;
     };
     class Time {
@@ -198,6 +198,12 @@ class Params {
 		default = 10; // Default value; must be listed in 'values' array, otherwise 0 is used
 		// Default values that are not whole numbers do not work. Param will default to 0 (or 1 if defined)
 	};
+    class MaxFriendlyGroupSize {
+        title = "Max Friendly Group Size";
+        values[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        texts[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+        default = 8;
+    }
 
     //#define WEATHER_DEFAULT	25
     //#define DEBUGCONSOLE_DEFAULT 0

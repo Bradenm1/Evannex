@@ -9,7 +9,8 @@ private _Peps = 0;
 	// Get the alive units for each group
 	private _unitsAlive = [_x] call br_fnc_getUnitsAlive;
 	if (_unitsAlive > 0) then {
-		if ((_Peps + _unitsAlive) <= _vehicle emptyPositions "cargo") then {
+		private _emptyPositions = ((_vehicle emptyPositions "Cargo") + (_vehicle emptyPositions "Gunner") + (_vehicle emptyPositions "Commander") + (_vehicle emptyPositions "Driver"));
+		if ((_Peps + _unitsAlive) <= _emptyPositions) then {
 			_groupWait deleteAt (_groupWait find _x);
 			_groups pushBack _x;
 			_Peps = _Peps + _unitsAlive;

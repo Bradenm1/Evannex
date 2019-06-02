@@ -17,14 +17,15 @@ br_fnc_createBombUnits = {
 	while {{(alive _x)} count (units _objectiveGroup) == 0} do {
 		_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, _unitChance, getMarkerPos _spawnPad, []] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 	};
-	(leader _objectiveGroup) moveInDriver _transportVehicle;
-	{ if (_x != (leader _objectiveGroup)) then { _x assignAsCargo _transportVehicle; (leader _objectiveGroup); _x moveInCargo _transportVehicle; }; } forEach (units _objectiveGroup);
+	(leader _objectiveGroup) moveInAny _transportVehicle;
+	{ if (_x != (leader _objectiveGroup)) then { if (!(_x moveInAny _transportVehicle)) then { deleteVehicle _x; }; }; } forEach (units _objectiveGroup);
 	// Give each unit a sactelCharge
 	{ _oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack; } forEach (units _objectiveGroup);
 	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _objectiveGroup);
 	{ _x setBehaviour "SAFE"; } forEach (units _objectiveGroup);
 	[_transportVehicle, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
 	br_friendly_objective_groups pushBack _objectiveGroup;
+	//sleep 5;
 	waitUntil { sleep 1; {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };
 	_transportVehicle setUnloadInCombat [FALSE, FALSE];
 	// Wait a second

@@ -6,7 +6,8 @@ private _unitChance = _this select 1;
 br_fnc_createDefence = {
 	// Select a random unit from the above list to spawn
 	_vehicle = (selectrandom _unitChance) createVehicle (getMarkerPos _spawnPad);
-	private _group = [_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
+	private _group = createGroup WEST;
+	_group = [_vehicle, _group] call compile preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
 	_vehicle setDir (markerDir _spawnPad);
 	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; _x disableAI "PATH"; } forEach (units _group);
 	// Apply the zone AI to the vehicle

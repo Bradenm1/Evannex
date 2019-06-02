@@ -8,6 +8,12 @@ br_fnc_spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {((count br_friendly_ground_groups)  < br_min_friendly_ai_groups)} do {
 			private _group = [WEST, _types select 0, _types select 2, _types select 1, _unitChance, call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", br_friendly_groups_waiting] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			private _secondGroup = nil;
+			if (count (units _group) > br_max_friendly_group_size) then { 
+				private _secondGroup = createGroup WEST;
+				[(units _group), 0, (count (units _group) / 2)] call BIS_fnc_subSelect joinSilent _secondGroup;
+				br_friendly_ground_groups pushBack _secondGroup;
+			};
 			br_friendly_ground_groups pushBack _group;
 			sleep _aiSpawnRate;		
 		};

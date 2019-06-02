@@ -7,9 +7,13 @@ private _unitChance = _this select 1;
 br_fnc_createAttackVehicle = {
 	// Select a random unit from the above list to spawn
 	_attackVehicle = (selectrandom _unitChance) createVehicle (getMarkerPos _spawnPad);
-	_attackVehicleGroup = [_attackVehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
+	//_attackVehicleGroup = [_attackVehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
+	// Create its crew
+	createVehicleCrew _attackVehicle;
+	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
+	_attackVehicleGroup = createGroup WEST;
+	(units (group ((crew _attackVehicle) select 0))) joinSilent _attackVehicleGroup;
 	[_attackVehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
-	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; } forEach (units _attackVehicleGroup);
 	// Apply the zone AI to the vehicle
 	br_friendly_ai_groups pushBack _attackVehicleGroup;
 	br_friendly_vehicles pushBack _attackVehicleGroup;

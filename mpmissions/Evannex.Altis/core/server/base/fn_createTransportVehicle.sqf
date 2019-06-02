@@ -9,20 +9,17 @@ private _landMarker = nil; // Used to tell the AI where to land
 // Deletes the current Vehicle units
 br_fnc_deleteOldVehicleUnits = {
 	br_heliGroups deleteAt (br_heliGroups find _vehicleGroup);
-	{ deleteVehicle _x } forEach units _vehicleGroup;
+	{ deleteVehicle _x; } forEach units _vehicleGroup;
 	deleteGroup _vehicleGroup;
 };
 
 // Creates the helicopter units
 br_fnc_createVehicleUnits = {
 	createVehicleCrew _vehicle;
-	// Get the vehicle commander
-	private _commander = driver _vehicle;
-	// Get the group from the commander
-	private _temp = group _commander;
 	_vehicleGroup = createGroup WEST;
-	// If vehicle is another faction it can spawn people on the wrong side, we need them to be on our side.
-	(units _temp) joinSilent _vehicleGroup;
+	(units (group ((crew _vehicle) select 0))) joinSilent _vehicleGroup;
+	// Delete all vehicle units but the driver
+	//{ deleteVehicle _x; } forEach units _vehicleGroup - [driver _vehicle, leader _vehicleGroup];
 	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 	{ _x setSkill br_ai_skill } forEach units _vehicleGroup;
 	br_heliGroups append [_vehicleGroup];
@@ -64,7 +61,8 @@ br_fnc_waitForUntsToEnterVehicle = {
 	private _tempGroup = _this select 0;
 	{_x selectweapon primaryWeapon _x; _x setDamage 0} foreach (units _tempGroup);
 	_timeBeforeTeleport = time + br_groupsStuckTeleportDelay;
-	waitUntil { sleep 1; {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || _vehicle emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
+	//waitUntil { sleep 1; {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || _vehicle emptyPositions "cargo" == 0 || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
+	waitUntil { sleep 1; {_x in _vehicle} count (units _tempGroup) == {(alive _x)} count (units _tempGroup) || [] call br_fnc_checkVehicleDead || time >= _timeBeforeTeleport || (getPos _vehicle select 2 > 10) };
 	if (time >= _timeBeforeTeleport ) then { { _x moveInCargo _vehicle; } forEach units _tempGroup; };
 };
 
@@ -105,22 +103,30 @@ fn_disable_group_fms = {
 	{ if (_enabled) then { _x enableAI "ALL"; } else { _x disableAI "ALL"; }; } forEach units _group;
 };
 
+fn_disable_group_guns = {
+ 	params ["_group", "_enabled"];
+	{ if (_enabled) then { _x enableAI "TARGET"; _x enableAI "AUTOTARGET"; _x enableAI "WEAPONAIM"; _x enableAI "AIMINGERROR"; _x enableAI "CHECKVISIBLE"; _x enableAI "AUTOCOMBAT"; _x enableAI "MINEDETECTION"; } else { _x disableAI "TARGET"; _x disableAI "AUTOTARGET"; _x disableAI "WEAPONAIM"; _x disableAI "AIMINGERROR"; _x disableAI "CHECKVISIBLE"; _x disableAI "AUTOCOMBAT"; _x disableAI "MINEDETECTION"; }; } forEach units _group;
+};
+
 // Go and land at zone
 br_fuc_MoveGroupTotZone = {
 	private _groups = _this select 0;
-	[_vehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"];
+	[_vehicle, "Waiting for all units to enter the vehicle..."] remoteExec ["vehicleChat"];
 	// Add groups to transit
 	{ br_groups_in_transit pushBack _x; } forEach _groups;
 	// Command groups into helicopter
 	{ [_x, FALSE, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
+	_vehicle setUnloadInCombat [FALSE, FALSE];
 	[_vehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"];
 	sleep 15;
 	{ [_x, FALSE] call fn_disable_group_fms; } forEach _groups;
+	{ [_x, TRUE] call fn_disable_group_guns; } forEach _groups;
 	{_x enableAI "MOVE"; } forEach units _vehicleGroup;
 	// Generate landing zone and move to it and land
 	[[] call br_fnc_createSpotNearZone] call br_fnc_move;
+	_vehicle setUnloadInCombat [TRUE, TRUE];
 	[_vehicle, "Ejecting units!"] remoteExec ["vehicleChat"];
 	// Tell the groups to getout
 	[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
@@ -177,11 +183,13 @@ br_fnc_runEvacVehicle = {
 			{ [_x, false, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
+			_vehicle setUnloadInCombat [FALSE, FALSE];
 			// Delete LZ
 			deleteVehicle _landMarker;
 			deleteMarker format ["EVACv - %1", _vehIndex];
 			// Move back to base
 			[getMarkerPos _spawnPad] call br_fnc_move;
+			_vehicle setUnloadInCombat [TRUE, TRUE];
 			// Eject the crew at base
 			[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
 			{ deleteVehicle _x } forEach units _vehicleGroup;
