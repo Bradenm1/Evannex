@@ -51,7 +51,7 @@ br_fnc_spawnAI = {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_enemy) + 0.2));
 			private _group = nil;
-			if (_rNumber <= (count _unitChance)) then {
+			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
 				_group = [EAST, br_unit_type_compositions_enemy select 0, br_unit_type_compositions_enemy select 2, br_unit_type_compositions_enemy select 1, _unitChance, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			} else {
 				_group = [_newPos, EAST, selectrandom br_custom_unit_compositions_enemy] call BIS_fnc_spawnGroup;

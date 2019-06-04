@@ -6,7 +6,6 @@ private _objectiveGroup = createGroup WEST; // The unit group
 private _transportVehicle = nil; // The vehicle the group is using
 private _getOutOfVehicleRadius = 400; // Range from objective to eject vehicle
 private _objective = nil; // The objective for the group
-private _types = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_friendly_faction]));
 private _unitChance = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_compositions.sqf", br_friendly_faction]));
 
 // Creat the units
@@ -15,7 +14,12 @@ br_fnc_createBombUnits = {
 	// Delete if existing group
 	//_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, selectrandom _unitChance, getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
 	while {{(alive _x)} count (units _objectiveGroup) == 0} do {
-		_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, _unitChance, getMarkerPos _spawnPad, []] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+		_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + 0.2));
+		if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
+			_objectiveGroup = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, getMarkerPos _spawnPad, []] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+		} else {
+			_objectiveGroup = [getMarkerPos _spawnPad, WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
+		};
 	};
 	(leader _objectiveGroup) moveInAny _transportVehicle;
 	{ if (_x != (leader _objectiveGroup)) then { if (!(_x moveInAny _transportVehicle)) then { deleteVehicle _x; }; }; } forEach (units _objectiveGroup);

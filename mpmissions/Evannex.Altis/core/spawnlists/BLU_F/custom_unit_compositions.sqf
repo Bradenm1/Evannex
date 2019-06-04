@@ -11,4 +11,38 @@
 		"unitClassName",
 		"unitClassName"
 	]*/
+	[
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR",
+		"OPTRE_Spartan2_Soldier_Rifleman_AR"
+	]
 ];
