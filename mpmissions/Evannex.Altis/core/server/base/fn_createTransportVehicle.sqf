@@ -19,7 +19,7 @@ br_fnc_createVehicleUnits = {
 	_vehicleGroup = createGroup WEST;
 	(units (group ((crew _vehicle) select 0))) joinSilent _vehicleGroup;
 	// Delete all vehicle units but the driver
-	//{ deleteVehicle _x; } forEach units _vehicleGroup - [driver _vehicle, leader _vehicleGroup];
+	{ deleteVehicle _x; } forEach units _vehicleGroup - [driver _vehicle, leader _vehicleGroup];
 	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
 	{ _x setSkill br_ai_skill } forEach units _vehicleGroup;
 	br_heliGroups append [_vehicleGroup];
@@ -239,7 +239,7 @@ br_fnc_runVehicleUnit = {
 		// Spawn vehicle
 		[] call br_fnc_createVehicleUnit;
 		while {({(alive _x)} count (units _vehicleGroup) > 0) && {(alive _vehicle)} && {(((leader _vehicleGroup) distance _vehicle) < 30)};} do {
-			sleep 15;
+			sleep 25;
 			if (_evacVehicle) then { call br_fnc_runEvacVehicle; } else { call br_fnc_runTransportVehicle; };
 			_vehicle setFuel 1;
 			_vehicle setDamage 0;

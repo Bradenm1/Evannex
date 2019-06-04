@@ -14,24 +14,29 @@ br_fnc_spawnFriendlyAI = {
 				_group = [call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
 			};
 			private _splitGroups = [_group];
-			private _splitGroupsTemp = [];
-			while {(count (units _group) > br_max_friendly_group_size)} do {
+			br_friendly_ground_groups pushBack _group;
+			scopeName "split";
+			while {TRUE} do {
+				private _tempDidSplit = FALSE;
+				private _splitGroupsTemp = [];
 				{
 					if (count (units _x) > br_max_friendly_group_size) then {
 						private _tempGroup = createGroup WEST;
 						[(units _x), 0, (count (units _x) / 2)] call BIS_fnc_subSelect joinSilent _tempGroup;
 						_splitGroupsTemp pushBack _tempGroup;
 						_splitGroupsTemp pushBack _x;
+						br_friendly_ground_groups pushBack _x;
+						br_friendly_groups_waiting pushBack _tempGroup;
 						_group = _x;
+						_tempDidSplit = TRUE;
 					};
 				} forEach (_splitGroups);
 				_splitGroups = _splitGroupsTemp;
+				if (!_tempDidSplit) then { breakOut "split" };
 			};
 			{ 
-				if (!({ alive _x } count units _x == 0) && !(count units _x == 0)) then {
-					br_friendly_ground_groups pushBack _x;
-					if (!(_x in br_friendly_groups_waiting)) then {br_friendly_groups_waiting pushBack _x };
-				};
+				br_friendly_ground_groups pushBack _x;
+				if (!(_x in br_friendly_groups_waiting)) then {br_friendly_groups_waiting pushBack _x };
 			} forEach (_splitGroups);
 			sleep _aiSpawnRate;		
 		};

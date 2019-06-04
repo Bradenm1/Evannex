@@ -4,7 +4,7 @@ br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1)
 br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
-br_max_friendly_group_size = 8; "MaxFriendlyGroupSize" call BIS_fnc_getParamValue; // Max group size
+br_max_friendly_group_size = "MaxFriendlyGroupSize" call BIS_fnc_getParamValue; // Max group size
 br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
