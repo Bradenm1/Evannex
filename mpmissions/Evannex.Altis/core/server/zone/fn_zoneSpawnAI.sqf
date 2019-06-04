@@ -1,7 +1,6 @@
 private _spawningMarker = _this select 0; // The marker which spawns the AI if active
-private _unitChance = _this select 1; // The list of units that have a chance to spawn
-private _unitChanceN = _this select 2;
-private _types = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_enemy_faction]));
+private _speicalChance = _this select 1; // The list of units that have a chance to spawn
+private _unitChance = _this select 2;
 
 private _aiSpawnRate = 0; // Delay in seconds
 private _allSpawnedDelay = 30; // Seconds to wait untill checking if any groups died
@@ -50,7 +49,14 @@ br_fnc_spawnAI = {
 		// Spawn AI untill reached limit
 		while {(count br_ai_groups <= br_min_ai_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_group = [EAST, _types select 0, _types select 2, _types select 1, _unitChanceN, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_enemy) + 0.2));
+			private _group = nil;
+			if (_rNumber <= (count _unitChance)) then {
+				_group = [EAST, br_unit_type_compositions_enemy select 0, br_unit_type_compositions_enemy select 2, br_unit_type_compositions_enemy select 1, _unitChance, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			} else {
+				_group = [_newPos, EAST, selectrandom br_custom_unit_compositions_enemy] call BIS_fnc_spawnGroup;
+				br_ai_groups pushBack _group;
+			};
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			if (_currentGarrisons < br_max_garrisons) then {
 				_completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
@@ -69,7 +75,7 @@ br_fnc_spawnAI = {
 		// Spawn spawn special units untill 
 		while {(count br_special_ai_groups <= br_min_special_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_group = [createGroup EAST, 1, _newPos, [selectRandom _unitChance], 1] call br_fnc_spawnGivenUnitsAt;
+			_group = [createGroup EAST, 1, _newPos, [selectRandom _speicalChance], 1] call br_fnc_spawnGivenUnitsAt;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			{ _x setSkill br_ai_skill; } forEach (units _group);
 			// Add all vehicles in the group to a list

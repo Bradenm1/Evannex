@@ -58,6 +58,10 @@ br_next_zone_start_delay = 15; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
 br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
+br_unit_type_compositions_friendly = [];
+br_unit_type_compositions_enemy = [];
+br_custom_unit_compositions_friendly = [];
+br_custom_unit_compositions_enemy = [];
 
 // Creates the zone
 br_fnc_createZone = {
@@ -289,6 +293,12 @@ br_fnc_get_faction = {
 br_fnc_get_factions = {
 	br_enemy_faction = ["EnemyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
 	br_friendly_faction = ["FriendlyFaction" call BIS_fnc_getParamValue] call br_fnc_get_faction;
+	
+	// Saved lists
+	br_unit_type_compositions_friendly = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_friendly_faction]));
+	br_unit_type_compositions_enemy = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_composition_types.sqf", br_enemy_faction]));
+	br_custom_unit_compositions_friendly = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\custom_unit_compositions.sqf", br_friendly_faction]));
+	br_custom_unit_compositions_enemy = (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\custom_unit_compositions.sqf", br_enemy_faction]));
 };
 
 // Set the time given the param
