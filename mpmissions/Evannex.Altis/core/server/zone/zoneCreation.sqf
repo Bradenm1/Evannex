@@ -279,6 +279,7 @@ br_fnc_get_faction = {
 		case 1: { _faction = "OPF_F" };
 		case 2: { _faction = "RHSUSAF" };
 		case 3: { _faction = "RHSAFRF" };
+		case 4: { _faction = "RHSSAF" };
 		default { _faction = "Error: Missing faction" };
 	};
 	_faction;

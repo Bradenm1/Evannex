@@ -1,0 +1,12 @@
+[
+	"rhssaf_m1025_olive_m2",
+	"rhssaf_m1025_olive",
+	"rhssaf_m998_olive_2dr_fulltop",
+	"rhssaf_m998_olive_2dr_halftop",
+	"rhssaf_army_pts",
+	"rhssaf_army_ural_open",
+	"rhssaf_army_ural",
+	"rhssaf_un_uaz",
+	"rhssaf_un_uaz_open",
+	"rhssaf_un_ural"
+]

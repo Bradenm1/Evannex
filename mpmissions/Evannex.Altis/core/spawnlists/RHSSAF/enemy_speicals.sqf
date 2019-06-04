@@ -1,0 +1,23 @@
+[
+	"rhssaf_army_pts",
+	"rhssaf_army_d30",
+	"rhssaf_army_m252",
+	"rhssaf_m1025_olive_m2",
+	"rhssaf_m1025_olive",
+	"rhssaf_m998_olive_2dr_fulltop",
+	"rhssaf_m998_olive_2dr_halftop",
+	"rhssaf_army_t72s",
+	"rhssaf_army_m93_oakleaf_summer_crew",
+	"rhssaf_army_ural_fuel",
+	"rhssaf_army_ural",
+	"rhssaf_army_metis_9k115",
+	"rhssaf_army_ags30_tripod",
+	"rhssaf_army_nsv_tripod",
+	"rhssaf_army_m2staticmg_minitripod",
+	"rhssaf_airforce_ht48",
+	"rhssaf_airforce_l_18",
+	"rhssaf_airforce_l_18_101",
+	"rhssaf_un_uaz",
+	"rhssaf_un_uaz_open",
+	"rhssaf_un_ural"
+];
