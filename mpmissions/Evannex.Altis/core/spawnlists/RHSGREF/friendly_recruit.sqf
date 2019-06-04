@@ -1,0 +1,20 @@
+[
+	"rhsgref_cdf_b_reg_specialist_aa",
+	"rhsgref_cdf_b_reg_grenadier_rpg",
+	"rhsgref_cdf_b_reg_crew",
+	"rhsgref_cdf_b_reg_crew_commander",
+	"rhsgref_cdf_b_reg_engineer",
+	"rhsgref_cdf_b_reg_engineer",
+	"rhsgref_cdf_b_reg_general",
+	"rhsgref_cdf_b_reg_machinegunner",
+	"rhsgref_cdf_b_reg_marksman",
+	"rhsgref_cdf_b_reg_medic",
+	"rhsgref_cdf_b_reg_officer",
+	"rhsgref_cdf_b_reg_rifleman",
+	"rhsgref_cdf_b_reg_rifleman_akm",
+	"rhsgref_cdf_b_reg_rifleman_aks74",
+	"rhsgref_cdf_b_reg_grenadier",
+	"rhsgref_cdf_b_reg_rifleman_lite",
+	"rhsgref_cdf_b_reg_rifleman_rpg75",
+	"rhsgref_cdf_b_reg_squadleader"
+]
