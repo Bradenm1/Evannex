@@ -38,5 +38,7 @@
 	"rhsusf_M977A4_REPAIR_BKIT_usarmy_wd",
 	"rhsusf_M977A4_AMMO_BKIT_M2_usarmy_wd",
 	"rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy",
-	"rhsusf_mrzr4_d"
+	"rhsusf_mrzr4_d",
+	"rhsusf_mkvsoc",
+	"rhsusf_mkvsoc"
 ];

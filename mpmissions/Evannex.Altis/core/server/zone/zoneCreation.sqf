@@ -58,6 +58,7 @@ br_next_zone_start_delay = 15; // Delay between zones
 br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
 br_groups_in_buildings = [];
 br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
+br_custom_units_chosen_offset = 0.2;
 br_unit_type_compositions_friendly = [];
 br_unit_type_compositions_enemy = [];
 br_custom_unit_compositions_friendly = [];
@@ -122,7 +123,7 @@ br_fnc_doChecks = {
 		if ((getMarkerColor _endStringHeliEvac != "") && {(br_enable_friendly_ai)})
 		then { [_endStringHeliEvac, _i, TRUE, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_transport.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createHelis.sqf"; };
 		if ((getMarkerColor _endStringBombSquad != "") && {(br_enable_friendly_ai)})
-		then { [_endStringBombSquad, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_objective_squad_vehicles.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
+		then { [_endStringBombSquad, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_objective_squad_vehicles.sqf", br_friendly_faction])), (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\unit_compositions.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createObjectiveUnits.sqf"; };
 		if ((getMarkerColor _endStringRecruit != "") && {(br_enable_friendly_ai)})
 		then { [_endStringRecruit, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_recruit.sqf", br_friendly_faction]))] execVM "core\server\recruit\fn_createRecruitAI.sqf"; };
 		if ((getMarkerColor _endStringVehicleTransport != "") && {(br_enable_friendly_ai)})

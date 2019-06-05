@@ -49,7 +49,7 @@ br_fnc_spawnAI = {
 		// Spawn AI untill reached limit
 		while {(count br_ai_groups <= br_min_ai_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
-			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_enemy) + 0.2));
+			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_enemy) + br_custom_units_chosen_offset));
 			private _group = nil;
 			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
 				_group = [EAST, br_unit_type_compositions_enemy select 0, br_unit_type_compositions_enemy select 2, br_unit_type_compositions_enemy select 1, _unitChance, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
@@ -78,16 +78,33 @@ br_fnc_spawnAI = {
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _speicalChance], 1] call br_fnc_spawnGivenUnitsAt;
 			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
 			{ _x setSkill br_ai_skill; } forEach (units _group);
+			br_special_ai_groups pushBack _group;
+			br_ai_groups pushBack _group;
 			// Add all vehicles in the group to a list
 			{  
 				_vehicle = (vehicle _x);
 				// Check if vehicle is null
 				if (!(isNull _vehicle)) then {
 					br_enemy_vehicle_objects pushBack _vehicle;
+					switch ((_vehicle call BIS_fnc_objectType) select 1) do {
+						case "Helicopter";
+						case "Plane": { _vehicle setPosASL [getPosASL _vehicle select 0, getPosASL _vehicle select 1, getTerrainHeightASL (position _vehicle) + 100 + random 500]; };
+						case "Ship": {  
+							private _waterPos = [getMarkerPos "ZONE_RADIUS", 0, (br_zone_radius * 1.8) * sqrt br_max_radius_distance, 5, 2] call BIS_fnc_findSafePos;
+							if (count _waterPos != 3 && surfaceIsWater _waterPos) then {
+								_vehicle setpos _waterPos;
+							} else {
+								br_enemy_vehicle_objects deleteAt (br_enemy_vehicle_objects find _vehicle);
+								br_special_ai_groups deleteAt (br_special_ai_groups find _group);
+								br_ai_groups deleteAt (br_ai_groups find _group);
+								deleteVehicle _vehicle;
+								[_group] call br_fnc_deleteGroups;
+							};
+						};
+						default {};
+					};
 				};
 			} forEach (units _group);
-			br_special_ai_groups pushBack _group;
-			br_ai_groups pushBack _group;
 			sleep 0.01;
 		};
 		// Save memory instead of constant checking

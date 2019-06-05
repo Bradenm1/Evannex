@@ -49,5 +49,9 @@
 	"I_MRAP_03_gmg_F",
 	"I_MRAP_03_hmg_F",
 	"C_Kart_01_yellow_F",
-	"O_T_VTOL_02_infantry_F"
+	"O_T_VTOL_02_infantry_F",
+	"O_Boat_Armed_01_hmg_F",
+	"O_Boat_Armed_01_hmg_F",
+	"I_Boat_Armed_01_minigun_F",
+	"I_Boat_Armed_01_minigun_F"
 ];

@@ -44,5 +44,8 @@
 	"B_T_Static_AT_F",
 	"B_T_GMG_01_F",
 	"B_T_HMG_01_F",
-	"B_T_Mortar_01_F"
+	"B_T_Mortar_01_F",
+	"B_Boat_Armed_01_minigun_F",
+	"B_Boat_Armed_01_minigun_F",
+	"B_Boat_Armed_01_minigun_F"
 ];

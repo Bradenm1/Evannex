@@ -7,12 +7,13 @@ br_fnc_spawnFriendlyAI = {
 		// Spawn AI untill reached limit
 		while {((count br_friendly_ground_groups)  < br_min_friendly_ai_groups)} do {
 			private _group = nil;
-			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + 0.2));
+			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + br_custom_units_chosen_offset));
 			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
 				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", br_friendly_groups_waiting] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
 			} else {
 				_group = [call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
 			};
+			// Now split the groups
 			private _splitGroups = [_group];
 			br_friendly_ground_groups pushBack _group;
 			scopeName "split";
@@ -34,10 +35,6 @@ br_fnc_spawnFriendlyAI = {
 				_splitGroups = _splitGroupsTemp;
 				if (!_tempDidSplit) then { breakOut "split" };
 			};
-			{ 
-				br_friendly_ground_groups pushBack _x;
-				if (!(_x in br_friendly_groups_waiting)) then {br_friendly_groups_waiting pushBack _x };
-			} forEach (_splitGroups);
 			sleep _aiSpawnRate;		
 		};
 		// Save memory instead of constant checking

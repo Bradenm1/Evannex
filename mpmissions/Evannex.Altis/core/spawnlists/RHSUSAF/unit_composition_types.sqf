@@ -1,8 +1,8 @@
 [
 	[
+		//"West",
 		"West",
-		"West",
-		"West",
+		//"West",
 		"West"
 	],
 	[

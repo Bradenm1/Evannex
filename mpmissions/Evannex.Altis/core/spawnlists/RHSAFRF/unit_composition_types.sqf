@@ -1,7 +1,7 @@
 [
 	[
 		"East",
-		"East",
+		//"East",
 		"East",
 		"East",
 		"East",
@@ -10,7 +10,7 @@
 	],
 	[
 		"rhs_faction_msv",
-		"rhs_faction_vdv",
+		//"rhs_faction_vdv",
 		"rhs_faction_vdv",
 		"rhs_faction_vdv",
 		"rhs_faction_vdv",
