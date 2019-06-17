@@ -4,10 +4,16 @@ br_create_side_objective = {
 	private _distance = 0;
 	private _objectivePosition = [0,0];
 
-	// Side objective cannot be within n of meters
-	while {_distance < 1500} do {
-		_objectivePosition = [[], 0, -1, 0, 0, 25, 0] call BIS_fnc_findSafePos;
-		_distance = br_current_zone distance2D _objectivePosition;
+	if (br_random_side_locations) then {
+		// Side objective cannot be within n of meters
+		while {_distance < br_min_side_distance_to_zone} do {
+			_objectivePosition = [[], 0, -1, 0, 0, 25, 0] call BIS_fnc_findSafePos;
+			_distance = br_current_zone distance2D _objectivePosition;
+		};
+	} else {
+		if (count br_sides != 0) then {
+			_objectivePosition = selectRandom br_sides;
+		};
 	};
 
 	_sideObjectName = (format ["Side_Objective_%1", count br_current_sides]);

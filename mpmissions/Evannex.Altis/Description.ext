@@ -180,6 +180,12 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 0;
     };
+    class RandomSideLocations {
+        title = "Place Side Mission Randomly";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
 	class ZoneSideEnabled {
         title = "Zone Sides Enabled";
         values[] = {0,1};

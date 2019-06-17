@@ -1,6 +1,6 @@
 // Number of AI to spawn each side
 br_friendly_mark_enemy = if ("FriendlyMarkEnemy" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If friendly units mark enemies on map
-br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If firendly units are enabled
+br_enable_friendly_ai = if ("FriendlyAIEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If friendly units are enabled
 br_hq_enabled = if ("HQEnabled" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE };
 br_max_ai_distance_before_delete = "MinAIDistanceForDeleteion" call BIS_fnc_getParamValue;
 br_min_enemy_groups_for_capture = "MinEnemyGroupsForCapture" call BIS_fnc_getParamValue; // Groups left for zone capture
@@ -8,6 +8,7 @@ br_max_friendly_group_size = "MaxFriendlyGroupSize" call BIS_fnc_getParamValue; 
 br_min_special_groups = "NumberEnemySpecialGroups" call BIS_fnc_getParamValue;
 br_min_friendly_ai_groups = "NumberFriendlyGroups" call BIS_fnc_getParamValue;
 br_min_ai_groups = "NumberEnemyGroups" call BIS_fnc_getParamValue; // Number of groups
+br_random_side_locations = if ("RandomSideLocations" call BIS_fnc_getParamValue == 1) then { TRUE } else { FALSE }; // If side objectives use random locations
 br_enabled_side_objectives = "SideObjectives" call BIS_fnc_getParamValue;
 br_max_user_vehicles = "MaxUserVehicles" call BIS_fnc_getParamValue;
 br_max_checks = 500; //"Checks" call BIS_fnc_getParamValue; // Max checks on finding markers for the gamemode
@@ -19,23 +20,29 @@ br_max_current_sides = "NSides" call BIS_fnc_getParamValue;
 br_max_garrisons = "NGarrisons" call BIS_fnc_getParamValue;
 br_ai_skill = [0.1, 0.5, 1] select (parseNumber "AISkill" call BIS_fnc_getParamValue);
 br_empty_vehicles_in_garbage_collection = [];
+br_unit_type_compositions_friendly = [];
+br_unit_type_compositions_enemy = [];
+br_custom_unit_compositions_friendly = [];
+br_custom_unit_compositions_enemy = [];
 br_friendly_groups_wating_for_evac = []; // Waiting at zone after capture
 br_friendly_objective_groups = []; // The objective groups which complete objectives
 br_friendly_groups_waiting = []; // Waiting at base for pickup
 br_friendly_ground_groups = []; // Friendly ground units
-br_enemy_vehicle_objects = [];
+br_enemy_vehicle_objects = []; // All enemy vehicles at the zone
+br_groups_in_buildings = []; // Enemy groups within buildings at the zone
 br_friendly_ai_groups = []; // All Firendly AI
-br_special_ai_groups = []; // Enemy special groups
+br_special_ai_groups = []; // Enemy special groups, includes boats
 br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
 br_groups_marked = []; // Enemy groups marked on map
 br_placed_mines = []; // Mines at the current zone
-br_base_defences = [];
+br_base_defences = []; // The friendly base defences
 br_spawned_vehicles = []; // Users spawned vehicles
 br_heliGroups = []; // Helicopters
 br_objectives = []; // Objectives at the zone
 br_ai_groups = []; // All spawned groups
-br_zones = []; // Zone Locations
+br_zones = []; // Zone marker locations
+br_sides = []; // Side marker locations
 br_recruits = []; // recruited ai
 br_garbage_collection_player_distance = 16; // Max distance from players before things are garbage collected
 br_garbage_collection_interval = 150; // Empty vehicles and dead units
@@ -43,8 +50,9 @@ br_garbage_collection_positions_interval = 300; // Delete certain AI if they hav
 br_spawn_enemy_to_player_dis = 300; // Won't let AI in the zone spawn within this distance to a player
 br_min_radius_distance = 180; // Limit to spawm from center
 br_max_radius_distance = 360; // Outter limit
-br_objective_max_angle = 0.30;
-br_heli_land_max_angle = 0.25;
+br_objective_max_angle = 0.30; // The max angle an objective can be on
+br_heli_land_max_angle = 0.25; // The max angle friendly transport helicopters can land on
+br_min_side_distance_to_zone = 1500; // Min allowed distance the side mission can spawn to the zone
 br_command_delay = 10; // Command delay for both enemy and friendly zone AI
 br_radio_tower_destoryed = FALSE; // If the radio tower is destroyed
 br_blow_up_radio_tower = FALSE; // Use for AI who blow up Radio Tower
@@ -55,14 +63,10 @@ br_HQ_taken = FALSE; // If the HQ is taken
 br_current_zone = nil; // Current selected zone
 br_current_sides = [];
 br_next_zone_start_delay = 15; // Delay between zones
-br_queue_squads_distance = 2000; // When new zone is over this amount queue group in evacs
-br_groups_in_buildings = [];
+br_queue_squads_distance = 2000; // When new zone is placed, the max distance to this zone before AI at old zone need evac
+br_queue_squads_distance_base = 500; // When new zone is placed, the max distance to the base before AI at old zone need evac
 br_groupsStuckTeleportDelay = 60; // Time before units are teleported into the cargo
-br_custom_units_chosen_offset = 0.2;
-br_unit_type_compositions_friendly = [];
-br_unit_type_compositions_enemy = [];
-br_custom_unit_compositions_friendly = [];
-br_custom_unit_compositions_enemy = [];
+br_custom_units_chosen_offset = 0.2; // Chance of custom groups chosen overall
 
 // Creates the zone
 br_fnc_createZone = {
@@ -87,9 +91,7 @@ br_fnc_deleteGroups = {
 // Delete all enemy AI
 br_fnc_deleteAllAI = {
 	// Delete existing units 
-	{ [_x] call br_fnc_deleteGroups; } forEach br_ai_groups;
-	{ [_x] call br_fnc_deleteGroups; } forEach br_special_ai_groups;
-	{ [_x] call br_fnc_deleteGroups; } forEach br_groups_in_buildings;
+	{ [_x] call br_fnc_deleteGroups; } forEach br_ai_groups + br_special_ai_groups + br_groups_in_buildings;
 	br_ai_groups = [];
 	br_special_ai_groups = [];
 	br_enemy_vehicle_objects = [];
@@ -102,6 +104,7 @@ br_fnc_doChecks = {
 	for "_i" from 0 to br_max_checks do {
 		// Get marker prefixs
 		private _endString = Format ["zone_spawn_%1", _i];
+		private _endStringSides = Format ["side_spawn_%1", _i];
 		private _endStringVeh = Format ["vehicle_spawn_%1", _i];
 		private _endStringHeli = Format ["helicopter_transport_%1", _i];
 		private _endStringHeliEvac = Format ["helicopter_evac_%1", _i];
@@ -114,6 +117,8 @@ br_fnc_doChecks = {
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones pushBack getMarkerPos _endString; };
+		if (getMarkerColor _endStringSides != "") 
+		then { br_sides pushBack getMarkerPos _endStringSides; };
 		if ((getMarkerColor _endStringVeh != "") && {(br_enable_friendly_ai)}) 
 		then { [_endStringVeh, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicles.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createVehicle.sqf"; };
 		if ((getMarkerColor _endStringJetSpawn != "") && {(br_enable_friendly_ai)}) 
@@ -210,20 +215,22 @@ br_fnc_onNewZoneCreation = {
 			deleteWaypoint ((waypoints _x) select 0);
 		};
 		_x setBehaviour "SAFE";	
-		// Add the group to the evac queue and delete from roaming if too far away from new zone
+		// Add the group to the evac/waiting queue and delete from roaming if too far away from new zone
 		if ((getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { 
 			if (_x in br_friendly_ai_groups) then { 
 				br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); 
 			};
-			br_friendly_groups_wating_for_evac append [_x]; 
+			// Check if units are close to the main base
+			if ((getpos (leader _x)) distance br_current_zone > br_queue_squads_distance_base) then {
+				br_friendly_groups_wating_for_evac append [_x]; 
+			} else {
+				br_friendly_groups_waiting append [_x]; 
+			};
 		};
 	} forEach br_friendly_ground_groups;
 	{
 		deleteVehicle _x;
-	} forEach br_enemy_vehicle_objects;
-	{
-		deleteVehicle _x;
-	} forEach br_placed_mines;
+	} forEach br_enemy_vehicle_objects + br_placed_mines; // Append
 };
 
 br_get_groups = {
