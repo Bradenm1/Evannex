@@ -114,6 +114,7 @@ br_fnc_doChecks = {
 		private _endStringVehicleTransport = Format ["vehicle_transport_spawn_%1", _i];
 		private _endStringVehicleEvac = Format ["vehicle_evac_spawn_%1", _i];
 		private _endStringBaseDefence = Format ["defence_spawn_%1", _i];
+		private _endStringCustomTransport = Format ["custom_transport_%1", _i];
 		// Check if markers exist
 		if (getMarkerColor _endString != "") 
 		then { br_zones pushBack getMarkerPos _endString; };
@@ -137,6 +138,8 @@ br_fnc_doChecks = {
 		then { [_endStringVehicleEvac, _i, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_vehicle_transport.sqf", br_friendly_faction])), TRUE] execVM "core\server\base\fn_createTransportVehicle.sqf"; };
 		if ((getMarkerColor _endStringBaseDefence != "") && {(br_enable_friendly_ai)})
 		then { [_endStringBaseDefence, (call compile preprocessFileLineNumbers (format ["core\spawnlists\%1\friendly_base_defence.sqf", br_friendly_faction]))] execVM "core\server\base\fn_createBaseDefence.sqf"; };
+		if (getMarkerColor _endStringCustomTransport != "") 
+		then { [getMarkerPos _endStringCustomTransport] execVM "core\server\base\fn_customTransport.sqf"; };
 		[_i] call br_fnc_doChecksDebug;
 	};
 };
