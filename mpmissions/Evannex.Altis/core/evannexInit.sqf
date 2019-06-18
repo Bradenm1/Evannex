@@ -5,6 +5,7 @@ if (isServer) then {
 	// Run the gamemode
 	execVM "core\server\zone\zoneCreation.sqf";
 	execVM "core\server\handlers\fn_requestVehicle.sqf";
+	execVM "core\server\handlers\fn_createCustomTransport.sqf";
 };
 
 // If it's a client
