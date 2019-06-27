@@ -3,7 +3,10 @@ private _radius = _this select 1;
 private _nearPlayer = FALSE;
 
 {  
-	if (_position distance (getpos _x) < _radius * sqrt 360) then { _nearPlayer = TRUE; };
-} forEach allPlayers; 
+	if (_position distance (getpos _x) < _radius) then 
+	{ 
+		_nearPlayer = TRUE; 
+	};
+} forEach call BIS_fnc_listPlayers; 
 
 _nearPlayer;

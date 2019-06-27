@@ -16,7 +16,7 @@ fnc_checkUnitSeen = {
 // Create the marker on the map
 fnc_createMapMarker = {
 	params ["_marker", "_group", "_name"];
-	[_marker, getpos (leader _group), _name, "ColorBlack", 0.5] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_marker, getpos (leader _group), _name, "ColorBlack", 0.5] call fn_createTextMarker;
 };
 
 // Create a maker given the type

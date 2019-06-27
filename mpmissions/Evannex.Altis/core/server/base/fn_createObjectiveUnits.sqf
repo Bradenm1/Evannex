@@ -11,12 +11,13 @@ private _objective = nil; // The objective for the group
 // Creat the units
 br_fnc_createBombUnits = {
 	_transportVehicle = (selectrandom _vehicleChance) createVehicle getMarkerPos _spawnPad;
+	[_transportVehicle] call fn_addToZeus;
 	// Delete if existing group
-	//_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, selectrandom _unitChance, getMarkerPos _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
+	//_objectiveGroup = [WEST, _types select 0, _types select 2, _types select 1, selectrandom _unitChance, getMarkerPos _spawnPad] call fn_spawnGroup;
 	while {{(alive _x)} count (units _objectiveGroup) == 0} do {
 		_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + br_custom_units_chosen_offset));
 		if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
-			_objectiveGroup = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, getMarkerPos _spawnPad, []] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+			_objectiveGroup = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, getMarkerPos _spawnPad, []] call fn_selectRandomGroupToSpawn;
 		} else {
 			_objectiveGroup = [getMarkerPos _spawnPad, WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
 		};
@@ -24,10 +25,13 @@ br_fnc_createBombUnits = {
 	(leader _objectiveGroup) moveInAny _transportVehicle;
 	{ if (_x != (leader _objectiveGroup)) then { if (!(_x moveInAny _transportVehicle)) then { deleteVehicle _x; }; }; } forEach (units _objectiveGroup);
 	// Give each unit a sactelCharge
-	{ _oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack; } forEach (units _objectiveGroup);
-	{ _x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1]; } forEach (units _objectiveGroup);
-	{ _x setBehaviour "SAFE"; } forEach (units _objectiveGroup);
-	[_transportVehicle, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
+	{ 
+		_oldPack = unitBackpack _x; removeBackpack _x; deleteVehicle _oldPack;
+		_x addBackpack "B_Carryall_ocamo"; _x addMagazines ["SatchelCharge_Remote_Mag", 1];
+		_x setBehaviour "SAFE";
+		[_x] call fn_objectInitEvents; 
+	} forEach (units _objectiveGroup);
+	[_transportVehicle, _spawnPad] call fn_setDirectionOfMarker;
 	br_friendly_objective_groups pushBack _objectiveGroup;
 	//sleep 5;
 	waitUntil { sleep 1; {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) };

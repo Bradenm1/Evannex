@@ -3,14 +3,14 @@ setObjectViewDistance (parseNumber "ViewDistance" call BIS_fnc_getParamValue);
 
 if (isServer) then {
 	// Run the gamemode
+	call compile preprocessFileLineNumbers "core\server\cache\fn_functions.sqf";
 	execVM "core\server\zone\zoneCreation.sqf";
 	execVM "core\server\handlers\fn_requestVehicle.sqf";
+	
 };
 
 // If it's a client
 if (hasInterface) then {
-	// Allow zeus to see spawned things
-	if ("ZeusSeesAI" call BIS_fnc_getParamValue == 1) then { execVM "core\server\zeus\fn_addEditableZeus.sqf"; };
 	// Disable annoying crap
 	execVM "core\client\fn_setPlayerSettings.sqf";
 	player addeventhandler ["respawn","_this execvm 'core\client\fn_setPlayerSettings.sqf'"];

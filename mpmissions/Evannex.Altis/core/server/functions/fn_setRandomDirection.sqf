@@ -1,6 +1,6 @@
 private _group = _this select 0;
 
 { 
-	_x setVectorDir (call compile preprocessFileLineNumbers "core\server\functions\fn_gerRandomVector.sqf");  
-	if (!(isNull objectParent _x)) then { (vehicle _x) setVectorDir (call compile preprocessFileLineNumbers "core\server\functions\fn_gerRandomVector.sqf"); };
+	_x setVectorDir call fn_getRandomVector;  
+	if (!(isNull objectParent _x)) then { (vehicle _x) setVectorDir call fn_getRandomVector; };
 } forEach (units _group);

@@ -29,7 +29,7 @@ br_runningCustomTransport = {
 		_player setVariable [_hasEjectAction, TRUE];
 	};
 	{ br_groups_in_transit pushBack _x; } forEach _groups;
-	{ [_x, FALSE, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
+	{ [_x, FALSE, _vehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 	waitUntil { sleep 3; (!(call br_checkDriverStatus) || !(_player getVariable _id)) };
 	// Check if the player ejected with units still within the vehicle
 	if (_ejectAction != -1) then {
@@ -46,7 +46,7 @@ br_runningCustomTransport = {
 	} forEach _groups;
 	{ _x setBehaviour "AWARE"; } forEach _groups;
 	// Eject all groups within the vehicle
-	{ [units _x] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectUnits.sqf"; } forEach _groups;
+	{ [units _x, FALSE] call fn_ejectUnits; } forEach _groups;
 };
 
 br_runCustomTransport = {
@@ -55,7 +55,7 @@ br_runCustomTransport = {
 	if (count br_friendly_groups_waiting > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_waiting, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf"; 
+		_groups = [_groups, br_friendly_groups_waiting, _vehicle] call fn_findGroupsInQueue; 
 		if (count _groups > 0) then {
 			_player setVariable [_id, TRUE];
 			[_groups] call br_runningCustomTransport;

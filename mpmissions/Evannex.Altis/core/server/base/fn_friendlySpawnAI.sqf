@@ -9,10 +9,13 @@ br_fnc_spawnFriendlyAI = {
 			private _group = nil;
 			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + br_custom_units_chosen_offset));
 			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
-				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", br_friendly_groups_waiting] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call fn_getGroundUnitsLocation, br_friendly_groups_waiting] call fn_selectRandomGroupToSpawn;
 			} else {
-				_group = [call compile preprocessFileLineNumbers "core\server\functions\fn_getGroundUnitsLocation.sqf", WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
+				_group = [call fn_getGroundUnitsLocation, WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
 			};
+			{ 
+				[_x] call fn_objectInitEvents; 
+			} forEach units _group;
 			// Now split the groups
 			private _splitGroups = [_group];
 			br_friendly_ground_groups pushBack _group;

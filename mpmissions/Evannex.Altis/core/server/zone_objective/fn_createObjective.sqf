@@ -64,12 +64,18 @@ br_fnc_spawnGroups = {
 		private  _safeSpot = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 20, 0] call BIS_fnc_findSafePos;
 		_group = [createGroup EAST, 1, _safeSpot, [_x]] call br_fnc_spawnGivenUnitsAt;
 		//{ _x setSkill br_ai_skill } forEach units _group;
-		[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
+		[_group] call fn_setRandomDirection;
 		_groupsToKill pushBack _group;
-		if (_garrison) then { _garrison = [leader _group, _objectiveLocation, 100] call SBGF_fnc_groupGarrison; };
-		if (!_garrison) then { [_group, _safeSpot, _zoneRadius] execVM "core\server\zone_objective\fn_groupRoam.sqf"; };
+		if (_garrison) then { _garrison = [leader _group, _objectiveLocation, 100] call SBGF_fnc_groupGarrison; }
+		else { [_group, _safeSpot, _zoneRadius] execVM "core\server\zone_objective\fn_groupRoam.sqf"; };
 		[_group] call br_set_states;
-		{ if (!isNull objectParent _x) then { _objects pushBack vehicle _x }; } forEach units _group;
+		{ 
+			if (!isNull objectParent _x) then { 
+				_objects pushBack vehicle _x;
+				[vehicle _x] call fn_objectInitEvents; 
+			}; 
+			[_x] call fn_objectInitEvents; 
+		} forEach units _group;
 	} forEach _groupsIfKill;
 	// Delete group if too far away from objective
 	[_groupsToKill, _objectiveOrigin, _zoneRadius] execVM "core\server\zone_objective\fn_groupChecker.sqf"; 
@@ -111,10 +117,10 @@ br_fnc_createObjective = {
 	_spawnedObj enableSimulationGlobal false;
 	if (count _objectToUse != 0) then { _objects append ([_spawnedObj, _objectToUse] call compile preprocessFileLineNumbers "core\server\functions\fn_createComposition.sqf"); };
 	// Creates the radius
-	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call (compile preProcessFile "core\server\markers\fn_createRadiusMarker.sqf");
+	[_radiusName, _objectiveOrigin, _zoneRadius, 360, "ColorRed", _radiusName, 1, _brushType, _shapeType] call fn_createRadiusMarker;
 	// Create text icon
-	[_textName, _objectiveOrigin, _displayName, "ColorBlue", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
-	[_objectiveLocation, _objectivePosition, "", "ColorBlue", 0] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[_textName, _objectiveOrigin, _displayName, "ColorBlue", 1] call fn_createTextMarker;
+	[_objectiveLocation, _objectivePosition, "", "ColorBlue", 0] call fn_createTextMarker;
 	br_objectives pushBack [_uniqueName, _spawnedObj, _groupsToKill, _objective, _mattersToObjectiveSquad, _zoneVarName, _requiresCompletedToCaptureZone, _removeOnZoneCompleted, _objectiveOrigin, _zoneRadius, _radiusName];
 	// Wait untill objective is completed
 	[] call br_fnc_DoObjectiveAndWaitTillComplete;

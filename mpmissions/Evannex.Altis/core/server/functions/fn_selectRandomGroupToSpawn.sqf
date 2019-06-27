@@ -14,7 +14,7 @@ private _type = _types select _index;
 private _typeSide = _sideTypes select _index;
 // Selects group side from the units array
 private _groups = _units select _index;
-private _group = [_side, _typeSide, _type, _unitTypes select _index, selectrandom _groups, _location] call compile preprocessFileLineNumbers "core\server\functions\fn_spawnGroup.sqf";
-_group setBehaviour "SAFE";
+private _group = [_side, _typeSide, _type, _unitTypes select _index, selectrandom _groups, _location] call fn_spawnGroup;
+//_group setBehaviour "SAFE";
 _mainGroup pushBack _group;
 _group;

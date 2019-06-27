@@ -20,8 +20,10 @@ br_fnc_createVehicleUnits = {
 	(units (group ((crew _vehicle) select 0))) joinSilent _vehicleGroup;
 	// Delete all vehicle units but the driver
 	{ deleteVehicle _x; } forEach units _vehicleGroup - [driver _vehicle, leader _vehicleGroup];
-	{_x disableAI "MOVE"; } forEach units _vehicleGroup;
-	{ _x setSkill br_ai_skill } forEach units _vehicleGroup;
+	{
+		_x disableAI "MOVE"; _x setSkill br_ai_skill;
+		[_x] call fn_objectInitEvents; 
+	} forEach units _vehicleGroup;
 	br_heliGroups append [_vehicleGroup];
 	_vehicle engineOn false;
 };
@@ -40,7 +42,7 @@ br_fnc_createSpotNearZone = {
 	if (!isNull _nearestRoad) then {
 		_pos = getPos _nearestRoad;
 	};
-	[format ["Drop - %1", _vehIndex], _pos, format ["Drop - %1", groupId _vehicleGroup], "ColorGreen", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["Drop - %1", _vehIndex], _pos, format ["Drop - %1", groupId _vehicleGroup], "ColorGreen", 1] call fn_createTextMarker;
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 	_pos;
 };
@@ -49,10 +51,11 @@ br_fnc_createSpotNearZone = {
 br_fnc_createVehicleUnit = {
 	// Select a random unit from the above list to spawn
 	_vehicle = (selectrandom _unitChance) createVehicle (getMarkerPos _spawnPad);
+	[_vehicle] call fn_addToZeus;
 	_vehicle setUnloadInCombat [FALSE, FALSE];
 	// Create its crew
 	call br_fnc_createVehicleUnits;
-	[_vehicleGroup, _spawnPad] call compile preprocessFileLineNumbers "core\server\functions\fn_setDirectionOfMarker.sqf";
+	[_vehicleGroup, _spawnPad] call fn_setDirectionOfMarker;
 	{ _x setBehaviour "AWARE"; _x setSkill br_ai_skill; } forEach (units _vehicleGroup);
 };
 
@@ -74,7 +77,7 @@ br_fnc_checkVehicleDead = {
 // Gets the LZ for the zone
 br_fnc_createEvacPoint = {
 	private _pos = _this select 0;
-	[format ["EVACv - %1", _vehIndex], _pos, format ["EVAC - %1", groupId _vehicleGroup], "colorCivilian", 1] call (compile preProcessFile "core\server\markers\fn_createTextMarker.sqf");
+	[format ["EVACv - %1", _vehIndex], _pos, format ["EVAC - %1", groupId _vehicleGroup], "colorCivilian", 1] call fn_createTextMarker;
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE" ];
 };
 
@@ -115,7 +118,7 @@ br_fuc_MoveGroupTotZone = {
 	// Add groups to transit
 	{ br_groups_in_transit pushBack _x; } forEach _groups;
 	// Command groups into helicopter
-	{ [_x, FALSE, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
+	{ [_x, FALSE, _vehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
 	_vehicle setUnloadInCombat [FALSE, FALSE];
@@ -129,7 +132,7 @@ br_fuc_MoveGroupTotZone = {
 	_vehicle setUnloadInCombat [TRUE, TRUE];
 	[_vehicle, "Ejecting units!"] remoteExec ["vehicleChat"];
 	// Tell the groups to getout
-	[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
+	[_vehicle, TRUE] call fn_ejectUnits;
 	{ [_x, TRUE] call fn_disable_group_fms; } forEach _groups;
 	{ deleteVehicle _x } forEach units _vehicleGroup;
 	call br_fnc_createVehicleUnits;
@@ -138,7 +141,7 @@ br_fuc_MoveGroupTotZone = {
 	deleteMarker format ["Drop - %1", _vehIndex];
 	// Wait untill all units are out
 	tempTime = time + br_groupsStuckTeleportDelay;
-	{ waitUntil { sleep 1; [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+	{ waitUntil { sleep 1; [_x, _vehicle] call fn_getUnitsInVehicle == 0 || time > tempTime}; } forEach _groups;
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 	// Remove groups from transit
@@ -161,7 +164,7 @@ br_fnc_runEvacVehicle = {
 	if (count br_friendly_groups_wating_for_evac > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_wating_for_evac, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";
+		_groups = [_groups, br_friendly_groups_wating_for_evac, _vehicle] call fn_findGroupsInQueue;
 		if (count _groups > 0) then {
 			{ 
 				br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _x);
@@ -180,7 +183,7 @@ br_fnc_runEvacVehicle = {
 			// Moveto LZ
 			[_pos] call br_fnc_move;
 			// Wait for group to get in
-			{ [_x, false, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf"; } forEach _groups;
+			{ [_x, false, _vehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 			// Wait for units to enter the helicopter
 			{ [_x] call br_fnc_waitForUntsToEnterVehicle; } forEach _groups;
 			_vehicle setUnloadInCombat [FALSE, FALSE];
@@ -191,12 +194,12 @@ br_fnc_runEvacVehicle = {
 			[getMarkerPos _spawnPad] call br_fnc_move;
 			_vehicle setUnloadInCombat [TRUE, TRUE];
 			// Eject the crew at base
-			[_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_ejectCrew.sqf";
+			[_vehicle, TRUE] call fn_ejectUnits;
 			{ deleteVehicle _x } forEach units _vehicleGroup;
 			call br_fnc_createVehicleUnits;
 			// Wait untill all units are out
 			tempTime = time + br_groupsStuckTeleportDelay;
-			{ waitUntil { sleep 1; [_x, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf" == 0 || time > tempTime}; } forEach _groups;
+			{ waitUntil { sleep 1; [_x, _vehicle] call fn_getUnitsInVehicle == 0 || time > tempTime}; } forEach _groups;
 			// Wait untill chopper is empty
 			{
 				private _y = _x; 
@@ -220,13 +223,13 @@ br_fnc_runTransportVehicle = {
 	if (count br_friendly_groups_waiting > 0) then {
 		private _groups = [];
 		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_waiting, _vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf"; 
+		_groups = [_groups, br_friendly_groups_waiting, _vehicle] call fn_findGroupsInQueue; 
 		if (count _groups > 0) then {
 			[_groups] call br_fuc_MoveGroupTotZone;
 		};	
 	} else { 
 		// Check if any players are waiting in helicopter
-		_playersGroups = [_vehicle] call compile preprocessFileLineNumbers "core\server\functions\fn_getPlayersInVehicle.sqf";
+		_playersGroups = [_vehicle] call fn_getPlayersInVehicle;
 		if (count _playersGroups > 0) then {
 			[_playersGroups] call br_fuc_MoveGroupTotZone;
 		};

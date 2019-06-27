@@ -52,12 +52,13 @@ br_fnc_spawnAI = {
 			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_enemy) + br_custom_units_chosen_offset));
 			private _group = nil;
 			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
-				_group = [EAST, br_unit_type_compositions_enemy select 0, br_unit_type_compositions_enemy select 2, br_unit_type_compositions_enemy select 1, _unitChance, _newPos, br_ai_groups] call compile preprocessFileLineNumbers "core\server\functions\fn_selectRandomGroupToSpawn.sqf";
+				_group = [EAST, br_unit_type_compositions_enemy select 0, br_unit_type_compositions_enemy select 2, br_unit_type_compositions_enemy select 1, _unitChance, _newPos, br_ai_groups] call fn_selectRandomGroupToSpawn;
 			} else {
 				_group = [_newPos, EAST, selectrandom br_custom_unit_compositions_enemy] call BIS_fnc_spawnGroup;
 				br_ai_groups pushBack _group;
 			};
-			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
+			[_group] call fn_setRandomDirection;
+			{ [_x] call fn_objectInitEvents; } forEach units _group;
 			if (_currentGarrisons < br_max_garrisons) then {
 				_completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
 				if (_completed) then {  
@@ -76,8 +77,11 @@ br_fnc_spawnAI = {
 		while {(count br_special_ai_groups <= br_min_special_groups) && (getMarkerColor _spawningMarker == "ColorRed" || !br_radio_tower_enabled)} do {
 			_newPos = [] call br_fnc_getPositionNearNoPlayersAtZone;
 			_group = [createGroup EAST, 1, _newPos, [selectRandom _speicalChance], 1] call br_fnc_spawnGivenUnitsAt;
-			[_group] call compile preprocessFileLineNumbers "core\server\functions\fn_setRandomDirection.sqf";
-			{ _x setSkill br_ai_skill; } forEach (units _group);
+			[_group] call fn_setRandomDirection;
+			{ 
+				_x setSkill br_ai_skill; 
+				[_x] call fn_setRandomDirection;
+			} forEach (units _group);
 			br_special_ai_groups pushBack _group;
 			br_ai_groups pushBack _group;
 			// Add all vehicles in the group to a list
@@ -86,6 +90,7 @@ br_fnc_spawnAI = {
 				// Check if vehicle is null
 				if (!(isNull _vehicle)) then {
 					br_enemy_vehicle_objects pushBack _vehicle;
+					[_vehicle] call fn_objectInitEvents;
 					switch ((_vehicle call BIS_fnc_objectType) select 1) do {
 						case "Helicopter";
 						case "Plane": { _vehicle setPosASL [getPosASL _vehicle select 0, getPosASL _vehicle select 1, getTerrainHeightASL (position _vehicle) + 100 + random 500]; };

@@ -7,10 +7,10 @@ br_fnc_deleteDumbAI = {
 	{
 		_y = _x;
 		{ 
-			if (!([getpos _x, br_garbage_collection_player_distance] call (compile preProcessFile "core\server\functions\fn_checkPlayersAround.sqf"))) then {
+			if !([getpos _x, br_garbage_collection_player_distance] call fn_checkPlayersAround) then {
 				if ((isNull objectParent _x) && {((getpos _x) distance (getMarkerPos "ZONE_ICON") > br_max_ai_distance_before_delete) && ((getpos _x) distance _sidePosition > br_max_ai_distance_before_delete)} && {!br_zone_taken}) then { deleteVehicle _x };
-				if (_postionMatters) then { [_x] call compile preprocessFileLineNumbers "core\server\functions\fn_checkPosition.sqf"; };
-			}
+				if (_postionMatters) then { [_x] call fn_checkPosition; };
+			};
 		} forEach (units _y);
 	} foreach _group;
 };

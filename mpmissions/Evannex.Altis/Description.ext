@@ -138,12 +138,6 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 0;
     };
-	class ForceWalk {
-        title = "Player Force Walk";
-        values[] = {0,1};
-        texts[] = {"Disabled","Enabled"};
-        default = 0;
-    };
 	class CustomAim {
         title = "More Steady Aim";
         values[] = {0,1};
