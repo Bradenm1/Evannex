@@ -19,6 +19,8 @@ fn_waitForGroupToEnterVehicle = compileFinal preprocessFileLineNumbers "core\ser
 fn_checkVehicleAndCrewAlive = compileFinal preprocessFileLineNumbers "core\server\functions\fn_checkVehicleAndCrewAlive.sqf";
 fn_createLandingNearZoneOnRoad = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_createLandingNearZoneOnRoad.sqf";
 fn_waitUntillArrived = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_waitUntillArrived.sqf";
+fn_getWaitingGroups = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_getWaitingGroups.sqf";
+fn_getWatingEvacGroups = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_getWatingEvacGroups.sqf";
 
 // Helicopters
 fn_createHelicopterCrew = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_createHelicopterCrew.sqf";

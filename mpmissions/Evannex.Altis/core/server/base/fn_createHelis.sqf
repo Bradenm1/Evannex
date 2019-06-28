@@ -12,7 +12,6 @@ br_fnc_createChopperUnit = {
 	_helicopterVehicle = (selectrandom _unitChance) createVehicle getMarkerPos _heliPad;
 	[_helicopterVehicle] call fn_addToZeus;
 	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
-	//[] call br_fnc_createHeliUnits;
 	waitUntil { sleep 3; {_x in _helicopterVehicle} count (units _vehicleGroup) == {(alive _x)} count (units _vehicleGroup) };
 };
 
@@ -20,8 +19,6 @@ br_fnc_createChopperUnit = {
 br_fuc_landGroupAtZone = {
 	private _groups = _this select 0;
 	[_helicopterVehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
-	// Add groups to transit
-	{ br_groups_in_transit pushBack _x; } forEach _groups;
 	// Command groups into helicopter
 	{ [_x, false, _helicopterVehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 	// Wait for the units to enter the helicopter
@@ -48,50 +45,21 @@ br_fuc_landGroupAtZone = {
 
 // If the chopper is evac
 br_fnc_runEvacChopper = {
-	if (count br_friendly_groups_wating_for_evac > 0) then {
-		private _groups = [];
-		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_wating_for_evac, _helicopterVehicle] call fn_findGroupsInQueue;
-		if (count _groups > 0) then {
-			{ 
-				br_friendly_groups_wating_for_evac deleteAt (br_friendly_groups_wating_for_evac find _x);
-				_x setBehaviour "SAFE";	 
-			} forEach _groups;
-			// Moveto LZ
-			private _landPosition = [(leader (_groups select 0))] call fn_createLandingNearObject;
-			[_helicopterVehicle, _vehicleGroup, [], _landPosition, TRUE, FALSE, "EVAC", "ColorCIV", TRUE] call fn_landHelicopter;
-			{ [_x, false, _helicopterVehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
-			_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
-			// Wait for units to enter the helicopter
-			[_helicopterVehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
-			{ [_x, _helicopterVehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
-			[_helicopterVehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
-			sleep 15;
-			[_helicopterVehicle, _vehicleGroup, _groups, getMarkerPos _heliPad, TRUE, TRUE, "RTB", "ColorOrange", TRUE] call fn_landHelicopter;
-			// Wait for units to eject and return to base
-			[_helicopterVehicle, _groups] call fn_dropEvacedUnitsAtBase;
-			_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
-		};
-	};
-};
-
-// If the chopper is transport
-br_fnc_runTransportChopper = {
-	// Check if any groups are waiting
-	if (count br_friendly_groups_waiting > 0) then {
-		private _groups = [];
-		// Get some waiting groups, if any
-		_groups = [_groups, br_friendly_groups_waiting, _helicopterVehicle] call fn_findGroupsInQueue;
-		if (count _groups > 0) then {
-			[_groups] call br_fuc_landGroupAtZone;
-		};		
-	} else { 
-		// Check if any players are waiting in helicopter
-		_playersGroups = [_helicopterVehicle] call fn_getPlayersInVehicle;
-		if (count _playersGroups > 0) then {
-			[_playersGroups] call br_fuc_landGroupAtZone;
-		};
-	};
+	private _groups = _this select 0;
+	// Moveto LZ
+	private _landPosition = [(leader (_groups select 0))] call fn_createLandingNearObject;
+	[_helicopterVehicle, _vehicleGroup, [], _landPosition, TRUE, FALSE, "EVAC", "ColorCIV", TRUE] call fn_landHelicopter;
+	{ [_x, false, _helicopterVehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
+	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
+	// Wait for units to enter the helicopter
+	[_helicopterVehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
+	{ [_x, _helicopterVehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
+	[_helicopterVehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
+	sleep 15;
+	[_helicopterVehicle, _vehicleGroup, _groups, getMarkerPos _heliPad, TRUE, TRUE, "RTB", "ColorOrange", TRUE] call fn_landHelicopter;
+	// Wait for units to eject and return to base
+	[_helicopterVehicle, _groups] call fn_dropEvacedUnitsAtBase;
+	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 };
 
 // Run AI
@@ -105,7 +73,13 @@ br_fnc_createHelis = {
 		// Check if units inside chopper are dead, or helicopter is dead or pilot ran away
 		while {({(alive _x)} count (units _vehicleGroup) > 0) && (alive _helicopterVehicle) && (((leader _vehicleGroup) distance _helicopterVehicle) < 30) && (fuel _helicopterVehicle > 0.2)} do {
 			sleep 25;
-			if (_evacChopper) then { [] call br_fnc_runEvacChopper; } else { [] call br_fnc_runTransportChopper; };
+			if (_evacChopper) then { 
+				private _groups = [_helicopterVehicle] call fn_getWatingEvacGroups;
+				if (count _groups > 0) then { [_groups] call br_fnc_runEvacChopper; };
+			} else { 
+				private _groups = [_helicopterVehicle] call fn_getWaitingGroups;
+				if (count _groups > 0) then { [_groups] call br_fuc_landGroupAtZone; };
+			};
 			_helicopterVehicle setFuel 1;
 			_helicopterVehicle setDamage 0;
 			// Heli should be on the pad, destory if not
