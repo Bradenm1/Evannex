@@ -5,12 +5,13 @@ private _vehicleGroup = nil; // The group in the heli
 private _helicopterVehicle = nil; // The helicopter
 private _landMarker = nil; // Used to tell the AI where to land
 private _unitChance = _this select 3;
+private _fmsDisable = ["MOVE", "TARGET", "AUTOTARGET", "FSM", "AUTOCOMBAT", "AIMINGERROR", "SUPPRESSION", "MINEDETECTION", "WEAPONAIM", "CHECKVISIBLE"];
 
 // Spawn custom units
 br_fnc_createChopperUnit = {
 	_helicopterVehicle = (selectrandom _unitChance) createVehicle getMarkerPos _heliPad;
 	[_helicopterVehicle] call fn_addToZeus;
-	_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 	//[] call br_fnc_createHeliUnits;
 	waitUntil { sleep 3; {_x in _helicopterVehicle} count (units _vehicleGroup) == {(alive _x)} count (units _vehicleGroup) };
 };
@@ -29,7 +30,7 @@ br_fuc_landGroupAtZone = {
 	sleep 15;
 	// Generate landing zone and move to it and land
 	private _landPosition = call fn_createLandingNearZone;
-	[_helicopterVehicle, _vehicleGroup, _groups, _landPosition, TRUE, TRUE, "LZ", "ColorGreen"] call fn_landHelicopter;
+	[_helicopterVehicle, _vehicleGroup, _groups, _landPosition, TRUE, TRUE, "LZ", "ColorGreen", TRUE] call fn_landHelicopter;
 	// Move groups into commanding zone group
 	{ 
 		private _y = _x;
@@ -38,15 +39,14 @@ br_fuc_landGroupAtZone = {
 			br_friendly_ai_groups pushBack _y; 
 		};
 	} forEach _groups;
-	_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 	// Goto helipad and land
-	[_helicopterVehicle, _vehicleGroup, [], getMarkerPos _heliPad, TRUE, FALSE, "RTB", "ColorOrange"] call fn_landHelicopter;
+	[_helicopterVehicle, _vehicleGroup, [], getMarkerPos _heliPad, TRUE, FALSE, "RTB", "ColorOrange", TRUE] call fn_landHelicopter;
 	// Create a temp group
-	_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 };
 
 // If the chopper is evac
-// using an old system... Takes one group at a time...
 br_fnc_runEvacChopper = {
 	if (count br_friendly_groups_wating_for_evac > 0) then {
 		private _groups = [];
@@ -59,28 +59,18 @@ br_fnc_runEvacChopper = {
 			} forEach _groups;
 			// Moveto LZ
 			private _landPosition = [(leader (_groups select 0))] call fn_createLandingNearObject;
-			[_helicopterVehicle, _vehicleGroup, [], _landPosition, TRUE, FALSE, "EVAC", "ColorCIV"] call fn_landHelicopter;
+			[_helicopterVehicle, _vehicleGroup, [], _landPosition, TRUE, FALSE, "EVAC", "ColorCIV", TRUE] call fn_landHelicopter;
 			{ [_x, false, _helicopterVehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
-			_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+			_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 			// Wait for units to enter the helicopter
 			[_helicopterVehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
 			{ [_x, _helicopterVehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
 			[_helicopterVehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
 			sleep 15;
-			[_helicopterVehicle, _vehicleGroup, _groups, getMarkerPos _heliPad, TRUE, TRUE, "RTB", "ColorOrange"] call fn_landHelicopter;
-			// Wait untill chopper is empty
-			private _tempTime = 0;
-			{
-				private _y = _x; 
-				_tempTime = time + br_groupsStuckTeleportDelay;
-				waitUntil { sleep 1; [_helicopterVehicle, TRUE] call fn_ejectUnits; {_x in _helicopterVehicle} count (units _y) == 0 || time > _tempTime}; 
-				// Move group to waiting groups
-				private _playerCount = ({isPlayer _x} count (units _y));
-				if (_playerCount == 0) then {
-					br_friendly_groups_waiting pushBack _y;
-				};
-			} forEach _groups;
-			_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+			[_helicopterVehicle, _vehicleGroup, _groups, getMarkerPos _heliPad, TRUE, TRUE, "RTB", "ColorOrange", TRUE] call fn_landHelicopter;
+			// Wait for units to eject and return to base
+			[_helicopterVehicle, _groups] call fn_dropEvacedUnitsAtBase;
+			_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 		};
 	};
 };

@@ -13,7 +13,7 @@ while {TRUE} do {
 		};
 	} forEach br_enemy_vehicle_objects;
 	_playerindex = 0;
-	while {count br_empty_vehicles_in_garbage_collection > 5 && {_playerindex < (count br_empty_vehicles_in_garbage_collection)}} do {
+	while {count br_empty_vehicles_in_garbage_collection > 5 && _playerindex < (count br_empty_vehicles_in_garbage_collection)} do {
 		_veh = br_empty_vehicles_in_garbage_collection select _playerindex;
 		if (!([getpos _veh, br_garbage_collection_player_distance] call fn_checkPlayersAround)) then {
 			if (count (crew _veh) == 0) then {

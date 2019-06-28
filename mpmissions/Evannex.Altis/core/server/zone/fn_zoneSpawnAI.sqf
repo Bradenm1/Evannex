@@ -91,6 +91,7 @@ br_fnc_spawnAI = {
 				if (!(isNull _vehicle)) then {
 					br_enemy_vehicle_objects pushBack _vehicle;
 					[_vehicle] call fn_objectInitEvents;
+					{ [_x] call fn_objectInitEvents; } forEach (crew _vehicle);
 					switch ((_vehicle call BIS_fnc_objectType) select 1) do {
 						case "Helicopter";
 						case "Plane": { _vehicle setPosASL [getPosASL _vehicle select 0, getPosASL _vehicle select 1, getTerrainHeightASL (position _vehicle) + 100 + random 500]; };

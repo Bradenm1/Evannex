@@ -17,12 +17,15 @@ fn_getUnitsInVehicle = compileFinal preprocessFileLineNumbers "core\server\funct
 fn_getPlayersInVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_getPlayersInVehicle.sqf";
 fn_waitForGroupToEnterVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_waitForGroupToEnterVehicle.sqf";
 fn_checkVehicleAndCrewAlive = compileFinal preprocessFileLineNumbers "core\server\functions\fn_checkVehicleAndCrewAlive.sqf";
+fn_createLandingNearZoneOnRoad = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_createLandingNearZoneOnRoad.sqf";
+fn_waitUntillArrived = compileFinal preprocessFileLineNumbers "core\server\functions\vehicles\fn_waitUntillArrived.sqf";
 
 // Helicopters
 fn_createHelicopterCrew = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_createHelicopterCrew.sqf";
 fn_waitUntillLanded = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_waitUntillLanded.sqf";
 fn_landHelicopter = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_landHelicopter.sqf";
 fn_createLandingNearZone = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_createLandingNearZone.sqf";
+fn_dropEvacedUnitsAtBase = compileFinal preprocessFileLineNumbers "core\server\functions\helicopters\fn_dropEvacedUnitsAtBase.sqf";
 
 // Groups 
 fn_findGroupsInQueue = compileFinal preprocessFileLineNumbers "core\server\functions\fn_findGroupsInQueue.sqf";

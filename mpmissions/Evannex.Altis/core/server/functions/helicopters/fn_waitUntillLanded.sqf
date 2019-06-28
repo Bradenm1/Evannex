@@ -7,7 +7,7 @@ if (!_alreadyFlying) then {
 	// If group already exists delete it
 	[_vehicleGroup] call fn_deleteGroup;
 	// Create units
-	_vehicleGroup = [_helicopterVehicle, WEST] call fn_createHelicopterCrew;
+	_vehicleGroup = [_helicopterVehicle, WEST, ["MOVE", "TARGET", "AUTOTARGET", "FSM", "AUTOCOMBAT", "AIMINGERROR", "SUPPRESSION", "MINEDETECTION", "WEAPONAIM", "CHECKVISIBLE"]] call fn_createHelicopterCrew;
 	// Since we are grounded we want to start the engine
 	_vehicle engineOn true;
 };
@@ -15,7 +15,7 @@ if (!_alreadyFlying) then {
 _vehicle setDamage 0;
 _vehicle setFuel 1;
 _vehicleGroup setBehaviour "CARELESS";
-{_x enableAI "MOVE"; } forEach units _vehicleGroup;
+{_x enableAI "MOVE"; } forEach units _vehicleGroup;	
 
 // Do WP stuff
 private _wp = _vehicleGroup addWaypoint [_landingPosition, 0];
