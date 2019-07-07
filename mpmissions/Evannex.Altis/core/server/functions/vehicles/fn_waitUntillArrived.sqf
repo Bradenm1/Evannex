@@ -19,5 +19,4 @@ waitUntil { sleep 2; _vehicle distance _drivingPosition < 10 || {!([_vehicle, _v
 	deleteWaypoint ((waypoints _vehicleGroup) select 0);
 };*/
 _vehicle engineOn false;
-_vehicle setUnloadInCombat [TRUE, TRUE];
 [_vehicleGroup] call fn_deleteGroup;

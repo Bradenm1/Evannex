@@ -28,7 +28,6 @@ br_runningCustomTransport = {
 		}, [_id, _hasEjectAction]];
 		_player setVariable [_hasEjectAction, TRUE];
 	};
-	{ br_groups_in_transit pushBack _x; } forEach _groups;
 	{ [_x, FALSE, _vehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 	waitUntil { sleep 3; (!(call br_checkDriverStatus) || !(_player getVariable _id)) };
 	// Check if the player ejected with units still within the vehicle
@@ -42,7 +41,6 @@ br_runningCustomTransport = {
 		if (_playerCount == 0) then {
 			br_friendly_ai_groups pushBack _y; 
 		};
-		br_groups_in_transit deleteAt (br_groups_in_transit find _x);
 	} forEach _groups;
 	{ _x setBehaviour "AWARE"; } forEach _groups;
 	// Eject all groups within the vehicle

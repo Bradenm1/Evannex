@@ -60,11 +60,11 @@ br_fnc_spawnAI = {
 			[_group] call fn_setRandomDirection;
 			{ [_x] call fn_objectInitEvents; } forEach units _group;
 			if (_currentGarrisons < br_max_garrisons) then {
-				_completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
+				private _completed = [leader _group, "ZONE_RADIUS", br_zone_radius * sqrt br_max_radius_distance] call SBGF_fnc_groupGarrison;
+				private _tempGroup = createGroup EAST;
 				if (_completed) then {  
 					{ 
 						_x disableAI "PATH"; 
-						_tempGroup = createGroup EAST;
 						[_x] joinSilent _tempGroup;
 						br_groups_in_buildings append [_tempGroup];
 					} forEach (units _group);

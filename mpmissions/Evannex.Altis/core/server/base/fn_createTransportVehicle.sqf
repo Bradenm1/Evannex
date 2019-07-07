@@ -32,7 +32,6 @@ br_fuc_MoveGroupTotZone = {
 	{ [_x, FALSE, _vehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
 	// Wait for the units to enter the helicopter
 	{ [_x, _vehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
-	_vehicle setUnloadInCombat [FALSE, FALSE];
 	[_vehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"];
 	sleep 15;
 	private _dropPosition = call fn_createLandingNearZoneOnRoad;
@@ -68,7 +67,6 @@ br_fnc_runEvacVehicle = {
 	{ [_x, _vehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
 	[_vehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
 	sleep 15;
-	_vehicle setUnloadInCombat [FALSE, FALSE];
 	[_vehicle, _vehicleGroup, _groups, getMarkerPos _spawnPad, TRUE, TRUE, "RTB", "ColorOrange", FALSE] call fn_landHelicopter;
 	// Wait for units to eject and return to base
 	[_vehicle, _groups] call fn_dropEvacedUnitsAtBase;

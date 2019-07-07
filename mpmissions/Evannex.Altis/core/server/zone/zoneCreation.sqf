@@ -32,7 +32,6 @@ br_enemy_vehicle_objects = []; // All enemy vehicles at the zone
 br_groups_in_buildings = []; // Enemy groups within buildings at the zone
 br_friendly_ai_groups = []; // All Firendly AI
 br_special_ai_groups = []; // Enemy special groups, includes boats
-br_groups_in_transit = []; // Groups in transit to the zone via helicopters
 br_friendly_vehicles = []; // Friendly armor
 br_groups_marked = []; // Enemy groups marked on map
 br_placed_mines = []; // Mines at the current zone

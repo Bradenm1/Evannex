@@ -12,7 +12,7 @@ private _unquieNumber = _vehicle call BIS_fnc_netId;
 
 // Place a marker on the map
 if (_displayOnMap) then { [format ["%1 - %2", _markerName, _unquieNumber], _position, format ["%1 - %2", _markerName, groupId (group (driver _vehicle))], _markerColour, 1] call fn_createTextMarker; };
-
+_vehicle setUnloadInCombat [FALSE, FALSE];
 if (_isAirVehicle) then {
 	_landMarker = createVehicle [ "Land_HelipadEmpty_F", _position, [], 0, "CAN_COLLIDE" ];
 	// Wait until landed
@@ -35,7 +35,7 @@ if (_ejectUnits) then {
 	// Set group as aware
 	{ _x setBehaviour "AWARE"; } forEach _groups;	
 };
-
+_vehicle setUnloadInCombat [TRUE, TRUE];
 if (_isAirVehicle) then { deleteVehicle _landMarker; };
 // Delete the marker on the map
 if (_displayOnMap) then { deleteMarker format ["%1 - %2", _markerName, _unquieNumber]; };
