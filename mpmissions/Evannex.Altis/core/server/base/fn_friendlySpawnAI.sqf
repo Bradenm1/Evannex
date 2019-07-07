@@ -12,6 +12,7 @@ br_fnc_spawnFriendlyAI = {
 				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call fn_getGroundUnitsLocation, br_friendly_groups_waiting] call fn_selectRandomGroupToSpawn;
 			} else {
 				_group = [call fn_getGroundUnitsLocation, WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
+				br_friendly_groups_waiting pushBack _group;
 			};
 			{ 
 				[_x] call fn_objectInitEvents; 
