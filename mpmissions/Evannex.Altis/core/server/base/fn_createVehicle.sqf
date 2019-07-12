@@ -37,7 +37,7 @@ br_fnc_runVehicleUnit = {
 		// Spawn vehicle
 		[] call br_fnc_createAttackVehicle;
 		// Wait untill they die
-		waituntil{ sleep 5; ({(alive _x)} count (units _attackVehicleGroup) < 1) || (!alive _attackVehicle) || (fuel _attackVehicle == 0)};
+		waituntil{ sleep 5; ({(alive _x)} count (units _attackVehicleGroup) == 0) || (!alive _attackVehicle) || (fuel _attackVehicle == 0)};
 		// Do some cleanup cause they died
 		if (!alive _attackVehicle && fuel _attackVehicle == 0) then { deleteVehicle _attackVehicle; } else { br_empty_vehicles_in_garbage_collection pushBack _attackVehicle; };
 		if (({(alive _x)} count (units _attackVehicleGroup) < 1)) then 

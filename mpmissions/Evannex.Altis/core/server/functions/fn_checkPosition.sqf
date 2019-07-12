@@ -1,6 +1,5 @@
 private _object = _this select 0;
 private _position = _object getVariable "checkPosition";
-private _hasMoved = TRUE;
 
 if (isNil "_position") then {
 	_object setVariable ["checkPosition", getPos _object];	

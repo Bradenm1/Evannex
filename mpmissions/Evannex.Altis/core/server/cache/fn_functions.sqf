@@ -13,6 +13,7 @@ zone_objectives = compileFinal preprocessFileLineNumbers "core\savedassets\zone_
 fn_createVehicleCrew = compileFinal preprocessFileLineNumbers "core\server\functions\fn_createVehicleCrew.sqf";
 fn_commandGroupIntoVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_commandGroupIntoVehicle.sqf";
 fn_ejectUnits = compileFinal preprocessFileLineNumbers "core\server\functions\fn_ejectUnits.sqf";
+fn_ejectGroup = compileFinal preprocessFileLineNumbers "core\server\functions\fn_ejectGroup.sqf";
 fn_getUnitsInVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_getUnitsInVehicle.sqf";
 fn_getPlayersInVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_getPlayersInVehicle.sqf";
 fn_waitForGroupToEnterVehicle = compileFinal preprocessFileLineNumbers "core\server\functions\fn_waitForGroupToEnterVehicle.sqf";
