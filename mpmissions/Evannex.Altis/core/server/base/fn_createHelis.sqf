@@ -36,7 +36,7 @@ br_fuc_landGroupAtZone = {
 			br_friendly_ai_groups pushBack _y; 
 		};
 	} forEach _groups;
-	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
+	//_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 	// Goto helipad and land
 	[_helicopterVehicle, _vehicleGroup, [], getMarkerPos _heliPad, TRUE, FALSE, "RTB", "ColorOrange", TRUE] call fn_landHelicopter;
 	// Create a temp group
@@ -50,7 +50,7 @@ br_fnc_runEvacChopper = {
 	private _landPosition = [(leader (_groups select 0))] call fn_createLandingNearObject;
 	[_helicopterVehicle, _vehicleGroup, [], _landPosition, TRUE, FALSE, "EVAC", "ColorCIV", TRUE] call fn_landHelicopter;
 	{ [_x, false, _helicopterVehicle] call fn_commandGroupIntoVehicle; } forEach _groups;
-	_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
+	//_vehicleGroup = [_helicopterVehicle, WEST, _fmsDisable] call fn_createHelicopterCrew;
 	// Wait for units to enter the helicopter
 	[_helicopterVehicle, "Waiting for all units to enter the helicopter..."] remoteExec ["vehicleChat"]; 
 	{ [_x, _helicopterVehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
