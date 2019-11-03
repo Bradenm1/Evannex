@@ -9,10 +9,10 @@ br_fnc_spawnFriendlyAI = {
 			private _group = nil;
 			_rNumber = floor (random ((count _unitChance) + (count br_custom_unit_compositions_friendly) + br_custom_units_chosen_offset));
 			if (((count _unitChance) != 0) && (_rNumber <= (count _unitChance))) then {
-				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call fn_getGroundUnitsLocation, br_friendly_groups_waiting] call fn_selectRandomGroupToSpawn;
+				_group = [WEST, br_unit_type_compositions_friendly select 0, br_unit_type_compositions_friendly select 2, br_unit_type_compositions_friendly select 1, _unitChance, call fn_getGroundUnitsLocation, call br_fnc_setInitCommandGroup] call fn_selectRandomGroupToSpawn;
 			} else {
 				_group = [call fn_getGroundUnitsLocation, WEST, selectrandom br_custom_unit_compositions_friendly] call BIS_fnc_spawnGroup;
-				br_friendly_groups_waiting pushBack _group;
+				(call br_fnc_setInitCommandGroup) pushback _group;
 			};
 			{ 
 				[_x] call fn_objectInitEvents; 
@@ -31,7 +31,7 @@ br_fnc_spawnFriendlyAI = {
 						_splitGroupsTemp pushBack _tempGroup;
 						_splitGroupsTemp pushBack _x;
 						br_friendly_ground_groups pushBack _x;
-						br_friendly_groups_waiting pushBack _tempGroup;
+						(call br_fnc_setInitCommandGroup) pushback _tempGroup;
 						_group = _x;
 						_tempDidSplit = TRUE;
 					};
@@ -43,6 +43,15 @@ br_fnc_spawnFriendlyAI = {
 		};
 		// Save memory instead of constant checking
 		sleep _allSpawnedDelay;
+	};
+};
+
+// Sets the init commanding group
+br_fnc_setInitCommandGroup = {
+	if (br_friendlies_use_transport) then {
+		br_friendly_groups_waiting;
+	} else {
+		br_friendly_ground_on_foot_to_zone;
 	};
 };
 

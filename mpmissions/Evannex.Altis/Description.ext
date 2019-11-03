@@ -192,6 +192,18 @@ class Params {
         texts[] = {"Disabled","Enabled"};
         default = 0;
     };
+    class FriendliesUseTransport {
+        title = "Friendlies Use Transport";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
+    class ObjectivesRequireClearedSpace {
+        title = "Objectives Require Cleared Space";
+        values[] = {0,1};
+        texts[] = {"Disabled","Enabled"};
+        default = 1;
+    };
     class  MaxUserVehicles {
 		title = "Max User Vehicles"; // Param name visible in the list
 		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 17, 20, 25, 30, 40, 50, 100}; // Values; must be integers; has to have the same number of elements as 'texts'

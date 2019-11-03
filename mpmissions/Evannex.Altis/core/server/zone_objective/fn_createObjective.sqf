@@ -104,13 +104,20 @@ br_fnc_createObjective = {
 	// Creates center
 	private _maxGrad = 20;
 	_objectiveOrigin = [];
-	while {count _objectiveOrigin < 2} do {
-		_objectiveOrigin = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, _maxGrad, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
-		_maxGrad = _maxGrad + 1;
-		sleep 0.1;
+	if (br_objectives_require_cleared_space) then { 
+		while {count _objectiveOrigin < 2} do {
+			_objectiveOrigin = [_position, 0, br_zone_radius * sqrt br_max_radius_distance, _maxGrad, 0, br_objective_max_angle, 0] call BIS_fnc_findSafePos;
+			_maxGrad = _maxGrad + 1;
+			sleep 0.1;
+		};
 	};
 	// Gets position near center
-	_objectivePosition = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 10, 0] call BIS_fnc_findSafePos;
+	if (br_objectives_require_cleared_space) then {
+		_objectivePosition = [_objectiveOrigin, 0, _zoneRadius * sqrt random 360, 20, 0, 10, 0] call BIS_fnc_findSafePos;
+	} else {
+		_objectiveOrigin = _position getPos [br_zone_radius * sqrt random br_max_radius_distance, random br_max_radius_distance];
+		_objectivePosition = _objectiveOrigin getPos [_zoneRadius * sqrt random 360, random 360];
+	};
 	// Place near center
 	_spawnedObj = "Land_LampAirport_F" createVehicle _objectivePosition;
 	_spawnedObj hideObjectGlobal true;

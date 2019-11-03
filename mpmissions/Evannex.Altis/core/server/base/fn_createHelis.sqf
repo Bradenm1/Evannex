@@ -24,6 +24,7 @@ br_fuc_landGroupAtZone = {
 	// Wait for the units to enter the helicopter
 	{ [_x, _helicopterVehicle, _vehicleGroup] call fn_waitForGroupToEnterVehicle; } forEach _groups;
 	[_helicopterVehicle, "Departing in 15 seconds!"] remoteExec ["vehicleChat"]; 
+	//br_headquarters sideChat format ["Air Transport Departing Soon - %1", groupId (group (driver _helicopterVehicle))];
 	sleep 15;
 	// Generate landing zone and move to it and land
 	private _landPosition = call fn_createLandingNearZone;

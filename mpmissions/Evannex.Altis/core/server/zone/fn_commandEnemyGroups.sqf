@@ -12,7 +12,7 @@ While {TRUE} do {
 			_wp = _y addWaypoint [_pos, 0];
 			_wp setWaypointFormation (selectrandom ["NO CHANGE", "COLUMN", "STAG COLUMN", "WEDGE", "ECH LEFT", "ECH RIGHT", "VEE", "LINE", "FILE", "DIAMOND"]);
 			_wp setWaypointSpeed (selectrandom ["UNCHANGED", "LIMITED", "NORMAL", "FULL"]);
-			_wp setWaypointBehaviour (selectrandom ["UNCHANGED", "CARELESS", "AWARE", "STEALTH"]);
+			_wp setWaypointBehaviour (selectrandom ["CARELESS", "AWARE", "STEALTH"]);
 			_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
 		};
 		// Check group is empty, remove it from groups and delete it

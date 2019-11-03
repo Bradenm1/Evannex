@@ -21,6 +21,7 @@ br_fnc_createAttackVehicle = {
 	// Apply the zone AI to the vehicle
 	br_friendly_ai_groups pushBack _attackVehicleGroup;
 	br_friendly_vehicles pushBack _attackVehicleGroup;
+	//br_headquarters sideChat format ["%1 - Ready for action!", getText (configFile >>  "CfgVehicles" >> typeof (Vehicle (leader _attackVehicleGroup)) >> "displayName")]
 };
 
 // What to do if the vehicle is dead but some units controlling the vehicle are alive

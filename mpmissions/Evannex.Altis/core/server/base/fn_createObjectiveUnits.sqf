@@ -32,7 +32,7 @@ br_fnc_createBombUnits = {
 		[_x] call fn_objectInitEvents; 
 	} forEach (units _objectiveGroup);
 	[_transportVehicle, _spawnPad] call fn_setDirectionOfMarker;
-	br_friendly_objective_groups pushBack _objectiveGroup;
+	//br_friendly_objective_groups pushBack _objectiveGroup;
 	//sleep 5;
 	waitUntil { sleep 1; {_x in _transportVehicle} count (units _objectiveGroup) == {(alive _x)} count (units _objectiveGroup) || !(alive _transportVehicle) || {({(alive _x)} count (units _objectiveGroup) == 0)} };
 	_transportVehicle setUnloadInCombat [FALSE, FALSE];
@@ -113,21 +113,26 @@ br_fnc_runRadioBombUnit = {
 		waitUntil { sleep 5; !br_zone_taken && {count br_objectives > 0} || {(alive _x)} count (units _objectiveGroup) == 0 || !(alive _transportVehicle)};
 		// Find a objective
 		call br_fnc_findObjective;
-		// Idle group if no radio tower
 		missionNamespace setVariable [(format ["br_objective_%1", _objective select 0]), FALSE];
-		// Check if any groups are waiting
-		private _getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
-		while {count _getPos > 2} do {
-			_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
-			sleep 0.1;
+		// Get position to exit vehicle
+		if (br_friendlies_use_transport) then {
+			br_friendly_objective_groups pushBack _objectiveGroup;
+			private _getPos = [getpos (_objective select 1), _getOutOfVehicleRadius, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+			while {count _getPos > 2} do {
+				_getPos = [getpos (_objective select 1), 0, 50, 1, 0, 60, 0] call BIS_fnc_findSafePos;
+				sleep 0.1;
+			};
+			private _wp = _objectiveGroup addWaypoint [_getPos, 0];
+			_wp setWaypointType "GETOUT";
+			_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
+			// Wait until group is within a given range
+			waitUntil { sleep 5; (count (waypoints _objectiveGroup)) == 0 || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || !(alive _transportVehicle) || {(alive _x)} count (units _objectiveGroup) == 0};
+			_transportVehicle setUnloadInCombat [TRUE, TRUE];
+			call br_fnc_deleteWayPoints;
+		} else {
+			[_transportVehicle, FALSE] call fn_ejectUnits;
+			call br_fnc_deleteWayPoints;
 		};
-		private _wp = _objectiveGroup addWaypoint [_getPos, 0];
-		_wp setWaypointType "GETOUT";
-		_wp setWaypointStatements ["true","deleteWaypoint [group this, currentWaypoint (group this)]"];
-		// Wait until group is within a given range
-		waitUntil { sleep 5; (count (waypoints _objectiveGroup)) == 0 || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || !(alive _transportVehicle) || {(alive _x)} count (units _objectiveGroup) == 0};
-		_transportVehicle setUnloadInCombat [TRUE, TRUE];
-		call br_fnc_deleteWayPoints;
 		// Tell group to get out of transport vehicle
 		if (!(missionNamespace getVariable (_objective select 5))) then {
 			//{[_x] allowGetIn false; unassignVehicle _x; _x action ["Eject", _transportVehicle]; _x action ["GetOut", _transportVehicle];} forEach (crew _transportVehicle);
@@ -140,6 +145,7 @@ br_fnc_runRadioBombUnit = {
 			};
 			private _wp = _objectiveGroup addWaypoint [_getPos, 0];
 			_wp setWaypointType "MOVE";
+			_wp setWaypointBehaviour "AWARE";
 			_wp setWaypointStatements ["true",(format ["deleteWaypoint [group this, currentWaypoint (group this)]; br_objective_%1 = TRUE;", _objective select 0])];
 			timeToComplete = time + 600;
 			waitUntil { sleep 2; ((timeToComplete < time) && !([] call br_near_players)) || missionNamespace getVariable (_objective select 5) || (missionNamespace getVariable (format ["br_objective_%1", _objective select 0])) || {(alive _x)} count (units _objectiveGroup) == 0; };
