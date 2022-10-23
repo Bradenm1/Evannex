@@ -228,7 +228,7 @@ br_fnc_onNewZoneCreation = {
 		};
 		_x setBehaviour "SAFE";	
 		// Add the group to the evac/waiting queue and delete from roaming if too far away from new zone
-		if (!br_friendlies_use_transport && (getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { 
+		if (br_friendlies_use_transport && (getpos (leader _x)) distance br_current_zone > br_queue_squads_distance) then { 
 			if (_x in br_friendly_ai_groups) then { 
 				br_friendly_ai_groups deleteAt (br_friendly_ai_groups find _x); 
 			};
